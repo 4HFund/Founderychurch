@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
 
     <style>
-        /* CSS Variables for The Foundery Church Brand Guidelines */
         :root {
             --bg-dark: #0f1115;
             --bg-light: #2a313c;
@@ -34,7 +33,6 @@
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Global Reset & Box Sizing */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -44,20 +42,18 @@
             -webkit-tap-highlight-color: transparent; 
         }
 
-        /* Body & Layout Setup */
         body {
             background-color: #000;
             display: flex; 
             justify-content: center; 
             align-items: center;
             height: 100vh; 
-            height: 100dvh; /* Dynamic viewport height for mobile browser bars */
+            height: 100dvh; 
             overflow: hidden; 
-            touch-action: none; /* Prevents pull-to-refresh on mobile */
+            touch-action: none; 
             color: var(--brand-cream);
         }
 
-        /* Main Game Container */
         #game-wrapper {
             position: relative; 
             width: 100vw; 
@@ -69,7 +65,6 @@
             box-shadow: 0 0 100px rgba(217, 108, 6, 0.1);
         }
 
-        /* Desktop specific styling */
         @media (min-width: 768px) {
             #game-wrapper { 
                 height: 90vh; 
@@ -78,7 +73,6 @@
             }
         }
 
-        /* HTML5 Canvas */
         canvas { 
             display: block; 
             width: 100%; 
@@ -89,10 +83,7 @@
             z-index: 1; 
         }
 
-        /* ------------------------------------------------------------------------
-                                UI LAYER & HUD
-        ------------------------------------------------------------------------
-        */
+        /* UI LAYER & HUD */
         #ui-layer { 
             position: absolute; 
             top: 0; 
@@ -145,10 +136,7 @@
         .lives-val { font-size: 1.8rem; letter-spacing: 4px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
         .lives-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--brand-cream-dim); }
 
-        /* ------------------------------------------------------------------------
-                                SCREENS & MODALS
-        ------------------------------------------------------------------------
-        */
+        /* SCREENS & MODALS */
         .screen {
             position: absolute; 
             top: 0; 
@@ -172,11 +160,10 @@
         
         .screen.active { 
             opacity: 1; 
-            pointer-events: auto; 
+            pointer-events: auto; /* This ensures ONLY active screens accept clicks */
             transform: scale(1); 
         }
 
-        /* Typography */
         h1 {
             color: var(--brand-cream); 
             font-size: clamp(2.5rem, 8vw, 3.8rem); 
@@ -206,10 +193,7 @@
             font-weight: 600;
         }
 
-        /* ------------------------------------------------------------------------
-                                BUTTONS & INPUTS
-        ------------------------------------------------------------------------
-        */
+        /* BUTTONS & INPUTS */
         .btn {
             background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
             border: none; 
@@ -231,7 +215,6 @@
             display: inline-block; 
             text-decoration: none; 
             text-align: center;
-            pointer-events: auto;
         }
         
         .btn:active { 
@@ -239,7 +222,6 @@
             box-shadow: 0 5px 15px var(--brand-orange-glow), inset 0 -1px 0 rgba(0,0,0,0.2); 
         }
         
-        /* Premium Button Shine Effect */
         .btn::after {
             content: ''; 
             position: absolute; 
@@ -271,7 +253,6 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Form Inputs */
         input[type="text"] {
             background: var(--brand-orange-glass); 
             border: 2px solid rgba(217, 108, 6, 0.4);
@@ -286,7 +267,6 @@
             font-size: 1.15rem; 
             text-transform: uppercase;
             transition: var(--transition-smooth);
-            pointer-events: auto;
         }
         
         input[type="text"]::placeholder { color: rgba(253, 251, 247, 0.4); font-weight: 600; }
@@ -306,10 +286,7 @@
             font-weight: 800;
         }
 
-        /* ------------------------------------------------------------------------
-                                END SCREEN SPECIFICS
-        ------------------------------------------------------------------------
-        */
+        /* END SCREEN SPECIFICS */
         .final-score { 
             font-size: 6rem; 
             color: var(--brand-gold); 
@@ -380,10 +357,7 @@
             font-size: 0.9rem;
         }
 
-        /* ------------------------------------------------------------------------
-                                LEADERBOARD UI
-        ------------------------------------------------------------------------
-        */
+        /* LEADERBOARD UI */
         #leaderboardList {
             width: 100%; 
             max-width: 400px; 
@@ -397,7 +371,6 @@
             margin: 25px 0;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
             
-            /* Custom Scrollbar */
             scrollbar-width: thin;
             scrollbar-color: var(--brand-orange) rgba(0,0,0,0.2);
         }
@@ -422,7 +395,6 @@
         .lb-row:hover { background: rgba(255,255,255,0.05); }
         .lb-row:last-child { border-bottom: none; }
         
-        /* Rank Colors */
         .lb-rank { font-weight: 900; width: 40px; text-align: left; color: var(--brand-cream-dim); }
         .lb-row[data-rank="1"] .lb-rank { color: var(--brand-gold); text-shadow: 0 0 10px var(--brand-gold); font-size: 1.4rem; }
         .lb-row[data-rank="2"] .lb-rank { color: #e0e0e0; font-size: 1.3rem; }
@@ -441,7 +413,6 @@
         }
         .lb-score { color: var(--brand-gold); font-weight: 900; text-align: right; letter-spacing: 1px; }
 
-        /* Status Messages */
         .status-msg {
             color: var(--brand-cream-dim);
             text-align: center;
@@ -525,18 +496,9 @@
 </div>
 
 <script type="module">
-/**
- * FIREBASE SDK IMPORTS
- * We import directly from Google's static CDN so a bundler (Webpack/Vite) is not required.
- * This makes the HTML file 100% standalone.
- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-/**
- * FIREBASE CONFIGURATION
- * Maps the web client to the specific Firestore backend project.
- */
 const firebaseConfig = {
     apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
     authDomain: "blessing-basket.firebaseapp.com",
@@ -547,49 +509,40 @@ const firebaseConfig = {
     measurementId: "G-8495PL9SH8"
 };
 
-// Initialize Firebase App & Database Instance
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-
-/**
- * ========================================================================
- * GAME CONFIGURATION & DATA
- * ========================================================================
- * Centralized data object allowing easy tweaking of game balance and content.
- */
 const GAME_CONFIG = {
     physics: {
-        gravity: 600,             // Downward force applied to particles
-        basketSpeed: 1800,        // Acceleration of the basket via keyboard
-        basketFriction: 0.80,     // Damping applied to basket velocity
-        basketMaxSpeed: 900,      // Terminal velocity of basket
-        touchFollowSpeed: 18,     // How fast basket snaps to finger (Lerp factor)
-        itemBaseSpeedMin: 200,    // Minimum starting fall speed for items
-        itemBaseSpeedMax: 350,    // Maximum starting fall speed for items
-        maxDifficultyTime: 75     // Seconds until items hit maximum fall speed
+        gravity: 600,
+        basketSpeed: 1800,
+        basketFriction: 0.80,
+        basketMaxSpeed: 900,
+        touchFollowSpeed: 18,
+        itemBaseSpeedMin: 200,
+        itemBaseSpeedMax: 350,
+        maxDifficultyTime: 75
     },
     rules: {
         maxLives: 3,
         pointsPerGood: 10,
-        pointsStreakBonus: 5,     // Added on top of base points if streak > 2
+        pointsStreakBonus: 5,
         pointsLostPerBad: 15,
         streakRequiredForBonus: 3
     },
     colors: {
-        goodBg: '#fdfbf7',       // Cream
-        goodGlow: '#f5b700',     // Gold
-        goodBorder: '#d96c06',   // Orange
-        goodText: '#0f1115',     // Dark
-        badBg: '#1e1414',        // Dark Red tint
-        badGlow: '#cc0000',      // Bright Red
-        badBorder: '#8b0000',    // Deep Red
-        badText: '#fdfbf7',      // Cream
-        basket: '#f5b700',       // Gold
-        basketInner: '#1e1a13',  // Dark core
-        forgeSparks: '#f5b700'   // Gold sparks
+        goodBg: '#fdfbf7',
+        goodGlow: '#f5b700',
+        goodBorder: '#d96c06',
+        goodText: '#0f1115',
+        badBg: '#1e1414',
+        badGlow: '#cc0000',
+        badBorder: '#8b0000',
+        badText: '#fdfbf7',
+        basket: '#f5b700',
+        basketInner: '#1e1a13',
+        forgeSparks: '#f5b700'
     },
-    // The items players want to catch
     goodItems: [
         { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' },
         { t: 'Groceries', e: '🥖' }, { t: 'Encouragement', e: '💬' }, { t: 'Coffee', e: '☕' },
@@ -597,14 +550,12 @@ const GAME_CONFIG = {
         { t: 'Smile', e: '😊' }, { t: 'Grace', e: '✨' }, { t: 'Love', e: '❤️' },
         { t: 'Patience', e: '⏳' }, { t: 'Generosity', e: '🎁' }, { t: 'Joy', e: '☀️' }
     ],
-    // The items players must avoid
     badItems: [
         { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' },
         { t: 'Negativity', e: '🌧️' }, { t: 'Excuses', e: '🤷' }, { t: 'Anger', e: '😡' },
         { t: 'Pride', e: '🦚' }, { t: 'Doubt', e: '❓' }, { t: 'Isolation', e: '🚪' },
         { t: 'Envy', e: '😒' }, { t: 'Bitterness', e: '🍋' }, { t: 'Apathy', e: '🥱' }
     ],
-    // Randomized real-world calls to action shown on Game Over
     challenges: [
         "Text someone you haven’t checked on in a while.",
         "Pray for a first responder, veteran, teacher, or neighbor today.",
@@ -619,1014 +570,269 @@ const GAME_CONFIG = {
     ]
 };
 
-
-/**
- * ========================================================================
- * UTILITY MATH FUNCTIONS
- * ========================================================================
- * Standard game dev math helpers for smooth animations and calculations.
- */
 const MathUtils = {
-    // Linear Interpolation: smoothly transition from A to B
     lerp: (a, b, t) => a + (b - a) * t,
-    // Keep a value strictly within a min/max range
     clamp: (val, min, max) => Math.min(Math.max(val, min), max),
-    // Get a random float between min and max
     randomRange: (min, max) => Math.random() * (max - min) + min,
-    // Easing function for floating text (Starts fast, slows down)
     easeOutCubic: (t) => 1 - Math.pow(1 - t, 3)
 };
 
-
-/**
- * ========================================================================
- * ADVANCED AUDIO SYNTHESIZER (ADSR)
- * ========================================================================
- * Generates sound effects dynamically using the browser's Web Audio API.
- * Uses ADSR Envelopes (Attack, Decay, Sustain, Release) to make sounds
- * feel professional, rounded, and pleasant rather than harsh retro beeps.
- */
 class AudioEngine {
     constructor() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.value = 0.4; // Global volume 40%
+        this.masterGain.gain.value = 0.4; 
         this.masterGain.connect(this.ctx.destination);
         this.enabled = true;
     }
-
-    /** Ensure AudioContext is running (browsers suspend it until user interaction) */
-    init() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-    }
-
-    /**
-     * Core Synthesizer function using an Envelope Generator
-     * @param {number} freq - Frequency in Hz (Pitch)
-     * @param {string} type - Oscillator type ('sine', 'square', 'sawtooth', 'triangle')
-     * @param {number} duration - Total length of sound in seconds
-     * @param {number} vol - Peak volume (0.0 to 1.0)
-     */
+    init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
     playTone(freq, type, duration, vol) {
         if (!this.enabled || this.ctx.state === 'suspended') return;
-        
         const osc = this.ctx.createOscillator();
         const gainNode = this.ctx.createGain();
-        
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        
-        // ADSR Envelope Construction
-        const attackTime = 0.02;
-        const releaseTime = 0.1;
-        const now = this.ctx.currentTime;
-        
-        // Start at 0
+        const attackTime = 0.02; const releaseTime = 0.1; const now = this.ctx.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        // Attack (Ramp up to peak volume)
         gainNode.gain.linearRampToValueAtTime(vol, now + attackTime);
-        // Sustain & Decay (Hold, then ramp down smoothly)
         gainNode.gain.setTargetAtTime(0, now + duration - releaseTime, releaseTime / 3);
-        
-        osc.connect(gainNode);
-        gainNode.connect(this.masterGain);
-        
-        osc.start(now);
-        osc.stop(now + duration);
+        osc.connect(gainNode); gainNode.connect(this.masterGain);
+        osc.start(now); osc.stop(now + duration);
     }
-
-    // A pleasant two-tone chime for catching a blessing
-    playGood() {
-        this.playTone(659.25, 'sine', 0.15, 0.3); // E5
-        setTimeout(() => this.playTone(880.00, 'sine', 0.25, 0.2), 50); // A5
-    }
-
-    // A low, dissonant buzz for catching a bad item
-    playBad() {
-        this.playTone(150, 'sawtooth', 0.4, 0.4);
-        setTimeout(() => this.playTone(145, 'square', 0.4, 0.2), 20); // Phasing effect
-    }
-
-    // An ascending arpeggio played when a streak hits 3
-    playLevelUp() {
-        // Notes: C5, E5, G5, C6
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, i) => {
-            setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.25), i * 70);
-        });
-    }
+    playGood() { this.playTone(659.25, 'sine', 0.15, 0.3); setTimeout(() => this.playTone(880.00, 'sine', 0.25, 0.2), 50); }
+    playBad() { this.playTone(150, 'sawtooth', 0.4, 0.4); setTimeout(() => this.playTone(145, 'square', 0.4, 0.2), 20); }
+    playLevelUp() { [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.25), i * 70); }); }
 }
 
-
-/**
- * ========================================================================
- * LOCAL STORAGE MANAGER
- * ========================================================================
- * Wraps localStorage interactions safely to prevent errors in private browsing.
- */
 class StorageManager {
-    static getHighScore() {
-        try { return parseInt(localStorage.getItem('blessingBasketHighScore')) || 0; } 
-        catch (e) { return 0; }
-    }
-    static setHighScore(score) {
-        try { localStorage.setItem('blessingBasketHighScore', score); } 
-        catch (e) { console.warn("Local storage disabled."); }
-    }
+    static getHighScore() { try { return parseInt(localStorage.getItem('blessingBasketHighScore')) || 0; } catch (e) { return 0; } }
+    static setHighScore(score) { try { localStorage.setItem('blessingBasketHighScore', score); } catch (e) { console.warn("Local storage disabled."); } }
 }
 
-
-/**
- * ========================================================================
- * INPUT MANAGER
- * ========================================================================
- * Normalizes Keyboard and Touch events into a single axis variable (-1 to 1).
- */
 class InputManager {
     constructor(canvas) {
-        this.axisX = 0;             // Represents movement direction (-1 left, 1 right, 0 idle)
-        this.touchTarget = null;    // Absolute X coordinate the user is touching
-        
-        this.keys = { left: false, right: false };
-
-        // Keyboard Event Listeners
+        this.axisX = 0; this.touchTarget = null; this.keys = { left: false, right: false };
         window.addEventListener('keydown', e => this.handleKey(e, true));
         window.addEventListener('keyup', e => this.handleKey(e, false));
-
-        // Touch Event Listeners (Bound to Canvas)
         canvas.addEventListener('touchstart', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchmove', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchend', () => { this.touchTarget = null; });
         canvas.addEventListener('touchcancel', () => { this.touchTarget = null; });
     }
-
     handleKey(e, isDown) {
         const key = e.key.toLowerCase();
         if (key === 'arrowleft' || key === 'a') this.keys.left = isDown;
         if (key === 'arrowright' || key === 'd') this.keys.right = isDown;
-        
-        // Resolve conflicting key presses
         if (this.keys.left && this.keys.right) this.axisX = 0;
         else if (this.keys.left) this.axisX = -1;
         else if (this.keys.right) this.axisX = 1;
         else this.axisX = 0;
     }
-
-    handleTouch(e) {
-        e.preventDefault(); // Stop scrolling/zooming
-        if (e.touches.length > 0) {
-            const rect = e.target.getBoundingClientRect();
-            // Calculate touch relative to the canvas left edge
-            this.touchTarget = e.touches[0].clientX - rect.left;
-        }
-    }
+    handleTouch(e) { e.preventDefault(); if (e.touches.length > 0) { const rect = e.target.getBoundingClientRect(); this.touchTarget = e.touches[0].clientX - rect.left; } }
 }
 
-
-/**
- * ========================================================================
- * UI MANAGER
- * ========================================================================
- * Handles all DOM element caching, CSS class toggling, and data binding.
- * Keeps the main Game class clean from HTML manipulation.
- */
 class UIManager {
     constructor() {
-        // Cache DOM elements
-        this.screens = {
-            start: document.getElementById('startScreen'),
-            end: document.getElementById('endScreen'),
-            leaderboard: document.getElementById('leaderboardScreen')
-        };
-        
+        this.screens = { start: document.getElementById('startScreen'), end: document.getElementById('endScreen'), leaderboard: document.getElementById('leaderboardScreen') };
         this.hud = document.getElementById('hud');
-        this.els = {
-            score: document.getElementById('scoreVal'),
-            streak: document.getElementById('streakVal'),
-            lives: document.getElementById('livesVal'),
-            finalScore: document.getElementById('finalScore'),
-            highScoreDisp: document.getElementById('highScoreDisplay'),
-            highScoreVal: document.getElementById('highScoreVal'),
-            challengeTxt: document.getElementById('challengeText'),
-            submitBlock: document.getElementById('submitScoreBlock'),
-            nameInput: document.getElementById('playerNameInput'),
-            saveMsg: document.getElementById('scoreSavedMsg'),
-            lbList: document.getElementById('leaderboardList'),
-            submitBtn: document.getElementById('submitScoreBtn')
-        };
-        
+        this.els = { score: document.getElementById('scoreVal'), streak: document.getElementById('streakVal'), lives: document.getElementById('livesVal'), finalScore: document.getElementById('finalScore'), highScoreDisp: document.getElementById('highScoreDisplay'), highScoreVal: document.getElementById('highScoreVal'), challengeTxt: document.getElementById('challengeText'), submitBlock: document.getElementById('submitScoreBlock'), nameInput: document.getElementById('playerNameInput'), saveMsg: document.getElementById('scoreSavedMsg'), lbList: document.getElementById('leaderboardList'), submitBtn: document.getElementById('submitScoreBtn') };
         this.activeScreen = this.screens.start;
     }
-
-    /** Switches the visible modal screen */
     switchScreen(screenName) {
-        // Hide current
         if (this.activeScreen) this.activeScreen.classList.remove('active');
-        // Show new
         const nextScreen = this.screens[screenName];
-        if (nextScreen) {
-            nextScreen.classList.add('active');
-            this.activeScreen = nextScreen;
-        }
+        if (nextScreen) { nextScreen.classList.add('active'); this.activeScreen = nextScreen; }
     }
-
-    /** Toggles the in-game Heads Up Display overlay */
-    setHUDVisible(isVisible) {
-        if (isVisible) this.hud.classList.add('active');
-        else this.hud.classList.remove('active');
-    }
-
-    /** Updates in-game numbers */
+    setHUDVisible(isVisible) { if (isVisible) this.hud.classList.add('active'); else this.hud.classList.remove('active'); }
     updateHUD(score, streak, lives) {
-        this.els.score.innerText = score;
-        this.els.streak.innerText = `Streak: ${streak}`;
-        
-        // Pulse gold logic
-        if (streak >= GAME_CONFIG.rules.streakRequiredForBonus) {
-            this.els.streak.classList.add('high');
-        } else {
-            this.els.streak.classList.remove('high');
-        }
-        
-        // Update heart emojis
+        this.els.score.innerText = score; this.els.streak.innerText = `Streak: ${streak}`;
+        if (streak >= GAME_CONFIG.rules.streakRequiredForBonus) { this.els.streak.classList.add('high'); } else { this.els.streak.classList.remove('high'); }
         this.els.lives.innerText = '❤️'.repeat(Math.max(0, lives)) || '💀';
     }
-
-    /** Populates the Game Over screen data */
     setupEndScreen(score, personalBest, isNewBest, challenge) {
-        this.els.finalScore.innerText = score;
-        this.els.challengeTxt.innerText = challenge;
-        
-        if (isNewBest) {
-            this.els.highScoreDisp.classList.add('new-high-score');
-            this.els.highScoreVal.innerText = personalBest + " (NEW!)";
-        } else {
-            this.els.highScoreDisp.classList.remove('new-high-score');
-            this.els.highScoreVal.innerText = personalBest;
-        }
-
-        // Only allow database submission if they scored points
-        if (score > 0) {
-            this.els.submitBlock.style.display = 'block';
-            this.els.saveMsg.style.display = 'none';
-            this.els.nameInput.value = ''; 
-        } else {
-            this.els.submitBlock.style.display = 'none';
-            this.els.saveMsg.style.display = 'none';
-        }
+        this.els.finalScore.innerText = score; this.els.challengeTxt.innerText = challenge;
+        if (isNewBest) { this.els.highScoreDisp.classList.add('new-high-score'); this.els.highScoreVal.innerText = personalBest + " (NEW!)"; } 
+        else { this.els.highScoreDisp.classList.remove('new-high-score'); this.els.highScoreVal.innerText = personalBest; }
+        if (score > 0) { this.els.submitBlock.style.display = 'block'; this.els.saveMsg.style.display = 'none'; this.els.nameInput.value = ''; } 
+        else { this.els.submitBlock.style.display = 'none'; this.els.saveMsg.style.display = 'none'; }
     }
-
-    /** Renders the fetched database array into HTML rows */
     renderLeaderboard(dataArray, error = null) {
-        if (error) {
-            this.els.lbList.innerHTML = `<div class="status-msg status-error">${error}</div>`;
-            return;
-        }
-        
-        if (dataArray.length === 0) {
-            this.els.lbList.innerHTML = `<div class="status-msg">Be the first to get a high score!</div>`;
-            return;
-        }
-
+        if (error) { this.els.lbList.innerHTML = `<div class="status-msg status-error">${error}</div>`; return; }
+        if (dataArray.length === 0) { this.els.lbList.innerHTML = `<div class="status-msg">Be the first to get a high score!</div>`; return; }
         let html = '';
         dataArray.forEach((row, index) => {
-            const rank = index + 1;
-            // Sanitize name injection to prevent basic XSS
-            const safeName = row.name.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 15);
-            html += `
-                <div class="lb-row" data-rank="${rank}">
-                    <div class="lb-rank">#${rank}</div>
-                    <div class="lb-name">${safeName}</div>
-                    <div class="lb-score">${row.score}</div>
-                </div>
-            `;
+            const rank = index + 1; const safeName = row.name.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 15);
+            html += `<div class="lb-row" data-rank="${rank}"><div class="lb-rank">#${rank}</div><div class="lb-name">${safeName}</div><div class="lb-score">${row.score}</div></div>`;
         });
         this.els.lbList.innerHTML = html;
     }
 }
 
-
-/**
- * ========================================================================
- * PARALLAX BACKGROUND SYSTEM
- * ========================================================================
- * Manages multiple layers of floating objects to create depth (z-index illusion).
- */
 class ParallaxBackground {
     constructor(width, height) {
-        this.width = width;
-        this.height = height;
-        this.layers = [];
-        
-        // Layer 1: Slow, tiny, dim background embers (Far away)
+        this.width = width; this.height = height; this.layers = [];
         this.layers.push(this.createLayer(30, { sizeMin: 0.5, sizeMax: 1.5, speedMult: 0.3, alphaMin: 0.1, alphaMax: 0.3 }));
-        
-        // Layer 2: Medium, standard embers (Midground)
         this.layers.push(this.createLayer(20, { sizeMin: 1.5, sizeMax: 2.5, speedMult: 0.8, alphaMin: 0.3, alphaMax: 0.6 }));
-        
-        // Layer 3: Fast, large, bright embers (Foreground/Out of focus)
         this.layers.push(this.createLayer(10, { sizeMin: 3.0, sizeMax: 5.0, speedMult: 1.5, alphaMin: 0.5, alphaMax: 0.8 }));
     }
-
-    createLayer(count, config) {
-        let particles = [];
-        for (let i = 0; i < count; i++) {
-            particles.push(this.spawnParticle(config, true));
-        }
-        return { particles, config };
-    }
-
+    createLayer(count, config) { let particles = []; for (let i = 0; i < count; i++) { particles.push(this.spawnParticle(config, true)); } return { particles, config }; }
     spawnParticle(config, randomY = false) {
-        return {
-            x: Math.random() * this.width,
-            // If randomY is true (init), spawn anywhere. If false (respawn), spawn just below screen.
-            y: randomY ? Math.random() * this.height : this.height + 10,
-            s: MathUtils.randomRange(config.sizeMin, config.sizeMax),
-            vy: -MathUtils.randomRange(20, 50) * config.speedMult,
-            vx: MathUtils.randomRange(-5, 5) * config.speedMult,
-            alpha: MathUtils.randomRange(config.alphaMin, config.alphaMax),
-            wobbleSpeed: MathUtils.randomRange(0.5, 2.0),
-            wobbleTime: Math.random() * Math.PI * 2
-        };
+        return { x: Math.random() * this.width, y: randomY ? Math.random() * this.height : this.height + 10, s: MathUtils.randomRange(config.sizeMin, config.sizeMax), vy: -MathUtils.randomRange(20, 50) * config.speedMult, vx: MathUtils.randomRange(-5, 5) * config.speedMult, alpha: MathUtils.randomRange(config.alphaMin, config.alphaMax), wobbleSpeed: MathUtils.randomRange(0.5, 2.0), wobbleTime: Math.random() * Math.PI * 2 };
     }
-
-    update(dt) {
-        this.layers.forEach(layer => {
-            layer.particles.forEach(p => {
-                // Sine wave wobble applied to X axis
-                p.wobbleTime += dt * p.wobbleSpeed;
-                p.x += (p.vx + Math.sin(p.wobbleTime) * 10) * dt;
-                p.y += p.vy * dt;
-                
-                // Wrap around when reaching top
-                if (p.y < -20) Object.assign(p, this.spawnParticle(layer.config, false));
-            });
-        });
-    }
-
-    draw(ctx) {
-        ctx.fillStyle = GAME_CONFIG.colors.forgeSparks;
-        this.layers.forEach(layer => {
-            layer.particles.forEach(p => {
-                ctx.globalAlpha = p.alpha;
-                ctx.beginPath(); 
-                ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); 
-                ctx.fill();
-            });
-        });
-        ctx.globalAlpha = 1.0; // Reset
-    }
+    update(dt) { this.layers.forEach(layer => { layer.particles.forEach(p => { p.wobbleTime += dt * p.wobbleSpeed; p.x += (p.vx + Math.sin(p.wobbleTime) * 10) * dt; p.y += p.vy * dt; if (p.y < -20) Object.assign(p, this.spawnParticle(layer.config, false)); }); }); }
+    draw(ctx) { ctx.fillStyle = GAME_CONFIG.colors.forgeSparks; this.layers.forEach(layer => { layer.particles.forEach(p => { ctx.globalAlpha = p.alpha; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill(); }); }); ctx.globalAlpha = 1.0; }
 }
 
-
-/**
- * ========================================================================
- * PARTICLE FX SYSTEM
- * ========================================================================
- * Handles explosive bursts and floating combat text (+10, -1 LIFE).
- */
 class ParticleSystem {
-    constructor() {
-        this.particles = [];
-        this.texts = [];
-    }
-
-    /** Emits a burst of physical particles */
-    emitBurst(x, y, color, isGood) {
-        const count = isGood ? 20 : 30; // Bad hits are more explosive
-        for (let i = 0; i < count; i++) {
-            this.particles.push({
-                x: x, 
-                y: y,
-                // Circular explosion vector
-                vx: MathUtils.randomRange(-300, 300),
-                vy: MathUtils.randomRange(-400, 50),
-                life: 1.0, 
-                decay: MathUtils.randomRange(0.8, 2.0),
-                color: color, 
-                size: MathUtils.randomRange(2, 6)
-            });
-        }
-    }
-    
-    /** Emits text that floats upwards and fades out */
-    emitText(x, y, text, color) {
-        this.texts.push({ 
-            x: x, 
-            y: y, 
-            text: text, 
-            color: color, 
-            life: 1.5, 
-            vy: -80,
-            startY: y // Used for easing calculations
-        });
-    }
-
+    constructor() { this.particles = []; this.texts = []; }
+    emitBurst(x, y, color, isGood) { const count = isGood ? 20 : 30; for (let i = 0; i < count; i++) { this.particles.push({ x: x, y: y, vx: MathUtils.randomRange(-300, 300), vy: MathUtils.randomRange(-400, 50), life: 1.0, decay: MathUtils.randomRange(0.8, 2.0), color: color, size: MathUtils.randomRange(2, 6) }); } }
+    emitText(x, y, text, color) { this.texts.push({ x: x, y: y, text: text, color: color, life: 1.5, vy: -80, startY: y }); }
     update(dt) {
-        // Physics Particles
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-            let p = this.particles[i];
-            p.vy += GAME_CONFIG.physics.gravity * dt; // Apply gravity
-            p.x += p.vx * dt;
-            p.y += p.vy * dt;
-            p.life -= p.decay * dt;
-            
-            if (p.life <= 0) this.particles.splice(i, 1);
-        }
-
-        // Floating Texts
-        for (let i = this.texts.length - 1; i >= 0; i--) {
-            let t = this.texts[i];
-            t.y += t.vy * dt;
-            t.life -= dt;
-            
-            if (t.life <= 0) this.texts.splice(i, 1);
-        }
+        for (let i = this.particles.length - 1; i >= 0; i--) { let p = this.particles[i]; p.vy += GAME_CONFIG.physics.gravity * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt; if (p.life <= 0) this.particles.splice(i, 1); }
+        for (let i = this.texts.length - 1; i >= 0; i--) { let t = this.texts[i]; t.y += t.vy * dt; t.life -= dt; if (t.life <= 0) this.texts.splice(i, 1); }
     }
-
     draw(ctx) {
-        // Draw physical sparks
-        this.particles.forEach(p => {
-            ctx.globalAlpha = Math.max(0, p.life);
-            ctx.fillStyle = p.color;
-            ctx.beginPath(); 
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); 
-            ctx.fill();
-        });
-        
-        // Draw Text
+        this.particles.forEach(p => { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); });
         this.texts.forEach(t => {
-            // Fade out in the last 0.5 seconds
-            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2));
-            ctx.fillStyle = t.color;
-            ctx.font = "900 24px Montserrat";
-            ctx.textAlign = "center";
-            ctx.shadowColor = '#000'; 
-            ctx.shadowBlur = 6;
-            
-            // Pop in effect using easing
-            let scale = 1;
-            let progress = 1.5 - t.life;
-            if (progress < 0.2) scale = MathUtils.easeOutCubic(progress * 5); // Rapid scale up
-            
-            ctx.save();
-            ctx.translate(t.x, t.y);
-            ctx.scale(scale, scale);
-            ctx.fillText(t.text, 0, 0);
-            ctx.restore();
-            
-            ctx.shadowBlur = 0;
+            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color; ctx.font = "900 24px Montserrat"; ctx.textAlign = "center"; ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
+            let scale = 1; let progress = 1.5 - t.life; if (progress < 0.2) scale = MathUtils.easeOutCubic(progress * 5);
+            ctx.save(); ctx.translate(t.x, t.y); ctx.scale(scale, scale); ctx.fillText(t.text, 0, 0); ctx.restore(); ctx.shadowBlur = 0;
         });
         ctx.globalAlpha = 1;
     }
 }
 
-
-/**
- * ========================================================================
- * GAME ENTITIES
- * ========================================================================
- */
-
-/** The Player's Basket */
 class Basket {
     constructor(game) {
-        this.game = game;
-        this.baseWidth = 110; 
-        this.baseHeight = 30;
-        this.width = this.baseWidth;
-        this.height = this.baseHeight;
-        
-        this.x = game.width / 2 - this.width / 2;
-        this.y = game.height - this.height - 80; // Elevated to avoid safe-area/home-bar issues
-        
-        this.vx = 0;
-        
-        // Animation states for squash/stretch
-        this.scaleX = 1;
-        this.scaleY = 1;
-        this.targetScaleX = 1;
-        this.targetScaleY = 1;
+        this.game = game; this.baseWidth = 110; this.baseHeight = 30; this.width = this.baseWidth; this.height = this.baseHeight;
+        this.x = game.width / 2 - this.width / 2; this.y = game.height - this.height - 80; this.vx = 0;
+        this.scaleX = 1; this.scaleY = 1; this.targetScaleX = 1; this.targetScaleY = 1;
     }
-
-    /** Triggers a visual deformation when an item hits */
-    pulse(isGood) {
-        if (isGood) {
-            // Squash down, stretch wide
-            this.scaleX = 1.2;
-            this.scaleY = 0.6;
-        } else {
-            // Stretch tall, squash narrow (shock recoil)
-            this.scaleX = 0.8;
-            this.scaleY = 1.3;
-        }
-    }
-
+    pulse(isGood) { if (isGood) { this.scaleX = 1.2; this.scaleY = 0.6; } else { this.scaleX = 0.8; this.scaleY = 1.3; } }
     update(dt) {
         const p = GAME_CONFIG.physics;
-        
-        // 1. Resolve Movement
-        if (this.game.input.touchTarget !== null) {
-            // Touch Drive: Smoothly interpolate toward finger X coordinate
-            const targetX = this.game.input.touchTarget - this.width / 2;
-            this.x += (targetX - this.x) * p.touchFollowSpeed * dt;
-            this.vx = 0; 
-        } else {
-            // Keyboard Drive: Acceleration & Friction model
-            this.vx += this.game.input.axisX * p.basketSpeed * dt;
-            this.vx *= p.basketFriction; 
-            
-            this.vx = MathUtils.clamp(this.vx, -p.basketMaxSpeed, p.basketMaxSpeed);
-            this.x += this.vx * dt;
-        }
-
-        // Keep inside screen bounds
-        if (this.x < 0) { this.x = 0; this.vx = 0; }
-        if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
-
-        // 2. Resolve Squash/Stretch Animation (Spring physics toward 1.0)
-        this.scaleX += (this.targetScaleX - this.scaleX) * 15 * dt;
-        this.scaleY += (this.targetScaleY - this.scaleY) * 15 * dt;
-        
-        // Apply scales to actual drawing dimensions
-        this.width = this.baseWidth * this.scaleX;
-        this.height = this.baseHeight * this.scaleY;
-        
-        // Adjust Y so the basket stays anchored to the bottom instead of growing downward
-        this.y = (this.game.height - 80) - this.height;
+        if (this.game.input.touchTarget !== null) { const targetX = this.game.input.touchTarget - this.width / 2; this.x += (targetX - this.x) * p.touchFollowSpeed * dt; this.vx = 0; } 
+        else { this.vx += this.game.input.axisX * p.basketSpeed * dt; this.vx *= p.basketFriction; this.vx = MathUtils.clamp(this.vx, -p.basketMaxSpeed, p.basketMaxSpeed); this.x += this.vx * dt; }
+        if (this.x < 0) { this.x = 0; this.vx = 0; } if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
+        this.scaleX += (this.targetScaleX - this.scaleX) * 15 * dt; this.scaleY += (this.targetScaleY - this.scaleY) * 15 * dt;
+        this.width = this.baseWidth * this.scaleX; this.height = this.baseHeight * this.scaleY; this.y = (this.game.height - 80) - this.height;
     }
-
     draw(ctx) {
-        const c = GAME_CONFIG.colors;
-        const radius = 10;
-        
-        ctx.save();
-        
-        // Outer glowing shell
-        ctx.shadowColor = c.basket;
-        ctx.shadowBlur = 25;
-        ctx.fillStyle = c.basket;
-        ctx.beginPath();
-        ctx.roundRect(this.x, this.y, this.width, this.height, radius);
-        ctx.fill();
-
-        // Inner dark core (creates the illusion of a container)
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = c.basketInner;
-        ctx.beginPath();
-        // Inner box is slightly smaller
-        ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, radius / 2);
-        ctx.fill();
-        
-        ctx.restore();
+        const c = GAME_CONFIG.colors; const radius = 10; ctx.save();
+        ctx.shadowColor = c.basket; ctx.shadowBlur = 25; ctx.fillStyle = c.basket; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, radius); ctx.fill();
+        ctx.shadowBlur = 0; ctx.fillStyle = c.basketInner; ctx.beginPath(); ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, radius / 2); ctx.fill(); ctx.restore();
     }
 }
 
-/** The Falling Blessing/Curse Cards */
 class FallingItem {
     constructor(game) {
-        this.game = game;
-        this.width = 130; 
-        this.height = 42;
-        
-        // Spawn randomly along X axis, completely above the screen
-        this.x = MathUtils.randomRange(10, game.width - this.width - 10);
-        this.y = -this.height - 10;
-        
-        // Determine type (65% chance for Good)
-        this.isGood = Math.random() > 0.35;
-        const dataList = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems;
-        const data = dataList[Math.floor(Math.random() * dataList.length)];
-        
-        this.text = data.t; 
-        this.emoji = data.e;
-        
-        // Calculate dynamic difficulty speed
-        const p = GAME_CONFIG.physics;
-        const timeRatio = MathUtils.clamp(this.game.survivalTime / p.maxDifficultyTime, 0, 1);
-        const baseSpeed = MathUtils.randomRange(p.itemBaseSpeedMin, p.itemBaseSpeedMax);
-        
-        // Speed multiplier maxes out at 2.5x original speed
-        this.vy = baseSpeed * (1 + (timeRatio * 1.5));
-        
-        // Add subtle rotation for polish
-        this.rotation = MathUtils.randomRange(-0.1, 0.1);
-        
-        this.markedForDeletion = false;
+        this.game = game; this.width = 130; this.height = 42;
+        this.x = MathUtils.randomRange(10, game.width - this.width - 10); this.y = -this.height - 10;
+        this.isGood = Math.random() > 0.35; const dataList = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems; const data = dataList[Math.floor(Math.random() * dataList.length)];
+        this.text = data.t; this.emoji = data.e;
+        const p = GAME_CONFIG.physics; const timeRatio = MathUtils.clamp(this.game.survivalTime / p.maxDifficultyTime, 0, 1);
+        const baseSpeed = MathUtils.randomRange(p.itemBaseSpeedMin, p.itemBaseSpeedMax); this.vy = baseSpeed * (1 + (timeRatio * 1.5));
+        this.rotation = MathUtils.randomRange(-0.1, 0.1); this.markedForDeletion = false;
     }
-
-    update(dt) {
-        this.y += this.vy * dt;
-        
-        // Despawn if it falls completely off screen
-        if (this.y > this.game.height + 20) {
-            this.markedForDeletion = true;
-        }
-    }
-
+    update(dt) { this.y += this.vy * dt; if (this.y > this.game.height + 20) { this.markedForDeletion = true; } }
     draw(ctx) {
-        const c = GAME_CONFIG.colors;
-        const cx = this.x + this.width / 2;
-        const cy = this.y + this.height / 2;
-        
-        ctx.save();
-        
-        // Translate to center to apply rotation
-        ctx.translate(cx, cy);
-        ctx.rotate(this.rotation);
-        
-        // Setup styling based on alignment
-        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow;
-        ctx.shadowBlur = 15;
-        ctx.fillStyle = this.isGood ? c.goodBg : c.badBg;
-        ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder;
-        ctx.lineWidth = 2;
-        
-        // Draw Card Background (centered around 0,0)
-        ctx.beginPath();
-        ctx.roundRect(-this.width/2, -this.height/2, this.width, this.height, 21);
-        ctx.fill();
-        ctx.shadowBlur = 0; // Turn off shadow for crisp border and text
-        ctx.stroke();
-
-        // Draw Text & Emoji
-        ctx.fillStyle = this.isGood ? c.goodText : c.badText;
-        ctx.font = "bold 14px Montserrat";
-        ctx.textAlign = "center"; 
-        ctx.textBaseline = "middle";
-        
-        // Slight Y offset adjustment for optical alignment of emojis/text
-        ctx.fillText(`${this.emoji} ${this.text}`, 0, 1); 
-        
-        ctx.restore();
+        const c = GAME_CONFIG.colors; const cx = this.x + this.width / 2; const cy = this.y + this.height / 2; ctx.save();
+        ctx.translate(cx, cy); ctx.rotate(this.rotation);
+        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow; ctx.shadowBlur = 15; ctx.fillStyle = this.isGood ? c.goodBg : c.badBg; ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(-this.width/2, -this.height/2, this.width, this.height, 21); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+        ctx.fillStyle = this.isGood ? c.goodText : c.badText; ctx.font = "bold 14px Montserrat"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(`${this.emoji} ${this.text}`, 0, 1); ctx.restore();
     }
 }
 
-
-/**
- * ========================================================================
- * MAIN GAME CONTROLLER (STATE MACHINE)
- * ========================================================================
- * Orchestrates the game loop, physics integration, collisions, and state.
- */
 class Game {
     constructor() {
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.wrapper = document.getElementById('game-wrapper');
-        
-        // Initialize Core Systems
-        this.audio = new AudioEngine();
-        this.input = new InputManager(this.canvas);
-        this.ui = new UIManager();
-        this.bg = new ParallaxBackground(0, 0); // Dimensions set in resize()
-        
-        // Game State Variables
-        this.state = 'MENU'; // MENU, PLAYING, END, LEADERBOARD
-        this.lastTime = 0;
-        this.score = 0;
-        this.streak = 0;
-        this.lives = GAME_CONFIG.rules.maxLives;
-        this.survivalTime = 0;
-        this.personalBest = StorageManager.getHighScore();
-        
-        // Effect Timers
-        this.shakeTimer = 0;
-        
-        // Spawner Control
-        this.itemTimer = 0;
-        this.itemInterval = 1.0; 
-        
-        // Arrays
-        this.items = [];
-        this.particles = new ParticleSystem();
-
-        // Screen setup
-        window.addEventListener('resize', () => this.resize());
-        this.resize();
-
-        // Wire up UI Events
-        this.bindEvents();
-
-        // Kick off the Master Loop
-        requestAnimationFrame(t => this.loop(t));
+        this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d'); this.wrapper = document.getElementById('game-wrapper');
+        this.audio = new AudioEngine(); this.input = new InputManager(this.canvas); this.ui = new UIManager(); this.bg = new ParallaxBackground(0, 0);
+        this.state = 'MENU'; this.lastTime = 0; this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.rules.maxLives; this.survivalTime = 0; this.personalBest = StorageManager.getHighScore();
+        this.shakeTimer = 0; this.itemTimer = 0; this.itemInterval = 1.0; 
+        this.items = []; this.particles = new ParticleSystem();
+        window.addEventListener('resize', () => this.resize()); this.resize(); this.bindEvents(); requestAnimationFrame(t => this.loop(t));
     }
-
-    /** Binds HTML buttons to class methods */
     bindEvents() {
         document.getElementById('startBtn').addEventListener('click', () => this.startMatch());
         document.getElementById('playAgainBtn').addEventListener('click', () => this.startMatch());
-        
         document.getElementById('shareBtn').addEventListener('click', (e) => this.shareChallenge(e.target));
         document.getElementById('submitScoreBtn').addEventListener('click', () => this.submitToDatabase());
-        
-        // Leaderboard Navigation
-        document.getElementById('lbStartBtn').addEventListener('click', () => {
-            this.state = 'LEADERBOARD';
-            this.fetchLeaderboard();
-            this.ui.switchScreen('leaderboard');
-        });
-        document.getElementById('lbEndBtn').addEventListener('click', () => {
-            this.state = 'LEADERBOARD';
-            this.fetchLeaderboard();
-            this.ui.switchScreen('leaderboard');
-        });
-        document.getElementById('lbCloseBtn').addEventListener('click', () => {
-            // Return to previous state based on score
-            if (this.survivalTime === 0) {
-                this.state = 'MENU';
-                this.ui.switchScreen('start');
-            } else {
-                this.state = 'END';
-                this.ui.switchScreen('end');
-            }
-        });
+        document.getElementById('lbStartBtn').addEventListener('click', () => { this.state = 'LEADERBOARD'; this.fetchLeaderboard(); this.ui.switchScreen('leaderboard'); });
+        document.getElementById('lbEndBtn').addEventListener('click', () => { this.state = 'LEADERBOARD'; this.fetchLeaderboard(); this.ui.switchScreen('leaderboard'); });
+        document.getElementById('lbCloseBtn').addEventListener('click', () => { if (this.survivalTime === 0) { this.state = 'MENU'; this.ui.switchScreen('start'); } else { this.state = 'END'; this.ui.switchScreen('end'); } });
     }
-
-    /** * Handles canvas resizing for high-DPI (Retina) displays.
-     * Prevents the game from looking blurry on modern phones.
-     */
     resize() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = this.wrapper.getBoundingClientRect();
-        
-        // Logical dimension
-        this.width = rect.width;
-        this.height = rect.height;
-        
-        // Physical dimension
-        this.canvas.width = this.width * dpr;
-        this.canvas.height = this.height * dpr;
-        
-        // Scale rendering context
-        this.ctx.scale(dpr, dpr);
-        
-        // Update background bounds
-        this.bg.width = this.width;
-        this.bg.height = this.height;
-        
-        // Keep basket grounded if screen rotates mid-game
-        if (this.basket) {
-            this.basket.y = (this.height - 80) - this.basket.height;
-            if (this.basket.x > this.width) this.basket.x = this.width - this.basket.width;
-        }
+        const dpr = window.devicePixelRatio || 1; const rect = this.wrapper.getBoundingClientRect();
+        this.width = rect.width; this.height = rect.height; this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
+        this.ctx.scale(dpr, dpr); this.bg.width = this.width; this.bg.height = this.height;
+        if (this.basket) { this.basket.y = (this.height - 80) - this.basket.height; if (this.basket.x > this.width) this.basket.x = this.width - this.basket.width; }
     }
-
-    /** Initializes a fresh run */
     startMatch() {
-        // Must be called on user interaction gesture to unlock browser audio
-        this.audio.init(); 
-        
-        this.state = 'PLAYING';
-        this.score = 0; 
-        this.streak = 0; 
-        this.lives = GAME_CONFIG.rules.maxLives; 
-        this.survivalTime = 0; 
-        this.itemTimer = 0;
-        
-        this.basket = new Basket(this);
-        this.items = [];
-        this.particles = new ParticleSystem();
-        
-        this.ui.switchScreen(null); // Clear all modals
-        this.ui.setHUDVisible(true);
-        this.ui.updateHUD(this.score, this.streak, this.lives);
+        this.audio.init(); this.state = 'PLAYING'; this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.rules.maxLives; this.survivalTime = 0; this.itemTimer = 0;
+        this.basket = new Basket(this); this.items = []; this.particles = new ParticleSystem();
+        this.ui.switchScreen(null); this.ui.setHUDVisible(true); this.ui.updateHUD(this.score, this.streak, this.lives);
     }
-
-    /** Handles Game Over logic */
     endMatch() {
-        this.state = 'END';
-        
-        const isNewBest = this.score > this.personalBest;
-        if (isNewBest) {
-            this.personalBest = this.score;
-            StorageManager.setHighScore(this.personalBest);
-        }
-
-        // Pick a random challenge from the config
+        this.state = 'END'; const isNewBest = this.score > this.personalBest;
+        if (isNewBest) { this.personalBest = this.score; StorageManager.setHighScore(this.personalBest); }
         this.currentChallenge = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
-        
-        this.ui.setHUDVisible(false);
-        this.ui.setupEndScreen(this.score, this.personalBest, isNewBest, this.currentChallenge);
-        this.ui.switchScreen('end');
+        this.ui.setHUDVisible(false); this.ui.setupEndScreen(this.score, this.personalBest, isNewBest, this.currentChallenge); this.ui.switchScreen('end');
     }
-
-    /** Triggers a camera shake effect */
-    triggerCameraShake() { 
-        this.shakeTimer = 0.35; // Duration in seconds
-    }
-
-    /** Uses the Native Web Share API if available, falls back to Clipboard */
+    triggerCameraShake() { this.shakeTimer = 0.35; }
     async shareChallenge(btnElement) {
-        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`;
-        const url = window.location.href;
-
-        if (navigator.share) {
-            try { 
-                await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: url }); 
-            } catch (e) { console.warn("Share canceled"); } 
-        } else {
-            // Fallback for desktop/unsupported browsers
-            navigator.clipboard.writeText(`${txt} ${url}`);
-            const origText = btnElement.innerText; 
-            btnElement.innerText = "COPIED TO CLIPBOARD!";
-            setTimeout(() => btnElement.innerText = origText, 2500);
-        }
+        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`; const url = window.location.href;
+        if (navigator.share) { try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: url }); } catch (e) { console.warn("Share canceled"); } } 
+        else { navigator.clipboard.writeText(`${txt} ${url}`); const origText = btnElement.innerText; btnElement.innerText = "COPIED TO CLIPBOARD!"; setTimeout(() => btnElement.innerText = origText, 2500); }
     }
-
-    /** Submits score to Firebase Firestore */
     async submitToDatabase() {
-        const nameInput = this.ui.els.nameInput;
-        const name = nameInput.value.trim();
-        
-        if (name === '') {
-            alert("Please enter your name!");
-            nameInput.focus();
-            return;
-        }
-        
-        const btn = this.ui.els.submitBtn;
-        btn.innerText = "SAVING TO CLOUD..."; 
-        btn.disabled = true;
-
-        try {
-            await addDoc(collection(db, "scores"), {
-                name: name,
-                score: this.score,
-                timestamp: serverTimestamp()
-            });
-            
-            // Hide input, show success text
-            this.ui.els.submitBlock.style.display = 'none';
-            this.ui.els.saveMsg.style.display = 'block';
-        } catch (e) {
-            console.error("Firebase write error: ", e);
-            alert("Failed to save score. Please check your connection and try again.");
-        }
-        
-        btn.innerText = "SUBMIT TO LEADERBOARD"; 
-        btn.disabled = false;
+        const nameInput = this.ui.els.nameInput; const name = nameInput.value.trim();
+        if (name === '') { alert("Please enter your name!"); nameInput.focus(); return; }
+        const btn = this.ui.els.submitBtn; btn.innerText = "SAVING TO CLOUD..."; btn.disabled = true;
+        try { await addDoc(collection(db, "scores"), { name: name, score: this.score, timestamp: serverTimestamp() }); this.ui.els.submitBlock.style.display = 'none'; this.ui.els.saveMsg.style.display = 'block'; } 
+        catch (e) { console.error("Firebase write error: ", e); alert("Failed to save score. Please check your connection and try again."); }
+        btn.innerText = "SUBMIT TO LEADERBOARD"; btn.disabled = false;
     }
-
-    /** Queries Firebase for top 10 scores */
     async fetchLeaderboard() {
-        try {
-            // Get top 10 scores, sorted descending
-            const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10));
-            const querySnapshot = await getDocs(q);
-            
-            let dataArray = [];
-            querySnapshot.forEach((doc) => dataArray.push(doc.data()));
-            
-            this.ui.renderLeaderboard(dataArray, null);
-        } catch (e) {
-            console.error("Firebase read error: ", e);
-            this.ui.renderLeaderboard([], "Could not connect to database. Please check your connection.");
-        }
+        try { const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10)); const querySnapshot = await getDocs(q); let dataArray = []; querySnapshot.forEach((doc) => dataArray.push(doc.data())); this.ui.renderLeaderboard(dataArray, null); } 
+        catch (e) { console.error("Firebase read error: ", e); this.ui.renderLeaderboard([], "Could not connect to database. Please check your connection."); }
     }
-
-    /** Logic Update Phase (Math & Physics) */
     update(dt) {
-        // Always update background
-        this.bg.update(dt);
-        
-        if (this.state !== 'PLAYING') return;
-
-        // Advance timers
-        this.survivalTime += dt;
-        if (this.shakeTimer > 0) this.shakeTimer -= dt;
-
-        // Update Entities
-        this.basket.update(dt);
-        this.particles.update(dt);
-
-        // --- SPAWNER LOGIC ---
-        this.itemTimer += dt;
-        
-        // Difficulty Curve: Spawn interval drops from 1.0s down to 0.3s as time passes
-        const progress = MathUtils.clamp(this.survivalTime / GAME_CONFIG.physics.maxDifficultyTime, 0, 1);
-        const currentInterval = Math.max(0.30, this.itemInterval - (progress * 0.70)); 
-        
-        if (this.itemTimer > currentInterval) {
-            this.items.push(new FallingItem(this));
-            this.itemTimer = 0;
-        }
-
-        // --- COLLISION DETECTION ---
-        const r = GAME_CONFIG.rules;
-        const c = GAME_CONFIG.colors;
-        const padding = 12; // Forgiveness padding so edge misses don't feel unfair
-        
-        // Loop backwards because we might delete items
+        this.bg.update(dt); if (this.state !== 'PLAYING') return; this.survivalTime += dt; if (this.shakeTimer > 0) this.shakeTimer -= dt;
+        this.basket.update(dt); this.particles.update(dt); this.itemTimer += dt;
+        const progress = MathUtils.clamp(this.survivalTime / GAME_CONFIG.physics.maxDifficultyTime, 0, 1); const currentInterval = Math.max(0.30, this.itemInterval - (progress * 0.70)); 
+        if (this.itemTimer > currentInterval) { this.items.push(new FallingItem(this)); this.itemTimer = 0; }
+        const r = GAME_CONFIG.rules; const c = GAME_CONFIG.colors; const padding = 12; 
         for (let i = this.items.length - 1; i >= 0; i--) {
-            let item = this.items[i];
-            item.update(dt);
-
-            // AABB (Axis-Aligned Bounding Box) Collision Check
-            if (item.x < this.basket.x + this.basket.width - padding &&
-                item.x + item.width > this.basket.x + padding &&
-                item.y + item.height > this.basket.y + padding &&
-                item.y < this.basket.y + this.basket.height) {
-                
+            let item = this.items[i]; item.update(dt);
+            if (item.x < this.basket.x + this.basket.width - padding && item.x + item.width > this.basket.x + padding && item.y + item.height > this.basket.y + padding && item.y < this.basket.y + this.basket.height) {
                 if (item.isGood) {
-                    // Positive Hit
-                    this.streak++;
-                    let bonus = this.streak > 2 ? r.pointsStreakBonus : 0;
-                    
-                    if (this.streak === r.streakRequiredForBonus) this.audio.playLevelUp(); 
-                    else this.audio.playGood();
-                    
-                    this.score += r.pointsPerGood + bonus;
-                    this.basket.pulse(true);
-                    
-                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.goodGlow, true);
-                    this.particles.emitText(item.x + item.width/2, item.y, `+${r.pointsPerGood + bonus}`, c.goodGlow);
+                    this.streak++; let bonus = this.streak > 2 ? r.pointsStreakBonus : 0;
+                    if (this.streak === r.streakRequiredForBonus) this.audio.playLevelUp(); else this.audio.playGood();
+                    this.score += r.pointsPerGood + bonus; this.basket.pulse(true);
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.goodGlow, true); this.particles.emitText(item.x + item.width/2, item.y, `+${r.pointsPerGood + bonus}`, c.goodGlow);
                 } else {
-                    // Negative Hit
-                    this.streak = 0;
-                    this.lives--;
-                    
-                    this.audio.playBad();
-                    this.triggerCameraShake();
-                    this.basket.pulse(false);
-                    
-                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.badGlow, false);
-                    this.particles.emitText(item.x + item.width/2, item.y, "-1 LIFE", c.badGlow);
-                    
-                    // Death Check
-                    if (this.lives <= 0) {
-                        this.ui.updateHUD(this.score, this.streak, this.lives);
-                        // Delay end match slightly to let particle explosion finish
-                        setTimeout(() => this.endMatch(), 250); 
-                    }
+                    this.streak = 0; this.lives--; this.audio.playBad(); this.triggerCameraShake(); this.basket.pulse(false);
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.badGlow, false); this.particles.emitText(item.x + item.width/2, item.y, "-1 LIFE", c.badGlow);
+                    if (this.lives <= 0) { this.ui.updateHUD(this.score, this.streak, this.lives); setTimeout(() => this.endMatch(), 250); }
                 }
-                
-                this.ui.updateHUD(this.score, this.streak, this.lives);
-                item.markedForDeletion = true;
+                this.ui.updateHUD(this.score, this.streak, this.lives); item.markedForDeletion = true;
             }
-
-            // Cleanup
-            if (item.markedForDeletion) {
-                this.items.splice(i, 1);
-            }
+            if (item.markedForDeletion) { this.items.splice(i, 1); }
         }
     }
-
-    /** Render Phase (Drawing to Canvas) */
     draw() {
-        // Clear previous frame
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        
-        this.ctx.save();
-        
-        // Apply Camera Shake Effect globally
-        if (this.shakeTimer > 0) {
-            // Intensity fades as timer goes down
-            const intensity = this.shakeTimer * 25; 
-            const dx = MathUtils.randomRange(-intensity, intensity);
-            const dy = MathUtils.randomRange(-intensity, intensity);
-            this.ctx.translate(dx, dy);
-        }
-
-        // 1. Draw Background Layer (behind everything)
+        this.ctx.clearRect(0, 0, this.width, this.height); this.ctx.save();
+        if (this.shakeTimer > 0) { const intensity = this.shakeTimer * 25; const dx = MathUtils.randomRange(-intensity, intensity); const dy = MathUtils.randomRange(-intensity, intensity); this.ctx.translate(dx, dy); }
         this.bg.draw(this.ctx);
-
-        // 2. Draw Game Elements
-        if (this.state === 'PLAYING') {
-            this.basket.draw(this.ctx);
-            // Draw items
-            for (let i = 0; i < this.items.length; i++) {
-                this.items[i].draw(this.ctx);
-            }
-            // Draw particles (on top of everything)
-            this.particles.draw(this.ctx);
-        }
-
+        if (this.state === 'PLAYING') { this.basket.draw(this.ctx); for (let i = 0; i < this.items.length; i++) { this.items[i].draw(this.ctx); } this.particles.draw(this.ctx); }
         this.ctx.restore();
     }
-
-    /** Master Game Loop synchronized to monitor refresh rate */
     loop(timestamp) {
-        // Calculate Delta Time in seconds (time since last frame)
-        let dt = (timestamp - this.lastTime) / 1000;
-        
-        // Cap Delta Time to prevent physics explosions if user tabs out
-        if (dt > 0.1) dt = 0.1; 
-        
-        this.lastTime = timestamp;
-
-        this.update(dt);
-        this.draw();
-        
-        // Loop forever
-        requestAnimationFrame(t => this.loop(t));
+        let dt = (timestamp - this.lastTime) / 1000; if (dt > 0.1) dt = 0.1; this.lastTime = timestamp; this.update(dt); this.draw(); requestAnimationFrame(t => this.loop(t));
     }
 }
-
-// Boot the game once the HTML has fully loaded
-document.addEventListener("DOMContentLoaded", () => {
-    new Game();
-});
+document.addEventListener("DOMContentLoaded", () => { new Game(); });
 </script>
 </body>
 </html>
