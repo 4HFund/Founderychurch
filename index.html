@@ -3,247 +3,901 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Blessing Basket | ChurchBuilt AAA Edition</title>
+    <title>Blessing Basket | The Foundery Church</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-dark: #0a0b0e; --bg-light: #1f252e;
-            --brand-orange: #d96c06; --brand-gold: #f5b700;
-            --brand-cream: #fdfbf7; --brand-cream-dim: rgba(253, 251, 247, 0.7);
-            --bad-red: #cc0000; --power-blue: #00e5ff;
-            --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
-            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Core Colors */
+            --bg-dark: #0f1115;
+            --bg-light: #2a313c;
+            --brand-orange: #d96c06;
+            --brand-orange-glow: rgba(217, 108, 6, 0.6);
+            --brand-orange-glass: rgba(217, 108, 6, 0.15);
+            --brand-gold: #f5b700;
+            --brand-gold-glow: rgba(245, 183, 0, 0.5);
+            --brand-cream: #fdfbf7;
+            --brand-cream-dim: rgba(253, 251, 247, 0.7);
+            --bad-red: #cc0000;
+            --bad-dark: #1e1414;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            /* Skin Colors */
+            --skin-classic: #f5b700;
+            --skin-forged: #788594;
+            --skin-neon: #00f3ff;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; touch-action: none; color: var(--brand-cream); }
-        #game-wrapper { position: relative; width: 100vw; height: 100vh; max-width: 600px; background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%); overflow: hidden; }
-        canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
-        .hud { position: absolute; top: 0; left: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; opacity: 0; transition: var(--transition-smooth); pointer-events: auto; }
-        .hud.active { opacity: 1; }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; padding: 0; 
+            user-select: none; 
+            font-family: 'Montserrat', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: #000;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; height: 100dvh; 
+            overflow: hidden; touch-action: none; 
+            color: var(--brand-cream);
+        }
+
+        #game-wrapper {
+            position: relative; 
+            width: 100vw; height: 100vh; height: 100dvh; max-width: 600px;
+            background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
+            overflow: hidden; 
+            box-shadow: 0 0 100px rgba(217, 108, 6, 0.1);
+            transition: background 1s ease;
+        }
+
+        /* Storm Phase Modifier */
+        #game-wrapper.storm-phase {
+            background: radial-gradient(circle at top, #1a0f0f 0%, #050505 100%);
+        }
+
+        @media (min-width: 768px) {
+            #game-wrapper { 
+                height: 90vh; border-radius: 28px; border: 1px solid var(--glass-border); 
+            }
+        }
+
+        /* Video Background Styling */
+        #bgVideo {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.5;
+            transition: opacity 1s ease;
+        }
+        #game-wrapper.storm-phase #bgVideo { opacity: 0.2; }
+
+        canvas { 
+            display: block; width: 100%; height: 100%; 
+            position: absolute; top: 0; left: 0; z-index: 1; 
+        }
+
+        /* UI LAYER & HUD */
+        #ui-layer { 
+            position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%; z-index: 10; pointer-events: none; 
+        }
+
+        .hud {
+            position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
+            display: flex; justify-content: space-between;
+            font-weight: 800; text-shadow: 0px 4px 15px rgba(0,0,0,0.9);
+            opacity: 0; transform: translateY(-20px);
+            transition: var(--transition-smooth);
+        }
+        .hud.active { opacity: 1; transform: translateY(0); }
+
+        .hud-left { display: flex; flex-direction: column; gap: 4px; }
+        .score-box { font-size: 1.4rem; letter-spacing: 1px; color: var(--brand-cream-dim); }
         .score-val { color: var(--brand-gold); font-size: 2rem; font-weight: 900; }
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 11, 14, 0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; opacity: 0; pointer-events: none; transition: 0.4s; transform: scale(1.1); backdrop-filter: blur(15px); }
+        
+        .streak-box { font-size: 0.9rem; color: var(--brand-orange); text-transform: uppercase; letter-spacing: 2px; transition: var(--transition-smooth); }
+        .streak-box.high { color: var(--brand-gold); text-shadow: 0 0 15px var(--brand-gold); transform: scale(1.05); transform-origin: left; }
+        
+        /* Combo Recipe Display */
+        .combo-recipe { margin-top: 5px; display: flex; gap: 5px; }
+        .combo-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--brand-cream-dim); opacity: 0.5; transition: all 0.3s; }
+        .combo-dot.filled { background: var(--brand-gold); border-color: var(--brand-gold); opacity: 1; box-shadow: 0 0 8px var(--brand-gold); }
+        
+        .hud-right { text-align: right; }
+        .lives-val { font-size: 1.8rem; letter-spacing: 4px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .lives-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--brand-cream-dim); }
+
+        /* SCREENS & MODALS */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 17, 21, 0.95);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
+            opacity: 0; pointer-events: none; 
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(1.08); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            overflow-y: auto;
+        }
         .screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
-        .btn { background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%); border: none; padding: 18px 30px; border-radius: 50px; color: #000; font-size: 1.1rem; font-weight: 900; cursor: pointer; width: 100%; max-width: 320px; margin-bottom: 15px; text-transform: uppercase; }
-        .btn-outline { background: var(--glass-bg); border: 2px solid var(--glass-border); color: #fff; }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
-        .shop-item { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; cursor: pointer; }
-        .shop-item.equipped { border-color: var(--brand-gold); background: rgba(245, 183, 0, 0.1); }
-        .toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #1e232d; border-left: 5px solid var(--brand-gold); padding: 15px; border-radius: 8px; z-index: 100; min-width: 250px; }
+
+        h1 { color: var(--brand-cream); font-size: clamp(2.5rem, 8vw, 3.8rem); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; line-height: 1; margin-bottom: 12px; text-shadow: 0 0 40px var(--brand-orange-glow); }
+        h2 { color: var(--brand-gold); font-size: 1.15rem; font-weight: 800; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; }
+        h3 { color: var(--brand-cream); font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
+        
+        p { color: var(--brand-cream-dim); font-size: 1.05rem; line-height: 1.7; margin-bottom: 20px; max-width: 420px; font-weight: 600; }
+
+        /* BUTTONS & INPUTS */
+        .btn {
+            background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
+            border: none; padding: 20px 40px; border-radius: 50px;
+            color: var(--bg-dark); font-size: 1.25rem; font-weight: 900; cursor: pointer;
+            box-shadow: 0 10px 30px var(--brand-orange-glow), inset 0 -3px 0 rgba(0,0,0,0.2); 
+            transition: var(--transition-smooth); text-transform: uppercase; letter-spacing: 2px; 
+            width: 100%; max-width: 320px; margin-bottom: 15px; position: relative; overflow: hidden; 
+            display: inline-block; text-decoration: none; text-align: center;
+        }
+        .btn:active { transform: translateY(2px) scale(0.97); box-shadow: 0 5px 15px var(--brand-orange-glow), inset 0 -1px 0 rgba(0,0,0,0.2); }
+        .btn::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg) translateY(-100%); transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .btn:hover::after { transform: rotate(45deg) translateY(100%); }
+
+        .btn-outline { background: var(--glass-bg); border: 2px solid var(--glass-border); color: var(--brand-cream); box-shadow: none; font-size: 0.9rem; padding: 16px 30px; backdrop-filter: blur(5px); }
+        
+        /* Modifiers & Customization UI */
+        .customization-panel { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; margin-bottom: 25px; width: 100%; max-width: 320px; }
+        
+        .skin-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .skin-btn { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.2s; opacity: 0.5; }
+        .skin-btn.active { border-color: var(--brand-cream); opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .skin-btn.locked { position: relative; cursor: not-allowed; }
+        .skin-btn.locked::after { content: '🔒'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px; }
+        
+        .bg-classic { background: var(--skin-classic); }
+        .bg-forged { background: var(--skin-forged); }
+        .bg-neon { background: var(--skin-neon); }
+
+        select.modifier-select {
+            width: 100%; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
+            color: var(--brand-cream); font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; outline: none; appearance: none;
+            text-align: center;
+        }
+        select.modifier-select option { background: var(--bg-dark); color: var(--brand-cream); }
+
+        input[type="text"] {
+            background: var(--brand-orange-glass); border: 2px solid rgba(217, 108, 6, 0.4); color: var(--brand-cream); 
+            font-family: 'Montserrat', sans-serif; font-weight: 800; outline: none; padding: 18px; border-radius: 50px; 
+            width: 100%; text-align: center; font-size: 1.15rem; text-transform: uppercase; transition: var(--transition-smooth);
+        }
+        input[type="text"]::placeholder { color: rgba(253, 251, 247, 0.4); font-weight: 600; }
+        input[type="text"]:focus { border-color: var(--brand-gold); background: rgba(245, 183, 0, 0.15); box-shadow: 0 0 20px var(--brand-gold-glow); }
+
+        .footer-text { margin-top: 20px; font-size: 0.75rem; color: rgba(253, 251, 247, 0.3); text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
+
+        /* END SCREEN SPECIFICS */
+        .final-score { font-size: 6rem; color: var(--brand-gold); font-weight: 900; line-height: 0.9; margin: 15px 0 5px 0; text-shadow: 0 0 50px var(--brand-gold-glow); }
+        .high-score { font-size: 0.95rem; color: var(--brand-cream-dim); font-weight: 800; letter-spacing: 2px; margin-bottom: 20px; }
+        .new-high-score { color: var(--brand-gold); text-shadow: 0 0 15px var(--brand-gold); animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } 100% { opacity: 0.8; transform: scale(1); } }
+
+        .challenge-card {
+            background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.2) 100%); 
+            border: 1px solid rgba(217, 108, 6, 0.3); border-top: 1px solid rgba(245, 183, 0, 0.5);
+            border-radius: 24px; padding: 30px 25px; margin: 10px 0 25px 0; max-width: 450px; 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .challenge-label { font-size: 0.8rem; color: var(--brand-orange); font-weight: 900; margin-bottom: 15px; letter-spacing: 3px; }
+        .challenge-text { color: var(--brand-cream); font-size: 1.2rem; font-weight: 600; line-height: 1.6; }
+
+        .action-row { display: flex; gap: 12px; width: 100%; max-width: 320px; margin-bottom: 12px;}
+        .action-row .btn, .action-row .btn-outline { flex: 1; padding: 16px 0; margin-bottom: 0; letter-spacing: 1px; font-size: 0.9rem; }
+
+        /* LEADERBOARD UI */
+        #leaderboardList {
+            width: 100%; max-width: 400px; height: 50vh; overflow-y: auto; overflow-x: hidden;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; 
+            padding: 15px; margin: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            scrollbar-width: thin; scrollbar-color: var(--brand-orange) rgba(0,0,0,0.2);
+        }
+        #leaderboardList::-webkit-scrollbar { width: 6px; }
+        #leaderboardList::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        #leaderboardList::-webkit-scrollbar-thumb { background: var(--brand-orange); border-radius: 10px; }
+
+        .lb-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--brand-cream); font-weight: 600; font-size: 1.15rem; border-radius: 12px;
+        }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-rank { font-weight: 900; width: 40px; text-align: left; color: var(--brand-cream-dim); }
+        .lb-row[data-rank="1"] .lb-rank { color: var(--brand-gold); text-shadow: 0 0 10px var(--brand-gold); font-size: 1.4rem; }
+        .lb-name { flex: 1; text-transform: uppercase; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 15px; font-weight: 800; }
+        .lb-score { color: var(--brand-gold); font-weight: 900; text-align: right; letter-spacing: 1px; }
+
+        .status-msg { color: var(--brand-cream-dim); text-align: center; padding: 40px 20px; font-weight: 600; line-height: 1.5; }
+        .status-error { color: var(--bad-red); }
     </style>
 </head>
 <body>
+
 <div id="game-wrapper">
     <canvas id="gameCanvas"></canvas>
-    <div id="toast-container"></div>
+
     <div id="ui-layer">
         <div class="hud" id="hud">
-            <div>
-                <div style="font-size: 0.8rem; opacity: 0.7;">SCORE</div>
-                <div class="score-val" id="scoreVal">0</div>
-                <div style="color: var(--brand-orange); font-size: 0.9rem;">🪙 <span id="graceCoinsVal">0</span></div>
+            <div class="hud-left">
+                <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
+                <div class="streak-box" id="streakVal">Streak: 0</div>
+                <div class="combo-recipe" id="comboRecipe">
+                    <div class="combo-dot" id="dot0"></div>
+                    <div class="combo-dot" id="dot1"></div>
+                    <div class="combo-dot" id="dot2"></div>
+                </div>
             </div>
-            <div style="text-align: right;">
-                <div id="livesVal" style="font-size: 1.5rem;">❤️❤️❤️</div>
-                <button class="btn-outline" id="btnPauseHUD" style="padding: 5px 10px; border-radius: 5px; margin-top: 5px;">PAUSE</button>
+            <div class="hud-right">
+                <div class="lives-val" id="livesVal">❤️❤️❤️</div>
+                <div class="lives-label">LIVES</div>
             </div>
         </div>
+
         <div class="screen active" id="startScreen">
-            <h1 style="margin-bottom: 10px;">BLESSING BASKET</h1>
-            <div style="margin-bottom: 20px;">🪙 <span id="menuCoins">0</span> Grace Coins</div>
-            <button class="btn" id="startBtn">START MISSION</button>
-            <button class="btn btn-outline" id="btnOpenShop">🛒 THE SHOP</button>
-            <button class="btn btn-outline" id="btnOpenSettings">⚙️ SETTINGS</button>
-        </div>
-        <div class="screen" id="shopScreen">
-            <h1>THE SHOP</h1>
-            <div style="margin-bottom: 10px;">🪙 <span id="shopCoins">0</span></div>
-            <div class="shop-grid" id="shopSkinsGrid"></div>
-            <button class="btn btn-outline" id="btnCloseShop" style="margin-top: 20px;">BACK</button>
-        </div>
-        <div class="screen" id="settingsScreen">
-            <h1>SETTINGS</h1>
-            <div style="width: 100%; max-width: 300px; text-align: left;">
-                <p>Master Volume</p>
-                <input type="range" id="volMaster" style="width: 100%; margin-bottom: 20px;">
-                <p>Move Left: <span id="bindLeft" style="color: var(--brand-gold);">A</span></p>
-                <p>Move Right: <span id="bindRight" style="color: var(--brand-gold);">D</span></p>
+            <h1>Blessing Basket</h1>
+            <h2>CATCH THE BLESSING. SHARE THE BLESSING.</h2>
+            
+            <div class="customization-panel">
+                <h3>Select Skin</h3>
+                <div class="skin-selector">
+                    <div class="skin-btn bg-classic active" data-skin="classic" title="Classic Gold"></div>
+                    <div class="skin-btn bg-forged locked" data-skin="forged" id="skinForged" title="Forged Steel (Unlock at 500)"></div>
+                    <div class="skin-btn bg-neon locked" data-skin="neon" id="skinNeon" title="Neon Pulse (Unlock at 1000)"></div>
+                </div>
+                
+                <h3>Modify Order</h3>
+                <select id="banSelect" class="modifier-select">
+                    <option value="none">Standard Play</option>
+                    </select>
+                <div style="font-size: 0.75rem; color: var(--brand-orange); margin-top: 5px;">Banning an item increases game speed by 15%</div>
             </div>
-            <button class="btn" id="btnResume" style="display: none;">RESUME</button>
-            <button class="btn btn-outline" id="btnCloseSettings">CLOSE</button>
+
+            <button class="btn" id="startBtn">START GAME</button>
+            <button class="btn btn-outline" id="lbStartBtn">VIEW LEADERBOARD</button>
+            
+            <div class="footer-text">An outreach game by The Foundery Church</div>
         </div>
+
+        <div class="screen" id="leaderboardScreen">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0;">TOP BLESSERS</h1>
+            <h2>GLOBAL HIGHSCORES</h2>
+            
+            <div id="leaderboardList">
+                <div class="status-msg">Connecting to database...</div>
+            </div>
+            
+            <button class="btn btn-outline" id="lbCloseBtn" style="max-width: 400px;">GO BACK</button>
+        </div>
+
         <div class="screen" id="endScreen">
-            <h2>MATCH OVER</h2>
-            <div class="score-val" id="finalScore" style="font-size: 4rem;">0</div>
-            <div style="margin-bottom: 20px;">+<span id="earnedCoins">0</span> Coins Earned</div>
-            <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-            <button class="btn btn-outline" id="btnEndToMenu">MENU</button>
+            <h2 style="color: var(--brand-cream); margin-bottom: 0; font-size: 1rem;">GREAT JOB CATCHING BLESSINGS.</h2>
+            
+            <div class="final-score" id="finalScore">0</div>
+            <div class="high-score" id="highScoreDisplay">PERSONAL BEST: <span id="highScoreVal">0</span></div>
+            
+            <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none; margin-bottom: 5px;">
+                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom: 12px;">
+                <button class="btn" id="submitScoreBtn" style="padding: 16px 20px; font-size: 1.1rem;">SUBMIT TO LEADERBOARD</button>
+            </div>
+            <div id="scoreSavedMsg" style="display: none; color: var(--brand-gold); font-weight: 900; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(245,183,0,0.5);">SCORE SAVED!</div>
+
+            <div class="challenge-card">
+                <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
+                <div class="challenge-text" id="challengeText">...</div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
+                <button class="btn btn-outline" id="lbEndBtn" style="background: rgba(0,0,0,0.4);">LEADERBOARD</button>
+            </div>
+            
+            <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 25px; width: 100%; max-width: 320px; border-color: rgba(217, 108, 6, 0.5);">SHARE CHALLENGE</button>
+            
+            <div class="action-row">
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1045720" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.8rem; padding: 14px 0;">PRAYER REQUEST</a>
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1070525" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.8rem; padding: 14px 0;">NOMINATE</a>
+            </div>
         </div>
     </div>
 </div>
 
 <script type="module">
+// ============================================================================
+// FIREBASE SDK & CONFIGURATION
+// ============================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-const firebaseConfig = { apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU", authDomain: "blessing-basket.firebaseapp.com", projectId: "blessing-basket", storageBucket: "blessing-basket.firebasestorage.app", messagingSenderId: "558241052507", appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e" };
-const app = initializeApp(firebaseConfig); const db = getFirestore(app);
-
-const CONFIG = {
-    physics: { gravity: 650, basketSpeed: 1900, basketFriction: 0.82, basketMaxSpeed: 950, itemSpeedMin: 200, difficultyTime: 100 },
-    gameplay: { maxLives: 3, points: 10, foilChance: 0.05, powerupChance: 0.04 },
-    shop: [
-        { id: 'skin_classic', name: 'Classic Gold', price: 0, color: '#f5b700' },
-        { id: 'skin_forged', name: 'Forged Steel', price: 500, color: '#788594' },
-        { id: 'skin_neon', name: 'Neon Pulse', price: 1500, color: '#00e5ff' }
-    ],
-    items: {
-        good: [{t:'Prayer', e:'🙏'}, {t:'Hope', e:'🌟'}, {t:'Grace', e:'✨'}],
-        bad: [{t:'Gossip', e:'🗣️'}, {t:'Fear', e:'😨'}],
-        powers: [{id:'shield', t:'Shield', e:'🛡️', c:'#00e5ff'}, {id:'magnet', t:'Magnet', e:'🧲', c:'#b300ff'}]
-    }
+const firebaseConfig = {
+    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
+    authDomain: "blessing-basket.firebaseapp.com",
+    projectId: "blessing-basket",
+    storageBucket: "blessing-basket.firebasestorage.app",
+    messagingSenderId: "558241052507",
+    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
+    measurementId: "G-8495PL9SH8"
 };
 
-class SaveSystem {
-    constructor() {
-        this.data = JSON.parse(localStorage.getItem('bb_save')) || { currency: 0, inventory: ['skin_classic'], skin: 'skin_classic', highScore: 0 };
-    }
-    save() { localStorage.setItem('bb_save', JSON.stringify(this.data)); }
-}
-const Save = new SaveSystem();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
+// ============================================================================
+// GAME DATA & CONFIGURATION
+// ============================================================================
+const GAME_CONFIG = {
+    physics: {
+        gravity: 600,
+        basketSpeed: 1800,
+        basketFriction: 0.80,
+        basketMaxSpeed: 900,
+        touchFollowSpeed: 18,
+        itemBaseSpeedMin: 200,
+        itemBaseSpeedMax: 350,
+        maxDifficultyTime: 75
+    },
+    rules: {
+        maxLives: 3,
+        pointsPerGood: 10,
+        pointsStreakBonus: 5,
+        pointsLostPerBad: 15,
+        streakRequiredForBonus: 3,
+        foilChance: 0.05,        // 5% chance for a rare Foil card
+        comboSequence: ['Prayer', 'Hope', 'Grace'] // The secret Mega Blessing recipe
+    },
+    colors: {
+        goodBg: '#fdfbf7', goodGlow: '#f5b700', goodBorder: '#d96c06', goodText: '#0f1115',
+        badBg: '#1e1414', badGlow: '#cc0000', badBorder: '#8b0000', badText: '#fdfbf7',
+        foilBg: '#ffffff', foilGlow: '#00f3ff', foilBorder: '#ff00ff',
+        basketInner: '#1e1a13', forgeSparks: '#f5b700'
+    },
+    skins: {
+        classic: { color: '#f5b700', unlockScore: 0 },
+        forged: { color: '#788594', unlockScore: 500 },
+        neon: { color: '#00f3ff', unlockScore: 1000 }
+    },
+    goodItems: [
+        { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' },
+        { t: 'Groceries', e: '🥖' }, { t: 'Encouragement', e: '💬' }, { t: 'Coffee', e: '☕' },
+        { t: 'Jeep Ride', e: '🚙' }, { t: 'Help', e: '🛠️' }, { t: 'Forgiveness', e: '🕊️' },
+        { t: 'Smile', e: '😊' }, { t: 'Grace', e: '✨' }, { t: 'Love', e: '❤️' },
+        { t: 'Pastor\'s Coffee', e: '☕' } // Easter Egg
+    ],
+    badItems: [
+        { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' },
+        { t: 'Negativity', e: '🌧️' }, { t: 'Excuses', e: '🤷' }, { t: 'Anger', e: '😡' },
+        { t: 'Pride', e: '🦚' }, { t: 'Doubt', e: '❓' }, { t: 'Isolation', e: '🚪' }
+    ],
+    challenges: [
+        "Text someone you haven’t checked on in a while.",
+        "Pray for a first responder, veteran, teacher, or neighbor today.",
+        "Bring someone a coffee, snack, or small encouragement.",
+        "Invite someone to church, Good Company, or coffee.",
+        "Donate something useful to Kenny’s Kloset.",
+        "Write a short note of encouragement and give it to someone this week.",
+        "Ask someone, 'How can I pray for you?' and actually follow up.",
+        "Share a kind word publicly about someone who usually goes unnoticed."
+    ]
+};
+
+const MathUtils = {
+    lerp: (a, b, t) => a + (b - a) * t,
+    clamp: (val, min, max) => Math.min(Math.max(val, min), max),
+    randomRange: (min, max) => Math.random() * (max - min) + min,
+    easeOutCubic: (t) => 1 - Math.pow(1 - t, 3)
+};
+
+// ============================================================================
+// CORE SYSTEMS (AUDIO, HAPTICS, STORAGE, INPUT)
+// ============================================================================
 class AudioEngine {
     constructor() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.master = this.ctx.createGain(); this.master.connect(this.ctx.destination);
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.3; 
+        this.masterGain.connect(this.ctx.destination);
+        this.bgm = document.getElementById('bgMusic');
     }
-    init() { if(this.ctx.state === 'suspended') this.ctx.resume(); }
-    play(f, d=0.2) {
-        const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
-        o.frequency.setValueAtTime(f, this.ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
-        o.connect(g); g.connect(this.master); o.start(); o.stop(this.ctx.currentTime + d);
+    init() { 
+        if (this.ctx.state === 'suspended') this.ctx.resume(); 
+        if (this.bgm) {
+            this.bgm.volume = 0.5;
+            this.bgm.play().catch(e => console.log("Audio autoplay prevented"));
+        }
+    }
+    playTone(freq, type, duration, vol) {
+        if (this.ctx.state === 'suspended') return;
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        const attackTime = 0.02; const releaseTime = 0.1; const now = this.ctx.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(vol, now + attackTime);
+        gainNode.gain.setTargetAtTime(0, now + duration - releaseTime, releaseTime / 3);
+        osc.connect(gainNode); gainNode.connect(this.masterGain);
+        osc.start(now); osc.stop(now + duration);
+    }
+    playGood() { this.playTone(659.25, 'sine', 0.15, 0.3); setTimeout(() => this.playTone(880.00, 'sine', 0.25, 0.2), 50); }
+    playBad() { this.playTone(150, 'sawtooth', 0.4, 0.4); setTimeout(() => this.playTone(145, 'square', 0.4, 0.2), 20); }
+    playLevelUp() { [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.25), i * 70); }); }
+    playMega() { [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => { setTimeout(() => this.playTone(freq, 'sine', 0.4, 0.4), i * 100); }); }
+}
+
+class Haptics {
+    static vibrate(pattern) {
+        if (navigator.vibrate) {
+            try { navigator.vibrate(pattern); } catch(e) {}
+        }
+    }
+    static good() { this.vibrate(40); }
+    static bad() { this.vibrate([100, 50, 100]); }
+    static foil() { this.vibrate([50, 50, 50, 50, 100]); }
+}
+
+class StorageManager {
+    static getHighScore() { try { return parseInt(localStorage.getItem('blessingBasketHighScore')) || 0; } catch (e) { return 0; } }
+    static setHighScore(score) { try { localStorage.setItem('blessingBasketHighScore', score); } catch (e) { } }
+}
+
+class InputManager {
+    constructor(canvas) {
+        this.axisX = 0; this.touchTarget = null; this.keys = { left: false, right: false };
+        window.addEventListener('keydown', e => this.handleKey(e, true));
+        window.addEventListener('keyup', e => this.handleKey(e, false));
+        canvas.addEventListener('touchstart', e => this.handleTouch(e), {passive: false});
+        canvas.addEventListener('touchmove', e => this.handleTouch(e), {passive: false});
+        canvas.addEventListener('touchend', () => { this.touchTarget = null; });
+        canvas.addEventListener('touchcancel', () => { this.touchTarget = null; });
+    }
+    handleKey(e, isDown) {
+        const key = e.key.toLowerCase();
+        if (key === 'arrowleft' || key === 'a') this.keys.left = isDown;
+        if (key === 'arrowright' || key === 'd') this.keys.right = isDown;
+        if (this.keys.left && this.keys.right) this.axisX = 0;
+        else if (this.keys.left) this.axisX = -1;
+        else if (this.keys.right) this.axisX = 1;
+        else this.axisX = 0;
+    }
+    handleTouch(e) { 
+        e.preventDefault(); 
+        if (e.touches.length > 0) { 
+            const rect = e.target.getBoundingClientRect(); 
+            this.touchTarget = e.touches[0].clientX - rect.left; 
+        } 
     }
 }
-const Audio = new AudioEngine();
 
-class Game {
+// ============================================================================
+// UI MANAGER
+// ============================================================================
+class UIManager {
     constructor() {
-        this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d');
-        this.state = 'MENU'; this.items = []; this.particles = []; this.lastTime = 0;
-        this.score = 0; this.lives = 0; this.coins = 0; this.survivalTime = 0; this.spawnTimer = 0;
-        this.input = { axis: 0, touch: null };
-        this.setupInput(); this.resize(); this.renderShop(); this.updateUI();
-        window.addEventListener('resize', () => this.resize());
-        requestAnimationFrame(t => this.loop(t));
-
-        document.getElementById('startBtn').onclick = () => this.start();
-        document.getElementById('playAgainBtn').onclick = () => this.start();
-        document.getElementById('btnOpenShop').onclick = () => this.showScreen('shopScreen');
-        document.getElementById('btnCloseShop').onclick = () => this.showScreen('startScreen');
-        document.getElementById('btnOpenSettings').onclick = () => this.showScreen('settingsScreen');
-        document.getElementById('btnCloseSettings').onclick = () => this.showScreen('startScreen');
+        this.screens = { start: document.getElementById('startScreen'), end: document.getElementById('endScreen'), leaderboard: document.getElementById('leaderboardScreen') };
+        this.hud = document.getElementById('hud');
+        this.els = { score: document.getElementById('scoreVal'), streak: document.getElementById('streakVal'), lives: document.getElementById('livesVal'), finalScore: document.getElementById('finalScore'), highScoreDisp: document.getElementById('highScoreDisplay'), highScoreVal: document.getElementById('highScoreVal'), challengeTxt: document.getElementById('challengeText'), submitBlock: document.getElementById('submitScoreBlock'), nameInput: document.getElementById('playerNameInput'), saveMsg: document.getElementById('scoreSavedMsg'), lbList: document.getElementById('leaderboardList'), submitBtn: document.getElementById('submitScoreBtn'), dot0: document.getElementById('dot0'), dot1: document.getElementById('dot1'), dot2: document.getElementById('dot2') };
+        this.activeScreen = this.screens.start;
+        this.initModifierSelect();
     }
-
-    setupInput() {
-        window.onkeydown = e => { if(e.key.toLowerCase()==='a') this.input.axis=-1; if(e.key.toLowerCase()==='d') this.input.axis=1; };
-        window.onkeyup = e => this.input.axis=0;
-        this.canvas.ontouchstart = e => this.input.touch = e.touches[0].clientX;
-        this.canvas.ontouchmove = e => this.input.touch = e.touches[0].clientX;
-        this.canvas.ontouchend = () => this.input.touch = null;
-    }
-
-    resize() {
-        this.width = this.canvas.clientWidth; this.height = this.canvas.clientHeight;
-        this.canvas.width = this.width * window.devicePixelRatio; this.canvas.height = this.height * window.devicePixelRatio;
-        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    }
-
-    start() {
-        Audio.init(); this.state = 'PLAYING'; this.score = 0; this.lives = CONFIG.gameplay.maxLives;
-        this.coins = 0; this.survivalTime = 0; this.items = [];
-        this.basket = { x: this.width/2 - 55, w: 110, h: 30, color: CONFIG.shop.find(s=>s.id===Save.data.skin).color };
-        this.showScreen('hud'); document.getElementById('hud').classList.add('active');
-    }
-
-    showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        if(id !== 'hud') document.getElementById(id).classList.add('active');
-    }
-
-    renderShop() {
-        const g = document.getElementById('shopSkinsGrid'); g.innerHTML = '';
-        CONFIG.shop.forEach(s => {
-            const owned = Save.data.inventory.includes(s.id);
-            const div = document.createElement('div'); div.className = `shop-item ${Save.data.skin===s.id?'equipped':''}`;
-            div.innerHTML = `<div style="background:${s.color}; height:20px; border-radius:5px;"></div><p>${s.name}</p><p>${owned?'OWNED':'🪙 '+s.price}</p>`;
-            div.onclick = () => {
-                if(!owned && Save.data.currency >= s.price) { Save.data.currency -= s.price; Save.data.inventory.push(s.id); Save.data.skin=s.id; }
-                else if(owned) Save.data.skin = s.id; Save.save(); this.renderShop(); this.updateUI();
-            };
-            g.appendChild(div);
+    
+    initModifierSelect() {
+        const select = document.getElementById('banSelect');
+        GAME_CONFIG.badItems.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.t; opt.innerText = `Ban: ${item.t}`;
+            select.appendChild(opt);
         });
     }
 
-    updateUI() {
-        document.getElementById('menuCoins').innerText = Save.data.currency;
-        document.getElementById('shopCoins').innerText = Save.data.currency;
-        document.getElementById('graceCoinsVal').innerText = Save.data.currency + this.coins;
-        document.getElementById('scoreVal').innerText = this.score;
-        document.getElementById('livesVal').innerText = '❤️'.repeat(this.lives);
+    updateSkins(personalBest) {
+        if (personalBest >= GAME_CONFIG.skins.forged.unlockScore) {
+            document.getElementById('skinForged').classList.remove('locked');
+            document.getElementById('skinForged').title = "Forged Steel";
+        }
+        if (personalBest >= GAME_CONFIG.skins.neon.unlockScore) {
+            document.getElementById('skinNeon').classList.remove('locked');
+            document.getElementById('skinNeon').title = "Neon Pulse";
+        }
     }
 
-    loop(ts) {
-        if(!this.lastTime) { this.lastTime = ts; requestAnimationFrame(t=>this.loop(t)); return; }
-        let dt = (ts - this.lastTime)/1000; if(dt > 0.1) dt = 0.1; this.lastTime = ts;
-
-        if(this.state === 'PLAYING') {
-            this.survivalTime += dt; this.spawnTimer += dt;
-            
-            // Basket Physics
-            if(this.input.touch) this.basket.x += (this.input.touch - this.basket.w/2 - this.basket.x) * 0.2;
-            else this.basket.x += this.input.axis * 10;
-            this.basket.x = Math.max(0, Math.min(this.width - this.basket.w, this.basket.x));
-
-            // Spawning
-            if(this.spawnTimer > 1) {
-                const isGood = Math.random() > 0.3;
-                const list = isGood ? CONFIG.items.good : CONFIG.items.bad;
-                const d = list[Math.floor(Math.random()*list.length)];
-                this.items.push({ x: Math.random()*(this.width-100), y:-50, isGood, txt: d.e + ' ' + d.t });
-                this.spawnTimer = 0;
-            }
-
-            // Item Physics & Collision
-            this.items.forEach((it, i) => {
-                it.y += 5;
-                if(it.y > this.height) this.items.splice(i, 1);
-                if(it.x < this.basket.x + this.basket.w && it.x + 100 > this.basket.x && it.y + 40 > this.height - 110) {
-                    if(it.isGood) { this.score += 10; this.coins += 1; Audio.play(440); }
-                    else { this.lives--; Audio.play(110); if(this.lives<=0) { this.state='END'; this.showScreen('endScreen'); document.getElementById('finalScore').innerText=this.score; document.getElementById('earnedCoins').innerText=this.coins; Save.data.currency+=this.coins; Save.save(); } }
-                    this.items.splice(i, 1); this.updateUI();
-                }
-            });
-        }
-
-        this.draw();
-        requestAnimationFrame(t => this.loop(t));
+    switchScreen(screenName) {
+        if (this.activeScreen) this.activeScreen.classList.remove('active');
+        const nextScreen = this.screens[screenName];
+        if (nextScreen) { nextScreen.classList.add('active'); this.activeScreen = nextScreen; }
     }
-
-    draw() {
-        this.ctx.clearRect(0,0,this.width,this.height);
-        if(this.state === 'PLAYING') {
-            this.ctx.fillStyle = this.basket.color; this.ctx.fillRect(this.basket.x, this.height-110, this.basket.w, this.basket.h);
-            this.items.forEach(it => {
-                this.ctx.fillStyle = it.isGood ? '#fff' : '#ff4444';
-                this.ctx.font = '14px Montserrat'; this.ctx.fillText(it.txt, it.x, it.y);
-            });
-        }
+    
+    setHUDVisible(isVisible) { if (isVisible) this.hud.classList.add('active'); else this.hud.classList.remove('active'); }
+    
+    updateHUD(score, streak, lives, comboIndex) {
+        this.els.score.innerText = score; this.els.streak.innerText = `Streak: ${streak}`;
+        if (streak >= GAME_CONFIG.rules.streakRequiredForBonus) { this.els.streak.classList.add('high'); } else { this.els.streak.classList.remove('high'); }
+        this.els.lives.innerText = '❤️'.repeat(Math.max(0, lives)) || '💀';
+        
+        // Update Combo Dots
+        this.els.dot0.classList.toggle('filled', comboIndex >= 1);
+        this.els.dot1.classList.toggle('filled', comboIndex >= 2);
+        this.els.dot2.classList.toggle('filled', comboIndex >= 3);
+    }
+    
+    setupEndScreen(score, personalBest, isNewBest, challenge) {
+        this.els.finalScore.innerText = score; this.els.challengeTxt.innerText = challenge;
+        if (isNewBest) { this.els.highScoreDisp.classList.add('new-high-score'); this.els.highScoreVal.innerText = personalBest + " (NEW!)"; } 
+        else { this.els.highScoreDisp.classList.remove('new-high-score'); this.els.highScoreVal.innerText = personalBest; }
+        if (score > 0) { this.els.submitBlock.style.display = 'block'; this.els.saveMsg.style.display = 'none'; this.els.nameInput.value = ''; } 
+        else { this.els.submitBlock.style.display = 'none'; this.els.saveMsg.style.display = 'none'; }
+    }
+    
+    renderLeaderboard(dataArray, error = null) {
+        if (error) { this.els.lbList.innerHTML = `<div class="status-msg status-error">${error}</div>`; return; }
+        if (dataArray.length === 0) { this.els.lbList.innerHTML = `<div class="status-msg">Be the first to get a high score!</div>`; return; }
+        let html = '';
+        dataArray.forEach((row, index) => {
+            const rank = index + 1; const safeName = row.name.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 15);
+            html += `<div class="lb-row" data-rank="${rank}"><div class="lb-rank">#${rank}</div><div class="lb-name">${safeName}</div><div class="lb-score">${row.score}</div></div>`;
+        });
+        this.els.lbList.innerHTML = html;
     }
 }
-new Game();
+
+// ============================================================================
+// VISUAL SYSTEMS
+// ============================================================================
+class ParallaxBackground {
+    constructor(width, height) {
+        this.width = width; this.height = height; this.layers = [];
+        this.layers.push(this.createLayer(30, { sizeMin: 0.5, sizeMax: 1.5, speedMult: 0.3, alphaMin: 0.1, alphaMax: 0.3 }));
+        this.layers.push(this.createLayer(20, { sizeMin: 1.5, sizeMax: 2.5, speedMult: 0.8, alphaMin: 0.3, alphaMax: 0.6 }));
+        this.layers.push(this.createLayer(10, { sizeMin: 3.0, sizeMax: 5.0, speedMult: 1.5, alphaMin: 0.5, alphaMax: 0.8 }));
+    }
+    createLayer(count, config) { let particles = []; for (let i = 0; i < count; i++) { particles.push(this.spawnParticle(config, true)); } return { particles, config }; }
+    spawnParticle(config, randomY = false) {
+        return { x: Math.random() * this.width, y: randomY ? Math.random() * this.height : this.height + 10, s: MathUtils.randomRange(config.sizeMin, config.sizeMax), vy: -MathUtils.randomRange(20, 50) * config.speedMult, vx: MathUtils.randomRange(-5, 5) * config.speedMult, alpha: MathUtils.randomRange(config.alphaMin, config.alphaMax), wobbleSpeed: MathUtils.randomRange(0.5, 2.0), wobbleTime: Math.random() * Math.PI * 2 };
+    }
+    update(dt, isStorm) { 
+        const speedBoost = isStorm ? 3 : 1;
+        this.layers.forEach(layer => { 
+            layer.particles.forEach(p => { 
+                p.wobbleTime += dt * p.wobbleSpeed; 
+                p.x += (p.vx + Math.sin(p.wobbleTime) * 10) * dt; 
+                p.y += p.vy * speedBoost * dt; 
+                if (p.y < -20) Object.assign(p, this.spawnParticle(layer.config, false)); 
+            }); 
+        }); 
+    }
+    draw(ctx) { 
+        ctx.fillStyle = GAME_CONFIG.colors.forgeSparks; 
+        this.layers.forEach(layer => { 
+            layer.particles.forEach(p => { ctx.globalAlpha = p.alpha; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill(); }); 
+        }); 
+        ctx.globalAlpha = 1.0; 
+    }
+}
+
+class ParticleSystem {
+    constructor() { this.particles = []; this.texts = []; }
+    emitBurst(x, y, color, isGood) { 
+        const count = isGood ? 20 : 30; 
+        for (let i = 0; i < count; i++) { 
+            this.particles.push({ x: x, y: y, vx: MathUtils.randomRange(-300, 300), vy: MathUtils.randomRange(-400, 50), life: 1.0, decay: MathUtils.randomRange(0.8, 2.0), color: color, size: MathUtils.randomRange(2, 6) }); 
+        } 
+    }
+    emitText(x, y, text, color) { this.texts.push({ x: x, y: y, text: text, color: color, life: 1.5, vy: -80, startY: y }); }
+    update(dt) {
+        for (let i = this.particles.length - 1; i >= 0; i--) { let p = this.particles[i]; p.vy += GAME_CONFIG.physics.gravity * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt; if (p.life <= 0) this.particles.splice(i, 1); }
+        for (let i = this.texts.length - 1; i >= 0; i--) { let t = this.texts[i]; t.y += t.vy * dt; t.life -= dt; if (t.life <= 0) this.texts.splice(i, 1); }
+    }
+    draw(ctx) {
+        this.particles.forEach(p => { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); });
+        this.texts.forEach(t => {
+            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color; ctx.font = "900 24px Montserrat"; ctx.textAlign = "center"; ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
+            let scale = 1; let progress = 1.5 - t.life; if (progress < 0.2) scale = MathUtils.easeOutCubic(progress * 5);
+            ctx.save(); ctx.translate(t.x, t.y); ctx.scale(scale, scale); ctx.fillText(t.text, 0, 0); ctx.restore(); ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+    }
+}
+
+// ============================================================================
+// GAME ENTITIES
+// ============================================================================
+class Basket {
+    constructor(game, skinColor) {
+        this.game = game; this.baseWidth = 110; this.baseHeight = 30; this.width = this.baseWidth; this.height = this.baseHeight;
+        this.x = game.width / 2 - this.width / 2; this.y = game.height - this.height - 80; this.vx = 0;
+        this.scaleX = 1; this.scaleY = 1; this.targetScaleX = 1; this.targetScaleY = 1;
+        this.color = skinColor;
+    }
+    pulse(isGood) { if (isGood) { this.scaleX = 1.2; this.scaleY = 0.6; } else { this.scaleX = 0.8; this.scaleY = 1.3; } }
+    update(dt) {
+        const p = GAME_CONFIG.physics;
+        if (this.game.input.touchTarget !== null) { const targetX = this.game.input.touchTarget - this.width / 2; this.x += (targetX - this.x) * p.touchFollowSpeed * dt; this.vx = 0; } 
+        else { this.vx += this.game.input.axisX * p.basketSpeed * dt; this.vx *= p.basketFriction; this.vx = MathUtils.clamp(this.vx, -p.basketMaxSpeed, p.basketMaxSpeed); this.x += this.vx * dt; }
+        if (this.x < 0) { this.x = 0; this.vx = 0; } if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
+        this.scaleX += (this.targetScaleX - this.scaleX) * 15 * dt; this.scaleY += (this.targetScaleY - this.scaleY) * 15 * dt;
+        this.width = this.baseWidth * this.scaleX; this.height = this.baseHeight * this.scaleY; this.y = (this.game.height - 80) - this.height;
+    }
+    draw(ctx) {
+        const c = GAME_CONFIG.colors; const radius = 10; ctx.save();
+        ctx.shadowColor = this.color; ctx.shadowBlur = 25; ctx.fillStyle = this.color; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, radius); ctx.fill();
+        ctx.shadowBlur = 0; ctx.fillStyle = c.basketInner; ctx.beginPath(); ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, radius / 2); ctx.fill(); ctx.restore();
+    }
+}
+
+class FallingItem {
+    constructor(game, bannedItemName) {
+        this.game = game; this.width = 130; this.height = 42;
+        this.x = MathUtils.randomRange(10, game.width - this.width - 10); this.y = -this.height - 10;
+        
+        this.isGood = Math.random() > 0.35; 
+        
+        // Handle Banned Items (Modifier)
+        let dataList = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems.filter(item => item.t !== bannedItemName);
+        if (dataList.length === 0) dataList = GAME_CONFIG.badItems; // Fallback
+        
+        const data = dataList[Math.floor(Math.random() * dataList.length)];
+        this.text = data.t; this.emoji = data.e;
+        
+        // Foil Drop Logic (Trading Card homage)
+        this.isFoil = this.isGood && Math.random() < GAME_CONFIG.rules.foilChance;
+        this.foilHue = 0;
+        
+        const p = GAME_CONFIG.physics; 
+        const timeRatio = MathUtils.clamp(this.game.survivalTime / p.maxDifficultyTime, 0, 1);
+        const baseSpeed = MathUtils.randomRange(p.itemBaseSpeedMin, p.itemBaseSpeedMax); 
+        
+        // Speed modifier based on time + if they banned an item (+15%)
+        const banMultiplier = bannedItemName !== 'none' ? 1.15 : 1.0;
+        const stormMultiplier = this.game.isStormPhase ? 1.3 : 1.0;
+        
+        this.vy = baseSpeed * (1 + (timeRatio * 1.5)) * banMultiplier * stormMultiplier;
+        
+        this.rotation = MathUtils.randomRange(-0.1, 0.1); 
+        this.markedForDeletion = false;
+    }
+    update(dt) { 
+        this.y += this.vy * dt; 
+        if (this.isFoil) this.foilHue = (this.foilHue + 300 * dt) % 360; // Animate foil color
+        if (this.y > this.game.height + 20) this.markedForDeletion = true; 
+    }
+    draw(ctx) {
+        const c = GAME_CONFIG.colors; const cx = this.x + this.width / 2; const cy = this.y + this.height / 2; ctx.save();
+        ctx.translate(cx, cy); ctx.rotate(this.rotation);
+        
+        if (this.isFoil) {
+            ctx.shadowColor = `hsl(${this.foilHue}, 100%, 50%)`; ctx.shadowBlur = 20; 
+            ctx.fillStyle = c.foilBg; ctx.strokeStyle = `hsl(${this.foilHue}, 100%, 50%)`; 
+        } else {
+            ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow; ctx.shadowBlur = 15; 
+            ctx.fillStyle = this.isGood ? c.goodBg : c.badBg; ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder; 
+        }
+        
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(-this.width/2, -this.height/2, this.width, this.height, 21); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+        
+        ctx.fillStyle = this.isGood ? c.goodText : c.badText; ctx.font = "bold 14px Montserrat"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; 
+        
+        let displayTxt = `${this.emoji} ${this.text}`;
+        if (this.isFoil) displayTxt = `✨ ${this.text}`;
+        
+        ctx.fillText(displayTxt, 0, 1); ctx.restore();
+    }
+}
+
+// ============================================================================
+// MASTER GAME CONTROLLER
+// ============================================================================
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d'); this.wrapper = document.getElementById('game-wrapper');
+        this.audio = new AudioEngine(); this.input = new InputManager(this.canvas); this.ui = new UIManager(); this.bg = new ParallaxBackground(0, 0);
+        
+        this.state = 'MENU'; this.lastTime = 0; this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.rules.maxLives; this.survivalTime = 0; 
+        this.personalBest = StorageManager.getHighScore();
+        this.ui.updateSkins(this.personalBest);
+        
+        this.shakeTimer = 0; this.itemTimer = 0; this.itemInterval = 1.0; 
+        this.items = []; this.particles = new ParticleSystem();
+        
+        // Modifiers & Combos
+        this.activeSkin = 'classic';
+        this.bannedItem = 'none';
+        this.comboIndex = 0;
+        this.isStormPhase = false;
+        
+        window.addEventListener('resize', () => this.resize()); this.resize(); this.bindEvents(); requestAnimationFrame(t => this.loop(t));
+    }
+    
+    bindEvents() {
+        document.getElementById('startBtn').addEventListener('click', () => this.startMatch());
+        document.getElementById('playAgainBtn').addEventListener('click', () => this.startMatch());
+        document.getElementById('shareBtn').addEventListener('click', (e) => this.shareChallenge(e.target));
+        document.getElementById('submitScoreBtn').addEventListener('click', () => this.submitToDatabase());
+        document.getElementById('lbStartBtn').addEventListener('click', () => { this.state = 'LEADERBOARD'; this.fetchLeaderboard(); this.ui.switchScreen('leaderboard'); });
+        document.getElementById('lbEndBtn').addEventListener('click', () => { this.state = 'LEADERBOARD'; this.fetchLeaderboard(); this.ui.switchScreen('leaderboard'); });
+        document.getElementById('lbCloseBtn').addEventListener('click', () => { if (this.survivalTime === 0) { this.state = 'MENU'; this.ui.switchScreen('start'); } else { this.state = 'END'; this.ui.switchScreen('end'); } });
+        
+        // Skin Selector Logic
+        document.querySelectorAll('.skin-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.classList.contains('locked')) return;
+                document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.activeSkin = e.target.dataset.skin;
+            });
+        });
+    }
+    
+    resize() {
+        const dpr = window.devicePixelRatio || 1; const rect = this.wrapper.getBoundingClientRect();
+        this.width = rect.width; this.height = rect.height; this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
+        this.ctx.scale(dpr, dpr); this.bg.width = this.width; this.bg.height = this.height;
+        if (this.basket) { this.basket.y = (this.height - 80) - this.basket.height; if (this.basket.x > this.width) this.basket.x = this.width - this.basket.width; }
+    }
+    
+    startMatch() {
+        this.audio.init(); this.state = 'PLAYING'; this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.rules.maxLives; 
+        this.survivalTime = 0; this.itemTimer = 0; this.comboIndex = 0; this.isStormPhase = false;
+        
+        this.bannedItem = document.getElementById('banSelect').value;
+        const skinColor = GAME_CONFIG.skins[this.activeSkin].color;
+        
+        this.basket = new Basket(this, skinColor); this.items = []; this.particles = new ParticleSystem();
+        this.wrapper.classList.remove('storm-phase');
+        
+        this.ui.switchScreen(null); this.ui.setHUDVisible(true); this.ui.updateHUD(this.score, this.streak, this.lives, this.comboIndex);
+    }
+    
+    endMatch() {
+        this.state = 'END'; const isNewBest = this.score > this.personalBest;
+        if (isNewBest) { this.personalBest = this.score; StorageManager.setHighScore(this.personalBest); this.ui.updateSkins(this.personalBest); }
+        this.currentChallenge = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
+        this.ui.setHUDVisible(false); this.ui.setupEndScreen(this.score, this.personalBest, isNewBest, this.currentChallenge); this.ui.switchScreen('end');
+        this.wrapper.classList.remove('storm-phase');
+    }
+    
+    triggerCameraShake() { this.shakeTimer = 0.35; }
+    
+    triggerMegaBlessing() {
+        this.audio.playMega();
+        Haptics.foil(); // Long vibration
+        this.score += 100;
+        this.particles.emitText(this.width/2, this.height/2, "MEGA BLESSING!", GAME_CONFIG.colors.goodGlow);
+        
+        // Destroy all bad items
+        this.items.forEach(item => {
+            if (!item.isGood) {
+                item.markedForDeletion = true;
+                this.particles.emitBurst(item.x + item.width/2, item.y + item.height/2, GAME_CONFIG.colors.badGlow, false);
+            }
+        });
+        this.comboIndex = 0;
+    }
+
+    async shareChallenge(btnElement) {
+        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`; const url = window.location.href;
+        if (navigator.share) { try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: url }); } catch (e) { console.warn("Share canceled"); } } 
+        else { navigator.clipboard.writeText(`${txt} ${url}`); const origText = btnElement.innerText; btnElement.innerText = "COPIED TO CLIPBOARD!"; setTimeout(() => btnElement.innerText = origText, 2500); }
+    }
+    
+    async submitToDatabase() {
+        const nameInput = this.ui.els.nameInput; const name = nameInput.value.trim();
+        if (name === '') { alert("Please enter your name!"); nameInput.focus(); return; }
+        const btn = this.ui.els.submitBtn; btn.innerText = "SAVING TO CLOUD..."; btn.disabled = true;
+        try { await addDoc(collection(db, "scores"), { name: name, score: this.score, timestamp: serverTimestamp() }); this.ui.els.submitBlock.style.display = 'none'; this.ui.els.saveMsg.style.display = 'block'; } 
+        catch (e) { console.error("Firebase write error: ", e); alert("Failed to save score. Please check your connection and try again."); }
+        btn.innerText = "SUBMIT TO LEADERBOARD"; btn.disabled = false;
+    }
+    
+    async fetchLeaderboard() {
+        try { const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10)); const querySnapshot = await getDocs(q); let dataArray = []; querySnapshot.forEach((doc) => dataArray.push(doc.data())); this.ui.renderLeaderboard(dataArray, null); } 
+        catch (e) { console.error("Firebase read error: ", e); this.ui.renderLeaderboard([], "Could not connect to database. Please check your connection."); }
+    }
+    
+    update(dt) {
+        this.bg.update(dt, this.isStormPhase); 
+        if (this.state !== 'PLAYING') return; 
+        
+        this.survivalTime += dt; 
+        if (this.shakeTimer > 0) this.shakeTimer -= dt;
+        
+        // Trigger Storm Phase
+        if (this.survivalTime > 45 && !this.isStormPhase) {
+            this.isStormPhase = true;
+            this.wrapper.classList.add('storm-phase');
+            this.particles.emitText(this.width/2, this.height/3, "STORM INCOMING", GAME_CONFIG.colors.badGlow);
+        }
+
+        this.basket.update(dt); this.particles.update(dt); this.itemTimer += dt;
+        
+        const progress = MathUtils.clamp(this.survivalTime / GAME_CONFIG.physics.maxDifficultyTime, 0, 1); 
+        // Storm phase halves the spawn interval (twice as many items)
+        const stormDivisor = this.isStormPhase ? 2 : 1;
+        const currentInterval = Math.max(0.30, this.itemInterval - (progress * 0.70)) / stormDivisor; 
+        
+        if (this.itemTimer > currentInterval) { this.items.push(new FallingItem(this, this.bannedItem)); this.itemTimer = 0; }
+        
+        const r = GAME_CONFIG.rules; const c = GAME_CONFIG.colors; const padding = 12; 
+        
+        for (let i = this.items.length - 1; i >= 0; i--) {
+            let item = this.items[i]; item.update(dt);
+            
+            if (item.x < this.basket.x + this.basket.width - padding && item.x + item.width > this.basket.x + padding && item.y + item.height > this.basket.y + padding && item.y < this.basket.y + this.basket.height) {
+                if (item.isGood) {
+                    // FOIL LOGIC
+                    if (item.isFoil) {
+                        Haptics.foil(); this.audio.playLevelUp();
+                        this.score += 50; this.lives = Math.min(this.lives + 1, r.maxLives);
+                        this.particles.emitText(item.x + item.width/2, item.y, "FOIL DROP! +1 LIFE", c.foilGlow);
+                    } else {
+                        Haptics.good();
+                        this.streak++; let bonus = this.streak > 2 ? r.pointsStreakBonus : 0;
+                        if (this.streak === r.streakRequiredForBonus) this.audio.playLevelUp(); else this.audio.playGood();
+                        this.score += (item.text === "Pastor's Coffee" ? 25 : r.pointsPerGood) + bonus;
+                        this.particles.emitText(item.x + item.width/2, item.y, `+${(item.text === "Pastor's Coffee" ? 25 : r.pointsPerGood) + bonus}`, c.goodGlow);
+                    }
+                    
+                    // COMBO LOGIC
+                    if (item.text === r.comboSequence[this.comboIndex]) {
+                        this.comboIndex++;
+                        if (this.comboIndex >= r.comboSequence.length) this.triggerMegaBlessing();
+                    } else {
+                        // Reset combo unless it matches the first item again
+                        this.comboIndex = item.text === r.comboSequence[0] ? 1 : 0;
+                    }
+
+                    this.basket.pulse(true);
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, item.isFoil ? c.foilGlow : c.goodGlow, true); 
+                } else {
+                    Haptics.bad();
+                    this.streak = 0; this.comboIndex = 0; this.lives--; this.audio.playBad(); this.triggerCameraShake(); this.basket.pulse(false);
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.badGlow, false); this.particles.emitText(item.x + item.width/2, item.y, "-1 LIFE", c.badGlow);
+                    if (this.lives <= 0) { this.ui.updateHUD(this.score, this.streak, this.lives, this.comboIndex); setTimeout(() => this.endMatch(), 250); }
+                }
+                this.ui.updateHUD(this.score, this.streak, this.lives, this.comboIndex); item.markedForDeletion = true;
+            }
+            if (item.markedForDeletion) { this.items.splice(i, 1); }
+        }
+    }
+    
+    draw() {
+        this.ctx.clearRect(0, 0, this.width, this.height); this.ctx.save();
+        if (this.shakeTimer > 0) { const intensity = this.shakeTimer * 25; const dx = MathUtils.randomRange(-intensity, intensity); const dy = MathUtils.randomRange(-intensity, intensity); this.ctx.translate(dx, dy); }
+        
+        this.bg.draw(this.ctx);
+        
+        if (this.state === 'PLAYING') { 
+            this.basket.draw(this.ctx); 
+            for (let i = 0; i < this.items.length; i++) { this.items[i].draw(this.ctx); } 
+            this.particles.draw(this.ctx); 
+        }
+        this.ctx.restore();
+    }
+    
+    loop(timestamp) {
+        let dt = (timestamp - this.lastTime) / 1000; if (dt > 0.1) dt = 0.1; this.lastTime = timestamp; this.update(dt); this.draw(); requestAnimationFrame(t => this.loop(t));
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => { new Game(); });
 </script>
 </body>
 </html>
