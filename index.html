@@ -1,199 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Blessing Basket | ChurchBuilt Edition</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
---bg-dark: #0a0b0e; --bg-light: #1f252e;
---brand-orange: #d96c06; --brand-orange-glow: rgba(217, 108, 6, 0.6); --brand-orange-glass: rgba(217, 108, 6, 0.15);
---brand-gold: #f5b700; --brand-gold-glow: rgba(245, 183, 0, 0.5);
---brand-cream: #fdfbf7; --brand-cream-dim: rgba(253, 251, 247, 0.7);
---bad-red: #cc0000; --bad-dark: #1e1414;
---power-blue: #00e5ff; --power-purple: #b300ff;
---glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
---transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100vh; height: 100dvh; overflow: hidden; touch-action: none; color: var(--brand-cream); }
-#game-wrapper { position: relative; width: 100vw; height: 100vh; height: 100dvh; max-width: 600px; background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%); overflow: hidden; box-shadow: 0 0 100px rgba(217, 108, 6, 0.1); transition: background 1s ease; }
-#game-wrapper.storm-phase { background: radial-gradient(circle at top, #1a0f0f 0%, #050505 100%); }
-@media (min-width: 768px) { #game-wrapper { height: 90vh; border-radius: 28px; border: 1px solid var(--glass-border); } }
-canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-#ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
-.hud { position: absolute; top: 0; left: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; font-weight: 800; text-shadow: 0px 4px 15px rgba(0,0,0,0.9); opacity: 0; transform: translateY(-20px); transition: var(--transition-smooth); }
-.hud.active { opacity: 1; transform: translateY(0); pointer-events: auto;}
-.hud-left { display: flex; flex-direction: column; gap: 4px; }
-.score-box { font-size: 1.4rem; letter-spacing: 1px; color: var(--brand-cream-dim); }
-.score-val { color: var(--brand-gold); font-size: 2rem; font-weight: 900; }
-.currency-box { font-size: 0.85rem; color: var(--brand-orange); display: flex; align-items: center; gap: 5px; margin-top: 2px;}
-.streak-box { font-size: 0.9rem; color: var(--brand-cream); text-transform: uppercase; letter-spacing: 2px; transition: var(--transition-smooth); margin-top: 5px;}
-.streak-box.high { color: var(--brand-gold); text-shadow: 0 0 15px var(--brand-gold); transform: scale(1.05); transform-origin: left; }
-.hud-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end;}
-.lives-val { font-size: 1.8rem; letter-spacing: 4px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-.lives-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--brand-cream-dim); }
-.btn-pause { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--brand-cream); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-top: 10px; cursor: pointer; pointer-events: auto; backdrop-filter: blur(5px);}
-.screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 11, 14, 0.96); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 40px 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(1.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); overflow-y: auto; overflow-x: hidden;}
-.screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
-.screen::-webkit-scrollbar { width: 0px; }
-h1 { color: var(--brand-cream); font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; line-height: 1.1; margin-bottom: 10px; text-shadow: 0 0 40px var(--brand-orange-glow); }
-h2 { color: var(--brand-gold); font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
-h3 { color: var(--brand-cream); font-size: 1rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px; text-transform: uppercase; width: 100%; text-align: left; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;}
-p { color: var(--brand-cream-dim); font-size: 1rem; line-height: 1.6; margin-bottom: 25px; max-width: 400px; font-weight: 600; }
-.btn { background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%); border: none; padding: 18px 30px; border-radius: 50px; color: var(--bg-dark); font-size: 1.1rem; font-weight: 900; cursor: pointer; box-shadow: 0 8px 25px var(--brand-orange-glow), inset 0 -3px 0 rgba(0,0,0,0.2); transition: var(--transition-smooth); text-transform: uppercase; letter-spacing: 2px; width: 100%; max-width: 320px; margin-bottom: 15px; position: relative; overflow: hidden; display: inline-block; text-decoration: none; text-align: center; }
-.btn:active { transform: translateY(2px) scale(0.97); box-shadow: 0 4px 10px var(--brand-orange-glow), inset 0 -1px 0 rgba(0,0,0,0.2); }
-.btn::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%); transform: rotate(45deg) translateY(-100%); transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
-.btn:hover::after { transform: rotate(45deg) translateY(100%); }
-.btn-outline { background: var(--glass-bg); border: 2px solid var(--glass-border); color: var(--brand-cream); box-shadow: none; font-size: 0.9rem; padding: 15px 25px; backdrop-filter: blur(5px); }
-.action-row { display: flex; gap: 10px; width: 100%; max-width: 320px; margin-bottom: 15px;}
-.action-row .btn, .action-row .btn-outline { flex: 1; padding: 14px 0; margin-bottom: 0; font-size: 0.85rem; }
-.panel { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; margin-bottom: 20px; width: 100%; max-width: 400px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-.setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: var(--brand-cream); font-weight: 600; font-size: 0.9rem;}
-.setting-row:last-child { margin-bottom: 0; }
-input[type="range"] { -webkit-appearance: none; width: 120px; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; outline: none; }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brand-gold); cursor: pointer; box-shadow: 0 0 10px var(--brand-gold-glow); }
-.keybind-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: var(--brand-gold); padding: 8px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; cursor: pointer; width: 80px; text-align: center;}
-.keybind-btn.listening { background: var(--brand-orange); color: #fff; animation: pulse 1s infinite; }
-/* SHOP UI */
-.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
-.shop-item { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s; position: relative;}
-.shop-item:hover { background: rgba(255,255,255,0.1); }
-.shop-item.owned { border-color: var(--brand-gold); }
-.shop-item.equipped { background: rgba(245, 183, 0, 0.15); border-color: var(--brand-gold); box-shadow: 0 0 15px var(--brand-gold-glow); }
-.shop-preview { width: 60px; height: 60px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px;}
-.shop-name { font-size: 0.8rem; font-weight: 800; color: var(--brand-cream); margin-bottom: 5px; text-transform: uppercase;}
-.shop-price { font-size: 0.9rem; font-weight: 900; color: var(--brand-orange); display: flex; align-items: center; gap: 4px;}
-.shop-item.owned .shop-price { color: var(--brand-cream-dim); font-size: 0.75rem; }
-/* ACHIEVEMENTS TOAST */
-#toast-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
-.toast { background: linear-gradient(90deg, rgba(20,22,28,0.95) 0%, rgba(30,35,45,0.95) 100%); border-left: 4px solid var(--brand-gold); border-radius: 8px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: slideInDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.5s ease 3.5s forwards; min-width: 280px;}
-.toast-icon { font-size: 24px; background: rgba(245, 183, 0, 0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 10px var(--brand-gold-glow);}
-.toast-content { display: flex; flex-direction: column; text-align: left; }
-.toast-title { color: var(--brand-gold); font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;}
-.toast-desc { color: var(--brand-cream); font-size: 0.9rem; font-weight: 600; }
-@keyframes slideInDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-@keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
-/* END SCREEN */
-.final-score { font-size: 5rem; color: var(--brand-gold); font-weight: 900; line-height: 0.9; margin: 10px 0; text-shadow: 0 0 40px var(--brand-gold-glow); }
-.challenge-card { background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.2) 100%); border: 1px solid rgba(217, 108, 6, 0.3); border-top: 1px solid rgba(245, 183, 0, 0.5); border-radius: 20px; padding: 25px; margin: 15px 0 25px 0; width: 100%; max-width: 400px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
-.challenge-label { font-size: 0.75rem; color: var(--brand-orange); font-weight: 900; margin-bottom: 10px; letter-spacing: 2px; }
-.challenge-text { color: var(--brand-cream); font-size: 1.1rem; font-weight: 600; line-height: 1.5; }
-input[type="text"] { background: var(--brand-orange-glass); border: 2px solid rgba(217, 108, 6, 0.4); color: var(--brand-cream); font-family: 'Montserrat', sans-serif; font-weight: 800; outline: none; padding: 15px; border-radius: 50px; width: 100%; text-align: center; font-size: 1.1rem; text-transform: uppercase; transition: var(--transition-smooth); margin-bottom: 10px;}
-input[type="text"]:focus { border-color: var(--brand-gold); background: rgba(245, 183, 0, 0.15); box-shadow: 0 0 20px var(--brand-gold-glow); }
-/* LEADERBOARD */
-#leaderboardList { width: 100%; max-width: 400px; height: 40vh; overflow-y: auto; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 15px; padding: 10px; margin: 15px 0; }
-.lb-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--brand-cream); font-weight: 600; font-size: 1rem; }
-.lb-rank { font-weight: 900; width: 30px; text-align: left; color: var(--brand-cream-dim); }
-.lb-name { flex: 1; text-transform: uppercase; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; font-weight: 800; }
-.lb-score { color: var(--brand-gold); font-weight: 900; text-align: right; }
-/* MISC */
-.flex-center { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;}
-.spacer { flex-grow: 1; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Blessing Basket | ChurchBuilt AAA Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0b0e; --bg-light: #1f252e;
+            --brand-orange: #d96c06; --brand-gold: #f5b700;
+            --brand-cream: #fdfbf7; --brand-cream-dim: rgba(253, 251, 247, 0.7);
+            --bad-red: #cc0000; --power-blue: #00e5ff;
+            --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; touch-action: none; color: var(--brand-cream); }
+        #game-wrapper { position: relative; width: 100vw; height: 100vh; max-width: 600px; background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%); overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+        .hud { position: absolute; top: 0; left: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; opacity: 0; transition: var(--transition-smooth); pointer-events: auto; }
+        .hud.active { opacity: 1; }
+        .score-val { color: var(--brand-gold); font-size: 2rem; font-weight: 900; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 11, 14, 0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; opacity: 0; pointer-events: none; transition: 0.4s; transform: scale(1.1); backdrop-filter: blur(15px); }
+        .screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+        .btn { background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%); border: none; padding: 18px 30px; border-radius: 50px; color: #000; font-size: 1.1rem; font-weight: 900; cursor: pointer; width: 100%; max-width: 320px; margin-bottom: 15px; text-transform: uppercase; }
+        .btn-outline { background: var(--glass-bg); border: 2px solid var(--glass-border); color: #fff; }
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
+        .shop-item { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; cursor: pointer; }
+        .shop-item.equipped { border-color: var(--brand-gold); background: rgba(245, 183, 0, 0.1); }
+        .toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #1e232d; border-left: 5px solid var(--brand-gold); padding: 15px; border-radius: 8px; z-index: 100; min-width: 250px; }
+    </style>
 </head>
 <body>
 <div id="game-wrapper">
-<canvas id="gameCanvas"></canvas>
-<div id="toast-container"></div>
-<div id="ui-layer">
-    <div class="hud" id="hud">
-        <div class="hud-left">
-            <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
-            <div class="currency-box">🪙 <span id="graceCoinsVal">0</span></div>
-            <div class="streak-box" id="streakVal">STREAK: 0</div>
-            <div id="activePowerup" style="color: var(--power-blue); font-size: 0.8rem; font-weight: 900; margin-top: 5px; text-transform: uppercase;"></div>
-        </div>
-        <div class="hud-right">
-            <div class="lives-val" id="livesVal">❤️❤️❤️</div>
-            <div class="lives-label">LIVES</div>
-            <div class="btn-pause" id="btnPauseHUD">⏸</div>
-        </div>
-    </div>
-
-    <div class="screen active" id="startScreen">
-        <h1>Blessing Basket</h1>
-        <div class="flex-center" style="margin-bottom: 25px;">
-            <div class="currency-box" style="font-size: 1.2rem; background: var(--glass-bg); padding: 8px 20px; border-radius: 20px; border: 1px solid var(--glass-border);">🪙 <span id="menuCoins">0</span> Grace Coins</div>
-        </div>
-        <button class="btn" id="startBtn">PLAY GAME</button>
-        <div class="action-row">
-            <button class="btn btn-outline" id="btnOpenShop">🛒 SHOP</button>
-            <button class="btn btn-outline" id="btnOpenSettings">⚙️ SETTINGS</button>
-        </div>
-        <button class="btn btn-outline" id="lbStartBtn" style="max-width: 320px;">🏆 LEADERBOARD</button>
-        <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">A ChurchBuilt Production</p>
-    </div>
-
-    <div class="screen" id="shopScreen">
-        <h1>THE SHOP</h1>
-        <h2>CUSTOMIZE YOUR BASKET</h2>
-        <div class="flex-center" style="margin-bottom: 20px;">
-            <div class="currency-box" style="font-size: 1.2rem;">🪙 <span id="shopCoins">0</span></div>
-        </div>
-        <div class="panel" style="max-width: 450px; padding: 15px;">
-            <h3>BASKET SKINS</h3>
-            <div class="shop-grid" id="shopSkinsGrid"></div>
-        </div>
-        <button class="btn btn-outline" id="btnCloseShop">MAIN MENU</button>
-    </div>
-
-    <div class="screen" id="settingsScreen">
-        <h1 id="settingsTitle">SETTINGS</h1>
-        <div class="panel">
-            <h3>AUDIO</h3>
-            <div class="setting-row"><span>Master Volume</span> <input type="range" id="volMaster" min="0" max="100" value="50"></div>
-            <div class="setting-row"><span>SFX Volume</span> <input type="range" id="volSfx" min="0" max="100" value="100"></div>
-            
-            <h3 style="margin-top: 20px;">CONTROLS</h3>
-            <div class="setting-row"><span>Move Left</span> <div class="keybind-btn" id="bindLeft">A</div></div>
-            <div class="setting-row"><span>Move Right</span> <div class="keybind-btn" id="bindRight">D</div></div>
-            <div class="setting-row"><span>Pause</span> <div class="keybind-btn" id="bindPause">ESC</div></div>
-            
-            <h3 style="margin-top: 20px;">GRAPHICS</h3>
-            <div class="setting-row"><span>Particle Effects</span> 
-                <select id="settingParticles" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--glass-border); padding: 5px; border-radius: 5px; outline: none;">
-                    <option value="high">High</option><option value="low">Low</option><option value="off">Off</option>
-                </select>
+    <canvas id="gameCanvas"></canvas>
+    <div id="toast-container"></div>
+    <div id="ui-layer">
+        <div class="hud" id="hud">
+            <div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">SCORE</div>
+                <div class="score-val" id="scoreVal">0</div>
+                <div style="color: var(--brand-orange); font-size: 0.9rem;">🪙 <span id="graceCoinsVal">0</span></div>
+            </div>
+            <div style="text-align: right;">
+                <div id="livesVal" style="font-size: 1.5rem;">❤️❤️❤️</div>
+                <button class="btn-outline" id="btnPauseHUD" style="padding: 5px 10px; border-radius: 5px; margin-top: 5px;">PAUSE</button>
             </div>
         </div>
-        <button class="btn" id="btnResume" style="display: none;">RESUME GAME</button>
-        <button class="btn btn-outline" id="btnCloseSettings">SAVE & BACK</button>
-    </div>
-
-    <div class="screen" id="leaderboardScreen">
-        <h1>TOP BLESSERS</h1>
-        <div id="leaderboardList"><div style="text-align:center; padding:20px; color:var(--brand-cream-dim);">Loading...</div></div>
-        <button class="btn btn-outline" id="lbCloseBtn" style="max-width: 400px;">GO BACK</button>
-    </div>
-
-    <div class="screen" id="endScreen">
-        <h2>MATCH COMPLETE</h2>
-        <div class="final-score" id="finalScore">0</div>
-        <div class="currency-box" style="font-size: 1rem; margin-bottom: 15px;">+<span id="earnedCoins">0</span> Grace Coins Earned!</div>
-        
-        <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none;">
-            <input type="text" id="playerNameInput" placeholder="ENTER NAME" maxlength="15" autocomplete="off" spellcheck="false">
-            <button class="btn" id="submitScoreBtn" style="padding: 14px 20px; font-size: 1rem; margin-top: 5px;">SUBMIT TO CLOUD</button>
+        <div class="screen active" id="startScreen">
+            <h1 style="margin-bottom: 10px;">BLESSING BASKET</h1>
+            <div style="margin-bottom: 20px;">🪙 <span id="menuCoins">0</span> Grace Coins</div>
+            <button class="btn" id="startBtn">START MISSION</button>
+            <button class="btn btn-outline" id="btnOpenShop">🛒 THE SHOP</button>
+            <button class="btn btn-outline" id="btnOpenSettings">⚙️ SETTINGS</button>
         </div>
-        <div id="scoreSavedMsg" style="display: none; color: var(--brand-gold); font-weight: 900; margin-bottom: 20px;">SCORE SAVED!</div>
-
-        <div class="challenge-card">
-            <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
-            <div class="challenge-text" id="challengeText">...</div>
+        <div class="screen" id="shopScreen">
+            <h1>THE SHOP</h1>
+            <div style="margin-bottom: 10px;">🪙 <span id="shopCoins">0</span></div>
+            <div class="shop-grid" id="shopSkinsGrid"></div>
+            <button class="btn btn-outline" id="btnCloseShop" style="margin-top: 20px;">BACK</button>
         </div>
-
-        <div class="action-row">
+        <div class="screen" id="settingsScreen">
+            <h1>SETTINGS</h1>
+            <div style="width: 100%; max-width: 300px; text-align: left;">
+                <p>Master Volume</p>
+                <input type="range" id="volMaster" style="width: 100%; margin-bottom: 20px;">
+                <p>Move Left: <span id="bindLeft" style="color: var(--brand-gold);">A</span></p>
+                <p>Move Right: <span id="bindRight" style="color: var(--brand-gold);">D</span></p>
+            </div>
+            <button class="btn" id="btnResume" style="display: none;">RESUME</button>
+            <button class="btn btn-outline" id="btnCloseSettings">CLOSE</button>
+        </div>
+        <div class="screen" id="endScreen">
+            <h2>MATCH OVER</h2>
+            <div class="score-val" id="finalScore" style="font-size: 4rem;">0</div>
+            <div style="margin-bottom: 20px;">+<span id="earnedCoins">0</span> Coins Earned</div>
             <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-            <button class="btn btn-outline" id="lbEndBtn" style="background: rgba(0,0,0,0.4);">LEADERBOARD</button>
+            <button class="btn btn-outline" id="btnEndToMenu">MENU</button>
         </div>
-        <button class="btn btn-outline" id="btnEndToMenu" style="margin-bottom: 20px; width: 100%; max-width: 320px;">MAIN MENU</button>
     </div>
-</div>
 </div>
 
 <script type="module">
@@ -203,863 +91,159 @@ import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serve
 const firebaseConfig = { apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU", authDomain: "blessing-basket.firebaseapp.com", projectId: "blessing-basket", storageBucket: "blessing-basket.firebasestorage.app", messagingSenderId: "558241052507", appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e" };
 const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-// ============================================================================
-// CORE ARCHITECTURE: EVENT BUS
-// ============================================================================
-class EventBus {
-    constructor() { this.events = {}; }
-    on(event, listener) { if (!this.events[event]) this.events[event] = []; this.events[event].push(listener); }
-    emit(event, data) { if (this.events[event]) this.events[event].forEach(l => l(data)); }
-}
-const Events = new EventBus();
-
-// ============================================================================
-// GAME DATA & CONFIG
-// ============================================================================
 const CONFIG = {
-    physics: { gravity: 600, basketSpeed: 1800, basketFriction: 0.80, basketMaxSpeed: 900, touchFollowSpeed: 18, itemSpeedMin: 200, itemSpeedMax: 350, difficultyCapTime: 90 },
-    rules: { maxLives: 3, ptsGood: 10, ptsFoil: 50, streakReq: 3, streakBonus: 5, foilChance: 0.05, powerupChance: 0.03 },
+    physics: { gravity: 650, basketSpeed: 1900, basketFriction: 0.82, basketMaxSpeed: 950, itemSpeedMin: 200, difficultyTime: 100 },
+    gameplay: { maxLives: 3, points: 10, foilChance: 0.05, powerupChance: 0.04 },
     shop: [
-        { id: 'skin_classic', name: 'Classic Gold', type: 'skin', price: 0, color: '#f5b700', isDefault: true },
-        { id: 'skin_forged', name: 'Forged Steel', type: 'skin', price: 500, color: '#788594' },
-        { id: 'skin_neon', name: 'Neon Pulse', type: 'skin', price: 1500, color: '#00e5ff' },
-        { id: 'skin_royal', name: 'Royal Purple', type: 'skin', price: 3000, color: '#b300ff' }
+        { id: 'skin_classic', name: 'Classic Gold', price: 0, color: '#f5b700' },
+        { id: 'skin_forged', name: 'Forged Steel', price: 500, color: '#788594' },
+        { id: 'skin_neon', name: 'Neon Pulse', price: 1500, color: '#00e5ff' }
     ],
     items: {
-        good: [ { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' }, { t: 'Jeep Ride', e: '🚙' }, { t: 'Grace', e: '✨' }, { t: 'Love', e: '❤️' } ],
-        bad: [ { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' }, { t: 'Negativity', e: '🌧️' }, { t: 'Pride', e: '🦚' } ],
-        powers: [ { id: 'shield', t: 'Shield', e: '🛡️', color: '#00e5ff' }, { id: 'magnet', t: 'Magnet', e: '🧲', color: '#b300ff' }, { id: 'time', t: 'Slow Time', e: '⏳', color: '#f5b700' } ]
-    },
-    achievements: [
-        { id: 'first_game', title: 'The Journey Begins', desc: 'Complete your first match.', reward: 100 },
-        { id: 'high_roller', title: 'High Roller', desc: 'Score over 500 points in one game.', reward: 500 },
-        { id: 'survivor', title: 'Survivor', desc: 'Survive for 60 seconds.', reward: 250 },
-        { id: 'shopper', title: 'Retail Therapy', desc: 'Buy your first item from the shop.', reward: 0 }
-    ],
-    challenges: [ "Text someone you haven’t checked on in a while.", "Pray for a first responder, veteran, teacher, or neighbor today.", "Bring someone a coffee, snack, or small encouragement.", "Invite someone to church, Good Company, or coffee." ]
+        good: [{t:'Prayer', e:'🙏'}, {t:'Hope', e:'🌟'}, {t:'Grace', e:'✨'}],
+        bad: [{t:'Gossip', e:'🗣️'}, {t:'Fear', e:'😨'}],
+        powers: [{id:'shield', t:'Shield', e:'🛡️', c:'#00e5ff'}, {id:'magnet', t:'Magnet', e:'🧲', c:'#b300ff'}]
+    }
 };
 
-const MathUtils = { clamp: (val, min, max) => Math.min(Math.max(val, min), max), rand: (min, max) => Math.random() * (max - min) + min, easeOut: (t) => 1 - Math.pow(1 - t, 3) };
-
-// ============================================================================
-// SAVE MANAGER
-// ============================================================================
-class SaveManager {
-    constructor() { this.load(); }
-    load() {
-        try {
-            const data = JSON.parse(localStorage.getItem('churchbuilt_save')) || {};
-            this.highScore = data.highScore || 0;
-            this.currency = data.currency || 0;
-            this.inventory = data.inventory || ['skin_classic'];
-            this.equipped = data.equipped || { skin: 'skin_classic' };
-            this.achievements = data.achievements || [];
-            this.settings = data.settings || { volMaster: 50, volSfx: 100, particles: 'high', keys: { left: 'a', right: 'd', pause: 'escape' }};
-        } catch(e) { this.reset(); }
-    }
-    save() { localStorage.setItem('churchbuilt_save', JSON.stringify({ highScore: this.highScore, currency: this.currency, inventory: this.inventory, equipped: this.equipped, achievements: this.achievements, settings: this.settings })); }
-    reset() { this.highScore = 0; this.currency = 0; this.inventory = ['skin_classic']; this.equipped = { skin: 'skin_classic' }; this.achievements = []; this.settings = { volMaster: 50, volSfx: 100, particles: 'high', keys: { left: 'a', right: 'd', pause: 'escape' }}; this.save(); }
-    addCurrency(amt) { this.currency += amt; this.save(); Events.emit('currency_updated', this.currency); }
-    hasItem(id) { return this.inventory.includes(id); }
-    buyItem(item) { if (this.currency >= item.price && !this.hasItem(item.id)) { this.currency -= item.price; this.inventory.push(item.id); this.equipped.skin = item.id; this.save(); Events.emit('currency_updated', this.currency); return true; } return false; }
-    equip(id) { if (this.hasItem(id)) { this.equipped.skin = id; this.save(); return true; } return false; }
-    unlockAchievement(id) { if (!this.achievements.includes(id)) { this.achievements.push(id); const ach = CONFIG.achievements.find(a => a.id === id); if (ach) { if (ach.reward > 0) this.addCurrency(ach.reward); Events.emit('achievement_unlocked', ach); this.save(); } } }
-}
-const Save = new SaveManager();
-
-// ============================================================================
-// AUDIO & HAPTICS
-// ============================================================================
-class AudioEngine {
-    constructor() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.masterNode = this.ctx.createGain(); this.sfxNode = this.ctx.createGain(); this.sfxNode.connect(this.masterNode); this.masterNode.connect(this.ctx.destination); this.updateVolumes(); }
-    init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
-    updateVolumes() { this.masterNode.gain.value = Save.settings.volMaster / 100; this.sfxNode.gain.value = Save.settings.volSfx / 100; }
-    playTone(f, type, dur, vol) { if (this.ctx.state === 'suspended') return; const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(f, this.ctx.currentTime); const now = this.ctx.currentTime; gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(vol, now + 0.02); gain.gain.setTargetAtTime(0, now + dur - 0.1, 0.1 / 3); osc.connect(gain); gain.connect(this.sfxNode); osc.start(now); osc.stop(now + dur); }
-    good() { this.playTone(659.25, 'sine', 0.15, 0.3); setTimeout(() => this.playTone(880.00, 'sine', 0.25, 0.2), 50); }
-    bad() { this.playTone(150, 'sawtooth', 0.4, 0.4); setTimeout(() => this.playTone(145, 'square', 0.4, 0.2), 20); }
-    powerup() { [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => { setTimeout(() => this.playTone(f, 'sine', 0.3, 0.3), i * 80); }); }
-}
-const Audio = new AudioEngine();
-const Haptics = { vibe: (p) => { if (navigator.vibrate) try{navigator.vibrate(p);}catch(e){} }, good: ()=>Haptics.vibe(30), bad: ()=>Haptics.vibe([100,50,100]), power: ()=>Haptics.vibe([50,50,50,50,100]) };
-
-// ============================================================================
-// INPUT & KEYBINDS
-// ============================================================================
-class InputManager {
-    constructor(canvas) {
-        this.axisX = 0; this.touchTarget = null; this.keys = { left: false, right: false }; this.bindConfig = Save.settings.keys; this.isBinding = null;
-        window.addEventListener('keydown', e => this.onDown(e)); window.addEventListener('keyup', e => this.onUp(e));
-        canvas.addEventListener('touchstart', e => this.touch(e), {passive: false}); canvas.addEventListener('touchmove', e => this.touch(e), {passive: false}); canvas.addEventListener('touchend', () => this.touchTarget = null);
-        Events.on('keybind_start', id => this.isBinding = id);
-    }
-    onDown(e) {
-        if (this.isBinding) { e.preventDefault(); Save.settings.keys[this.isBinding] = e.key.toLowerCase(); Save.save(); Events.emit('keybind_end', {id: this.isBinding, key: e.key}); this.isBinding = null; this.bindConfig = Save.settings.keys; return; }
-        const k = e.key.toLowerCase(); if (k === this.bindConfig.left) this.keys.left = true; if (k === this.bindConfig.right) this.keys.right = true; if (k === this.bindConfig.pause) Events.emit('req_pause'); this.updateAxis();
-    }
-    onUp(e) { const k = e.key.toLowerCase(); if (k === this.bindConfig.left) this.keys.left = false; if (k === this.bindConfig.right) this.keys.right = false; this.updateAxis(); }
-    updateAxis() { if (this.keys.left && this.keys.right) this.axisX = 0; else if (this.keys.left) this.axisX = -1; else if (this.keys.right) this.axisX = 1; else this.axisX = 0; }
-    touch(e) { e.preventDefault(); if (e.touches.length > 0) this.touchTarget = e.touches[0].clientX - e.target.getBoundingClientRect().left; }
-}
-
-// ============================================================================
-// PARTICLES
-// ============================================================================
-class ParticleSystem {
-    constructor() { this.p = []; this.t = []; }
-    burst(x, y, color, count) { if(Save.settings.particles==='off')return; let mult = Save.settings.particles==='low'?0.5:1; for(let i=0; i<count*mult; i++) this.p.push({ x:x, y:y, vx:MathUtils.rand(-300,300), vy:MathUtils.rand(-400,50), l:1, d:MathUtils.rand(0.8,2), c:color, s:MathUtils.rand(2,6) }); }
-    text(x, y, txt, color) { this.t.push({ x:x, y:y, t:txt, c:color, l:1.5, vy:-80 }); }
-    update(dt) {
-        for(let i=this.p.length-1; i>=0; i--) { let p=this.p[i]; p.vy+=CONFIG.physics.gravity*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.l-=p.d*dt; if(p.l<=0)this.p.splice(i,1); }
-        for(let i=this.t.length-1; i>=0; i--) { let t=this.t[i]; t.y+=t.vy*dt; t.l-=dt; if(t.l<=0)this.t.splice(i,1); }
-    }
-    draw(ctx) {
-        this.p.forEach(p=>{ ctx.globalAlpha=Math.max(0,p.l); ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,p.s,0,Math.PI*2); ctx.fill(); });
-        this.t.forEach(t=>{ ctx.globalAlpha=Math.max(0,Math.min(1,t.l*2)); ctx.fillStyle=t.c; ctx.font="900 24px Montserrat"; ctx.textAlign="center"; ctx.shadowColor='#000'; ctx.shadowBlur=6; let sc=1; let pr=1.5-t.l; if(pr<0.2)sc=MathUtils.easeOut(pr*5); ctx.save(); ctx.translate(t.x,t.y); ctx.scale(sc,sc); ctx.fillText(t.t,0,0); ctx.restore(); ctx.shadowBlur=0; });
-        ctx.globalAlpha=1;
-    }
-}
-
-// ============================================================================
-// GAME ENTITIES
-// ============================================================================
-class Basket {
-    constructor(game) {
-        this.game = game; this.w = 110; this.h = 30; this.x = game.width/2 - this.w/2; this.y = game.height - this.h - 80; this.vx = 0;
-        this.sx = 1; this.sy = 1; this.color = CONFIG.shop.find(s=>s.id===Save.equipped.skin)?.color || '#f5b700'; this.hasShield = false;
-    }
-    pulse(good) { this.sx = good ? 1.2 : 0.8; this.sy = good ? 0.6 : 1.3; }
-    update(dt) {
-        let p = CONFIG.physics;
-        if(this.game.input.touchTarget!==null) { this.x += (this.game.input.touchTarget - this.w/2 - this.x) * p.touchFollowSpeed * dt; this.vx=0; }
-        else { this.vx += this.game.input.axisX * p.basketSpeed * dt; this.vx *= p.basketFriction; this.vx = MathUtils.clamp(this.vx, -p.basketMaxSpeed, p.basketMaxSpeed); this.x += this.vx * dt; }
-        if(this.x<0){this.x=0;this.vx=0;} if(this.x+this.w>this.game.width){this.x=this.game.width-this.w;this.vx=0;}
-        this.sx += (1 - this.sx) * 15 * dt; this.sy += (1 - this.sy) * 15 * dt;
-        this.y = (this.game.height - 80) - (this.h * this.sy);
-    }
-    draw(ctx) {
-        ctx.save(); ctx.shadowColor = this.hasShield ? 'var(--power-blue)' : this.color; ctx.shadowBlur = this.hasShield ? 40 : 25; ctx.fillStyle = this.color;
-        let dw = this.w * this.sx; let dh = this.h * this.sy; let dx = this.x + (this.w - dw)/2;
-        ctx.beginPath(); ctx.roundRect(dx, this.y, dw, dh, 10); ctx.fill();
-        ctx.shadowBlur=0; ctx.fillStyle='#1e1a13'; ctx.beginPath(); ctx.roundRect(dx+5, this.y+4, dw-10, dh-12, 5); ctx.fill();
-        if(this.hasShield) { ctx.strokeStyle = 'var(--power-blue)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.roundRect(dx-5, this.y-5, dw+10, dh+10, 15); ctx.stroke(); }
-        ctx.restore();
-    }
-}
-
-class FallingItem {
-    constructor(game) {
-        this.game = game; this.w = 130; this.h = 42; this.x = MathUtils.rand(10, game.width - this.w - 10); this.y = -this.h - 10;
-        
-        let roll = Math.random();
-        if(roll < CONFIG.rules.powerupChance) { this.type = 'power'; this.data = CONFIG.items.powers[Math.floor(Math.random() * CONFIG.items.powers.length)]; }
-        else if(roll < 0.35 + CONFIG.rules.powerupChance) { this.type = 'bad'; this.data = CONFIG.items.bad[Math.floor(Math.random() * CONFIG.items.bad.length)]; }
-        else { this.type = 'good'; this.data = CONFIG.items.good[Math.floor(Math.random() * CONFIG.items.good.length)]; }
-        
-        this.isFoil = this.type === 'good' && Math.random() < CONFIG.rules.foilChance; this.hue = 0;
-        let p = CONFIG.physics; let tr = MathUtils.clamp(this.game.time / p.difficultyCapTime, 0, 1);
-        this.vy = MathUtils.rand(p.itemSpeedMin, p.itemSpeedMax) * (1 + (tr * 1.5));
-        this.rot = MathUtils.rand(-0.1, 0.1); this.dead = false;
-    }
-    update(dt) {
-        if(this.game.activePower === 'time') dt *= 0.4; // Time warp logic
-        if(this.game.activePower === 'magnet' && (this.type==='good' || this.isFoil || this.type==='power')) {
-            let cx = this.x + this.w/2; let bx = this.game.basket.x + this.game.basket.w/2;
-            if(Math.abs(cx - bx) < 200) this.x += (bx - cx) * 3 * dt; // Pull toward basket
-        }
-        this.y += this.vy * dt; if(this.isFoil) this.hue = (this.hue + 300*dt)%360; if(this.y > this.game.height + 20) this.dead = true;
-    }
-    draw(ctx) {
-        ctx.save(); ctx.translate(this.x + this.w/2, this.y + this.h/2); ctx.rotate(this.rot);
-        if(this.type === 'power') { ctx.shadowColor = this.data.color; ctx.shadowBlur = 20; ctx.fillStyle = '#111'; ctx.strokeStyle = this.data.color; }
-        else if(this.isFoil) { ctx.shadowColor = `hsl(${this.hue}, 100%, 50%)`; ctx.shadowBlur = 20; ctx.fillStyle = '#fff'; ctx.strokeStyle = `hsl(${this.hue}, 100%, 50%)`; }
-        else { ctx.shadowColor = this.type==='good' ? '#f5b700' : '#cc0000'; ctx.shadowBlur = 15; ctx.fillStyle = this.type==='good' ? '#fdfbf7' : '#1e1414'; ctx.strokeStyle = this.type==='good' ? '#d96c06' : '#8b0000'; }
-        ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(-this.w/2, -this.h/2, this.w, this.h, 21); ctx.fill(); ctx.shadowBlur=0; ctx.stroke();
-        ctx.fillStyle = (this.type==='good' && !this.isFoil) ? '#000' : '#fff'; ctx.font = "bold 14px Montserrat"; ctx.textAlign="center"; ctx.textBaseline="middle"; 
-        ctx.fillText(this.isFoil ? `✨ ${this.data.t}` : `${this.data.e} ${this.data.t}`, 0, 1); ctx.restore();
-    }
-}
-
-// ============================================================================
-// UIManager
-// ============================================================================
-class UIManager {
-    constructor() {
-        this.els = {
-            scrStart: document.getElementById('startScreen'), scrEnd: document.getElementById('endScreen'), scrShop: document.getElementById('shopScreen'), scrSet: document.getElementById('settingsScreen'), scrLB: document.getElementById('leaderboardScreen'),
-            hud: document.getElementById('hud'), score: document.getElementById('scoreVal'), streak: document.getElementById('streakVal'), lives: document.getElementById('livesVal'), coins: document.getElementById('graceCoinsVal'), menuCoins: document.getElementById('menuCoins'), shopCoins: document.getElementById('shopCoins'),
-            pInput: document.getElementById('playerNameInput'), sBlock: document.getElementById('submitScoreBlock'), sMsg: document.getElementById('scoreSavedMsg'), sBtn: document.getElementById('submitScoreBtn'), 
-            fScore: document.getElementById('finalScore'), earned: document.getElementById('earnedCoins'), chText: document.getElementById('challengeText'), lbList: document.getElementById('leaderboardList'), shopGrid: document.getElementById('shopSkinsGrid'),
-            volM: document.getElementById('volMaster'), volS: document.getElementById('volSfx'), partSel: document.getElementById('settingParticles'),
-            kL: document.getElementById('bindLeft'), kR: document.getElementById('bindRight'), kP: document.getElementById('bindPause'), btnRes: document.getElementById('btnResume'), activeP: document.getElementById('activePowerup')
-        };
-        this.activeScreen = this.els.scrStart; this.bindEvents(); this.updateCurrency(); this.buildShop(); this.syncSettings();
-        Events.on('currency_updated', () => { this.updateCurrency(); this.buildShop(); });
-        Events.on('achievement_unlocked', ach => this.showToast(ach));
-        Events.on('keybind_end', data => { if(data.id==='left') this.els.kL.innerText=data.key.toUpperCase(); if(data.id==='right') this.els.kR.innerText=data.key.toUpperCase(); if(data.id==='pause') this.els.kP.innerText=data.key.toUpperCase(); this.els.kL.classList.remove('listening'); this.els.kR.classList.remove('listening'); this.els.kP.classList.remove('listening'); });
-    }
-    bindEvents() {
-        document.getElementById('btnOpenShop').addEventListener('click', ()=>this.nav(this.els.scrShop)); document.getElementById('btnCloseShop').addEventListener('click', ()=>this.nav(this.els.scrStart));
-        document.getElementById('btnOpenSettings').addEventListener('click', ()=>{ this.els.btnRes.style.display='none'; this.nav(this.els.scrSet); }); document.getElementById('btnCloseSettings').addEventListener('click', ()=>{ Save.save(); Audio.updateVolumes(); this.nav(this.els.scrStart); });
-        document.getElementById('btnPauseHUD').addEventListener('click', ()=>{ Events.emit('req_pause'); }); this.els.btnRes.addEventListener('click', ()=>{ Events.emit('req_resume'); this.nav(null); this.hud(true); });
-        this.els.volM.addEventListener('input', e => Save.settings.volMaster = e.target.value); this.els.volS.addEventListener('input', e => Save.settings.volSfx = e.target.value); this.els.partSel.addEventListener('change', e => Save.settings.particles = e.target.value);
-        this.els.kL.addEventListener('click', ()=>{ this.els.kL.classList.add('listening'); Events.emit('keybind_start', 'left'); }); this.els.kR.addEventListener('click', ()=>{ this.els.kR.classList.add('listening'); Events.emit('keybind_start', 'right'); }); this.els.kP.addEventListener('click', ()=>{ this.els.kP.classList.add('listening'); Events.emit('keybind_start', 'pause'); });
-    }
-    syncSettings() { this.els.volM.value = Save.settings.volMaster; this.els.volS.value = Save.settings.volSfx; this.els.partSel.value = Save.settings.particles; this.els.kL.innerText = Save.settings.keys.left.toUpperCase(); this.els.kR.innerText = Save.settings.keys.right.toUpperCase(); this.els.kP.innerText = Save.settings.keys.pause.toUpperCase(); }
-    nav(screen) { if(this.activeScreen) this.activeScreen.classList.remove('active'); if(screen) { screen.classList.add('active'); this.activeScreen = screen; } else this.activeScreen = null; }
-    hud(vis) { if(vis) this.els.hud.classList.add('active'); else this.els.hud.classList.remove('active'); }
-    updateCurrency() { this.els.coins.innerText = Save.currency; this.els.menuCoins.innerText = Save.currency; this.els.shopCoins.innerText = Save.currency; }
-    buildShop() {
-        this.els.shopGrid.innerHTML = '';
-        CONFIG.shop.forEach(item => {
-            const owned = Save.hasItem(item.id); const eq = Save.equipped.skin === item.id;
-            const div = document.createElement('div'); div.className = `shop-item ${owned?'owned':''} ${eq?'equipped':''}`;
-            div.innerHTML = `<div class="shop-preview" style="background:${item.color}"></div><div class="shop-name">${item.name}</div><div class="shop-price">${owned ? (eq?'EQUIPPED':'OWNED') : `🪙 ${item.price}`}</div>`;
-            div.onclick = () => { if(!owned) { if(Save.buyItem(item)){ Save.unlockAchievement('shopper'); Audio.powerup(); } else { Audio.bad(); } } else if(!eq) { Save.equip(item.id); this.buildShop(); } };
-            this.els.shopGrid.appendChild(div);
-        });
-    }
-    showToast(ach) {
-        const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast';
-        t.innerHTML = `<div class="toast-icon">🏆</div><div class="toast-content"><div class="toast-title">Achievement Unlocked</div><div class="toast-desc">${ach.title}</div></div>`;
-        c.appendChild(t); setTimeout(() => t.remove(), 4000);
-    }
-    pauseMenu() { this.hud(false); this.els.btnRes.style.display='inline-block'; this.nav(this.els.scrSet); }
-}
-
-// ============================================================================
-// MAIN GAME LOOP
-// ============================================================================
-class Game {
-    constructor() {
-        this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d');
-        this.input = new InputManager(this.canvas); this.ui = new UIManager();
-        this.state = 'MENU'; this.lastTime = 0; this.time = 0; this.score = 0; this.streak = 0; this.lives = 0; this.currencyEarned = 0;
-        this.shake = 0; this.spawnT = 0; this.items = []; this.particles = new ParticleSystem();
-        this.activePower = null; this.powerTimer = 0;
-        
-        window.addEventListener('resize', ()=>this.resize()); this.resize();
-        
-        document.getElementById('startBtn').addEventListener('click', ()=>this.start()); document.getElementById('playAgainBtn').addEventListener('click', ()=>this.start()); document.getElementById('btnEndToMenu').addEventListener('click', ()=>{ this.ui.nav(this.ui.els.scrStart); this.ui.updateCurrency(); });
-        document.getElementById('submitScoreBtn').addEventListener('click', ()=>this.submitScore()); document.getElementById('lbStartBtn').addEventListener('click', ()=>this.showLB(this.ui.els.scrStart)); document.getElementById('lbEndBtn').addEventListener('click', ()=>this.showLB(this.ui.els.scrEnd)); document.getElementById('lbCloseBtn').addEventListener('click', ()=>this.ui.nav(this.lbPrev));
-        
-        Events.on('req_pause', ()=> { if(this.state==='PLAYING') { this.state='PAUSED'; this.ui.pauseMenu(); } });
-        Events.on('req_resume', ()=> { if(this.state==='PAUSED') { this.state='PLAYING'; this.lastTime = performance.now(); } });
-        
-        requestAnimationFrame(t=>this.loop(t));
-    }
-    resize() { const dpr = window.devicePixelRatio||1; const r = document.getElementById('game-wrapper').getBoundingClientRect(); this.width=r.width; this.height=r.height; this.canvas.width=this.width*dpr; this.canvas.height=this.height*dpr; this.ctx.scale(dpr,dpr); if(this.basket) this.basket.y = this.height - this.basket.h - 80; }
-    start() {
-        Audio.init(); this.state = 'PLAYING'; this.time = 0; this.score = 0; this.streak = 0; this.lives = CONFIG.rules.maxLives; this.currencyEarned = 0; this.spawnT = 0; this.items = []; this.particles = new ParticleSystem(); this.activePower = null; this.powerTimer = 0;
-        this.basket = new Basket(this); this.ui.nav(null); this.ui.hud(true); this.updateHUD(); Save.unlockAchievement('first_game');
-    }
-    end() {
-        this.state = 'END'; const isNew = this.score > Save.highScore; if(isNew) { Save.highScore = this.score; Save.save(); }
-        Save.addCurrency(this.currencyEarned); if(this.score >= 500) Save.unlockAchievement('high_roller'); if(this.time >= 60) Save.unlockAchievement('survivor');
-        this.ui.hud(false); this.ui.els.earned.innerText = this.currencyEarned; this.ui.setupEndScreen(this.score, Save.highScore, isNew, CONFIG.challenges[Math.floor(Math.random()*CONFIG.challenges.length)]); this.ui.nav(this.ui.els.scrEnd);
-    }
-    activatePower(id) {
-        Audio.powerup(); this.particles.text(this.width/2, this.height/2, "POWER UP!", 'var(--power-blue)');
-        if(id==='shield') { this.basket.hasShield = true; this.ui.els.activeP.innerText = "SHIELD ACTIVE"; }
-        else { this.activePower = id; this.powerTimer = 5.0; this.ui.els.activeP.innerText = id.toUpperCase() + " ACTIVE"; }
-    }
-    updateHUD() { this.ui.els.score.innerText = this.score; this.ui.els.streak.innerText = `STREAK: ${this.streak}`; this.ui.els.lives.innerText = '❤️'.repeat(Math.max(0,this.lives))||'💀'; if(this.streak>=CONFIG.rules.streakReq) this.ui.els.streak.classList.add('high'); else this.ui.els.streak.classList.remove('high'); }
-    async submitScore() { const n = this.ui.els.pInput.value.trim(); if(!n) return alert("Enter name!"); const b = this.ui.els.sBtn; b.innerText="SAVING..."; b.disabled=true; try { await addDoc(collection(db,"scores"),{name:n,score:this.score,timestamp:serverTimestamp()}); this.ui.els.sBlock.style.display='none'; this.ui.els.sMsg.style.display='block'; } catch(e) { alert("Network error."); } b.innerText="SUBMIT"; b.disabled=false; }
-    async showLB(prev) { this.lbPrev = prev; this.ui.nav(this.ui.els.scrLB); this.ui.els.lbList.innerHTML="<div class='status-msg'>Loading...</div>"; try { const q=query(collection(db,"scores"),orderBy("score","desc"),limit(10)); const s=await getDocs(q); let arr=[]; s.forEach(d=>arr.push(d.data())); this.ui.renderLeaderboard(arr); } catch(e) { this.ui.renderLeaderboard([],"Database Error"); } }
-    
-    update(dt) {
-        if(this.state !== 'PLAYING') return; this.time += dt; if(this.shake>0) this.shake-=dt;
-        
-        // Powerup Timers
-        if(this.activePower) { this.powerTimer -= dt; if(this.powerTimer <= 0) { this.activePower = null; this.ui.els.activeP.innerText = ""; } }
-        if(!this.basket.hasShield && !this.activePower) this.ui.els.activeP.innerText = "";
-
-        this.basket.update(dt); this.particles.update(dt); this.spawnT += dt;
-        let pr = MathUtils.clamp(this.time/CONFIG.physics.difficultyCapTime, 0, 1); let intv = Math.max(0.3, 1.0 - (pr * 0.7));
-        if(this.spawnT > intv) { this.items.push(new FallingItem(this)); this.spawnT = 0; }
-        
-        for(let i=this.items.length-1; i>=0; i--) {
-            let t = this.items[i]; t.update(dt);
-            if(t.x < this.basket.x+this.basket.w-12 && t.x+t.w > this.basket.x+12 && t.y+t.h > this.basket.y+12 && t.y < this.basket.y+this.basket.h) {
-                if(t.type === 'power') { this.activatePower(t.data.id); }
-                else if(t.type === 'good') {
-                    if(t.isFoil) { Haptics.power(); Audio.playLevelUp(); this.score+=CONFIG.rules.ptsFoil; this.currencyEarned+=5; this.particles.text(t.x+t.w/2, t.y, "FOIL! +5 COINS", '#00e5ff'); }
-                    else { Haptics.good(); this.streak++; let b = this.streak>2?CONFIG.rules.streakBonus:0; if(this.streak===3) Audio.playLevelUp(); else Audio.good(); this.score+=CONFIG.rules.ptsGood+b; this.currencyEarned+=1; this.particles.text(t.x+t.w/2, t.y, `+${CONFIG.rules.ptsGood+b}`, '#f5b700'); }
-                    this.basket.pulse(true); this.particles.burst(t.x+t.w/2, t.y+t.h, t.isFoil?'#00e5ff':'#f5b700', 20);
-                } else {
-                    if(this.basket.hasShield) { this.basket.hasShield=false; this.particles.text(t.x+t.w/2, t.y, "SHIELD BROKEN", 'var(--power-blue)'); Audio.bad(); }
-                    else { Haptics.bad(); this.streak=0; this.lives--; Audio.bad(); this.shake=0.35; this.basket.pulse(false); this.particles.burst(t.x+t.w/2, t.y+t.h, '#cc0000', 30); this.particles.text(t.x+t.w/2, t.y, "-1 LIFE", '#cc0000'); if(this.lives<=0) { this.updateHUD(); setTimeout(()=>this.end(), 250); } }
-                }
-                this.updateHUD(); this.ui.els.coins.innerText = Save.currency + this.currencyEarned; t.dead=true;
-            }
-            if(t.dead) this.items.splice(i,1);
-        }
-    }
-    
-    draw() {
-        this.ctx.clearRect(0,0,this.width,this.height); this.ctx.save();
-        if(this.shake>0) { let ins=this.shake*25; this.ctx.translate(MathUtils.rand(-ins,ins),MathUtils.rand(-ins,ins)); }
-        
-        // Background Effects (Stars/Sparks)
-        if(Save.settings.particles !== 'off') { this.ctx.fillStyle='#f5b700'; this.ctx.globalAlpha=0.2; for(let i=0; i<20; i++) { this.ctx.beginPath(); this.ctx.arc((this.time*10+i*50)%this.width, (this.time*20+i*70)%this.height, 2, 0, Math.PI*2); this.ctx.fill(); } this.ctx.globalAlpha=1; }
-        
-        if(this.state==='PLAYING' || this.state==='PAUSED') { this.basket.draw(this.ctx); this.items.forEach(i=>i.draw(this.ctx)); this.particles.draw(this.ctx); }
-        if(this.state==='PAUSED') { this.ctx.fillStyle='rgba(0,0,0,0.5)'; this.ctx.fillRect(0,0,this.width,this.height); this.ctx.fillStyle='#fff'; this.ctx.font='900 40px Montserrat'; this.ctx.textAlign='center'; this.ctx.fillText("PAUSED", this.width/2, this.height/2); }
-        this.ctx.restore();
-    }
-    loop(ts) { let dt = (ts-this.lastTime)/1000; if(dt>0.1)dt=0.1; this.lastTime=ts; this.update(dt); this.draw(); requestAnimationFrame(t=>this.loop(t)); }
-}
-document.addEventListener("DOMContentLoaded", () => { new Game(); });
-</script>
-    <script type="module">
-/**
- * ============================================================================
- * BLESSING BASKET: GLOBAL CORE ENGINE (PART 1)
- * ============================================================================
- * Developed for The Foundery Church.
- * Architecture: Event-Driven Pub/Sub with State Machine.
- */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-// --- DATABASE INITIALIZATION ---
-const firebaseConfig = {
-    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
-    authDomain: "blessing-basket.firebaseapp.com",
-    projectId: "blessing-basket",
-    storageBucket: "blessing-basket.firebasestorage.app",
-    messagingSenderId: "558241052507",
-    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
-    measurementId: "G-8495PL9SH8"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/**
- * ============================================================================
- * 1. GLOBAL EVENT BUS
- * ============================================================================
- * Allows different systems (Audio, UI, Physics) to communicate without
- * direct dependencies, preventing the game from freezing.
- */
-class EventBus {
-    constructor() {
-        this.events = {};
-    }
-
-    /** Subscribe to an event */
-    on(event, listener) {
-        if (!this.events[event]) this.events[event] = [];
-        this.events[event].push(listener);
-    }
-
-    /** Broadcast an event */
-    emit(event, data) {
-        if (!this.events[event]) return;
-        this.events[event].forEach(listener => listener(data));
-    }
-}
-
-const Events = new EventBus();
-
-/**
- * ============================================================================
- * 2. GAME SETTINGS & META DATA
- * ============================================================================
- */
-const CONFIG = {
-    physics: {
-        gravity: 650,
-        basketSpeed: 1900,
-        basketFriction: 0.82,
-        basketMaxSpeed: 950,
-        touchLerp: 20,
-        baseFallSpeedMin: 220,
-        baseFallSpeedMax: 380,
-        difficultyCapTime: 100 // Seconds until max speed is reached
-    },
-    gameplay: {
-        maxLives: 3,
-        basePoints: 10,
-        foilMultiplier: 5,
-        streakThreshold: 3,
-        streakBonus: 5,
-        foilChance: 0.05,
-        powerupChance: 0.04
-    },
-    shop: [
-        { id: 'skin_classic', name: 'Classic Gold', type: 'skin', price: 0, color: '#f5b700' },
-        { id: 'skin_forged', name: 'Forged Steel', type: 'skin', price: 750, color: '#788594' },
-        { id: 'skin_neon', name: 'Neon Pulse', type: 'skin', price: 1500, color: '#00e5ff' },
-        { id: 'skin_royal', name: 'Royal Grace', type: 'skin', price: 3000, color: '#b300ff' },
-        { id: 'skin_magma', name: 'The Forge', type: 'skin', price: 5000, color: '#ff4e00' }
-    ],
-    items: {
-        good: [
-            { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' },
-            { t: 'Groceries', e: '🥖' }, { t: 'Encouragement', e: '💬' }, { t: 'Grace', e: '✨' },
-            { t: 'Forgiveness', e: '🕊️' }, { t: 'Jeep Ride', e: '🚙' }, { t: 'Love', e: '❤️' }
-        ],
-        bad: [
-            { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' },
-            { t: 'Negativity', e: '🌧️' }, { t: 'Pride', e: '🦚' }, { t: 'Anger', e: '😡' }
-        ],
-        powers: [
-            { id: 'shield', t: 'Shield', e: '🛡️', color: '#00e5ff', desc: 'Blocks one hit' },
-            { id: 'magnet', t: 'Magnet', e: '🧲', color: '#b300ff', desc: 'Pulls blessings' },
-            { id: 'time', t: 'Time Warp', e: '⏳', color: '#f5b700', desc: 'Slows falling' }
-        ]
-    },
-    achievements: [
-        { id: 'first_mission', title: 'Mission Start', desc: 'Complete your first match.', reward: 100 },
-        { id: 'blessed_streak', title: 'Consistent Grace', desc: 'Reach a 10x streak.', reward: 250 },
-        { id: 'high_score_500', title: 'Pillar of Light', desc: 'Score 500 points.', reward: 500 },
-        { id: 'collector', title: 'Gear Up', desc: 'Buy your first shop item.', reward: 0 },
-        { id: 'survivor_90', title: 'Unyielding', desc: 'Survive for 90 seconds.', reward: 1000 }
-    ],
-    challenges: [
-        "Text someone you haven't checked on in a while.",
-        "Pray for a first responder, veteran, or teacher today.",
-        "Bring someone a coffee, snack, or small encouragement.",
-        "Invite someone to church or a Good Company event.",
-        "Donate something useful to Kenny's Kloset this week.",
-        "Write a handwritten note of thanks to a neighbor."
-    ]
-};
-
-/**
- * ============================================================================
- * 3. SAVE & PROGRESSION SYSTEM
- * ============================================================================
- */
 class SaveSystem {
     constructor() {
-        this.data = {
-            highScore: 0,
-            currency: 0,
-            inventory: ['skin_classic'],
-            equippedSkin: 'skin_classic',
-            achievements: [],
-            settings: {
-                volMaster: 50,
-                volSfx: 100,
-                particles: 'high',
-                keyLeft: 'a',
-                keyRight: 'd',
-                keyPause: 'escape'
-            }
-        };
-        this.load();
+        this.data = JSON.parse(localStorage.getItem('bb_save')) || { currency: 0, inventory: ['skin_classic'], skin: 'skin_classic', highScore: 0 };
     }
-
-    load() {
-        const saved = localStorage.getItem('blessing_basket_pro_save');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                this.data = { ...this.data, ...parsed };
-            } catch (e) { console.error("Save corrupted, resetting."); }
-        }
-    }
-
-    save() {
-        localStorage.setItem('blessing_basket_pro_save', JSON.stringify(this.data));
-    }
-
-    addCurrency(amt) {
-        this.data.currency += amt;
-        this.save();
-        Events.emit('ui_update_currency', this.data.currency);
-    }
-
-    unlockAchievement(id) {
-        if (!this.data.achievements.includes(id)) {
-            const ach = CONFIG.achievements.find(a => a.id === id);
-            this.data.achievements.push(id);
-            if (ach && ach.reward > 0) this.addCurrency(ach.reward);
-            this.save();
-            Events.emit('toast_achievement', ach);
-        }
-    }
+    save() { localStorage.setItem('bb_save', JSON.stringify(this.data)); }
 }
-
 const Save = new SaveSystem();
 
-/**
- * ============================================================================
- * 4. AUDIO ENGINE (WEB AUDIO API)
- * ============================================================================
- */
 class AudioEngine {
     constructor() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.masterNode = this.ctx.createGain();
-        this.sfxNode = this.ctx.createGain();
-        this.sfxNode.connect(this.masterNode);
-        this.masterNode.connect(this.ctx.destination);
-        this.updateVolumes();
+        this.master = this.ctx.createGain(); this.master.connect(this.ctx.destination);
     }
-
-    init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
-
-    updateVolumes() {
-        this.masterNode.gain.value = Save.data.settings.volMaster / 100;
-        this.sfxNode.gain.value = Save.data.settings.volSfx / 100;
+    init() { if(this.ctx.state === 'suspended') this.ctx.resume(); }
+    play(f, d=0.2) {
+        const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+        o.frequency.setValueAtTime(f, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
+        o.connect(g); g.connect(this.master); o.start(); o.stop(this.ctx.currentTime + d);
     }
-
-    play(freq, type = 'sine', dur = 0.2, vol = 0.2) {
-        if (this.ctx.state === 'suspended') return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-        osc.connect(gain); gain.connect(this.sfxNode);
-        osc.start(); osc.stop(this.ctx.currentTime + dur);
-    }
-
-    good() { this.play(523.25, 'sine', 0.2, 0.3); setTimeout(() => this.play(659.25, 'sine', 0.3, 0.2), 60); }
-    bad() { this.play(110, 'sawtooth', 0.5, 0.4); }
-    powerup() { [440, 554, 659, 880].forEach((f, i) => setTimeout(() => this.play(f, 'triangle', 0.4, 0.2), i * 100)); }
-    click() { this.play(800, 'sine', 0.05, 0.1); }
 }
-
 const Audio = new AudioEngine();
 
-// --- END PART 1 ---
-// (Let the user know we are waiting for Part 2)
-<script type="module">
-/**
- * ============================================================================
- * BLESSING BASKET: GLOBAL CORE ENGINE (PART 2)
- * ============================================================================
- * Physics, Shop Logic, and the Master Game Loop.
- */
-
-// --- 5. VISUAL & PARTICLE SYSTEMS ---
-class ParticleSystem {
-    constructor() { this.p = []; this.t = []; }
-    
-    burst(x, y, color, count = 15) {
-        if (Save.data.settings.particles === 'off') return;
-        const mult = Save.data.settings.particles === 'low' ? 0.5 : 1;
-        for (let i = 0; i < count * mult; i++) {
-            this.p.push({
-                x, y,
-                vx: (Math.random() - 0.5) * 350,
-                vy: (Math.random() - 0.5) * 350 - 100,
-                life: 1, decay: Math.random() * 1.5 + 0.5,
-                color, size: Math.random() * 4 + 2
-            });
-        }
-    }
-
-    text(x, y, txt, color) {
-        this.t.push({ x, y, txt, color, life: 1.5, vy: -70 });
-    }
-
-    update(dt) {
-        for (let i = this.p.length - 1; i >= 0; i--) {
-            let p = this.p[i]; p.vy += CONFIG.physics.gravity * dt;
-            p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt;
-            if (p.life <= 0) this.p.splice(i, 1);
-        }
-        for (let i = this.t.length - 1; i >= 0; i--) {
-            let t = this.t[i]; t.y += t.vy * dt; t.life -= dt;
-            if (t.life <= 0) this.t.splice(i, 1);
-        }
-    }
-
-    draw(ctx) {
-        this.p.forEach(p => {
-            ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
-        });
-        this.t.forEach(t => {
-            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color;
-            ctx.font = "900 22px Montserrat"; ctx.textAlign = "center";
-            ctx.shadowColor = '#000'; ctx.shadowBlur = 5; ctx.fillText(t.txt, t.x, t.y);
-        });
-        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-    }
-}
-
-// --- 6. GAME ENTITIES ---
-class Basket {
-    constructor(game) {
-        this.game = game; this.w = 110; this.h = 30;
-        this.x = game.width / 2 - this.w / 2; this.y = game.height - this.h - 80;
-        this.vx = 0; this.sx = 1; this.sy = 1;
-        this.shield = false;
-        this.color = CONFIG.shop.find(s => s.id === Save.data.equippedSkin)?.color || '#f5b700';
-    }
-
-    update(dt) {
-        const p = CONFIG.physics;
-        if (this.game.input.touchTarget !== null) {
-            this.x += (this.game.input.touchTarget - this.w / 2 - this.x) * p.touchLerp * dt;
-        } else {
-            this.vx += this.game.input.axisX * p.basketSpeed * dt;
-            this.vx *= p.basketFriction;
-            this.vx = Math.min(Math.max(this.vx, -p.basketMaxSpeed), p.basketMaxSpeed);
-            this.x += this.vx * dt;
-        }
-        if (this.x < 0) this.x = 0; if (this.x + this.w > this.game.width) this.x = this.game.width - this.w;
-        this.sx += (1 - this.sx) * 12 * dt; this.sy += (1 - this.sy) * 12 * dt;
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.shadowColor = this.shield ? '#00e5ff' : this.color;
-        ctx.shadowBlur = this.shield ? 35 : 20;
-        ctx.fillStyle = this.color;
-        const dw = this.w * this.sx; const dh = this.h * this.sy;
-        const dx = this.x + (this.w - dw) / 2;
-        ctx.beginPath(); ctx.roundRect(dx, this.y, dw, dh, 10); ctx.fill();
-        if (this.shield) {
-            ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.roundRect(dx - 5, this.y - 5, dw + 10, dh + 10, 15); ctx.stroke();
-        }
-        ctx.restore();
-    }
-}
-
-class Item {
-    constructor(game) {
-        this.game = game; this.w = 130; this.h = 42;
-        this.x = Math.random() * (game.width - this.w - 20) + 10; this.y = -this.h - 10;
-        this.dead = false;
-        
-        const roll = Math.random();
-        if (roll < CONFIG.gameplay.powerupChance) {
-            this.type = 'power'; this.data = CONFIG.items.powers[Math.floor(Math.random() * CONFIG.items.powers.length)];
-        } else if (roll < 0.38) {
-            this.type = 'bad'; this.data = CONFIG.items.bad[Math.floor(Math.random() * CONFIG.items.bad.length)];
-        } else {
-            this.type = 'good'; this.data = CONFIG.items.good[Math.floor(Math.random() * CONFIG.items.good.length)];
-        }
-        
-        this.foil = (this.type === 'good' && Math.random() < CONFIG.gameplay.foilChance);
-        const progress = Math.min(1, this.game.survivalTime / CONFIG.physics.difficultyCapTime);
-        this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.6);
-        if (this.game.activePower === 'time') this.vy *= 0.5;
-    }
-
-    update(dt) {
-        if (this.game.activePower === 'magnet' && (this.type === 'good' || this.type === 'power')) {
-            this.x += (this.game.basket.x + this.game.basket.w/2 - (this.x + this.w/2)) * 3 * dt;
-        }
-        this.y += this.vy * dt;
-        if (this.y > this.game.height + 50) this.dead = true;
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.shadowBlur = 15;
-        if (this.type === 'power') {
-            ctx.shadowColor = this.data.color; ctx.fillStyle = '#111'; ctx.strokeStyle = this.data.color;
-        } else if (this.foil) {
-            ctx.shadowColor = '#00e5ff'; ctx.fillStyle = '#fff'; ctx.strokeStyle = '#00e5ff';
-        } else {
-            ctx.shadowColor = this.type === 'good' ? '#f5b700' : '#cc0000';
-            ctx.fillStyle = this.type === 'good' ? '#fdfbf7' : '#1e1414';
-            ctx.strokeStyle = this.type === 'good' ? '#d96c06' : '#8b0000';
-        }
-        ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.w, this.h, 21); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = (this.type === 'good' && !this.foil) ? '#000' : '#fff';
-        ctx.font = "bold 14px Montserrat"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(`${this.foil ? '✨' : this.data.e} ${this.data.t}`, this.x + this.w / 2, this.y + this.h / 2);
-        ctx.restore();
-    }
-}
-
-// --- 7. UI CONTROLLER ---
-class UIManager {
-    constructor() {
-        this.cacheEls();
-        this.bindEvents();
-        this.updateCurrency(Save.data.currency);
-        this.renderShop();
-    }
-
-    cacheEls() {
-        this.hud = document.getElementById('hud');
-        this.screens = {
-            menu: document.getElementById('startScreen'), shop: document.getElementById('shopScreen'),
-            set: document.getElementById('settingsScreen'), end: document.getElementById('endScreen'),
-            lb: document.getElementById('leaderboardScreen')
-        };
-        this.vals = {
-            score: document.getElementById('scoreVal'), coins: document.getElementById('graceCoinsVal'),
-            lives: document.getElementById('livesVal'), streak: document.getElementById('streakVal'),
-            menuCoins: document.getElementById('menuCoins'), shopCoins: document.getElementById('shopCoins'),
-            earned: document.getElementById('earnedCoins'), fScore: document.getElementById('finalScore'),
-            ch: document.getElementById('challengeText'), activeP: document.getElementById('activePowerup')
-        };
-    }
-
-    bindEvents() {
-        document.getElementById('startBtn').onclick = () => Events.emit('req_start');
-        document.getElementById('btnOpenShop').onclick = () => this.show('shop');
-        document.getElementById('btnCloseShop').onclick = () => this.show('menu');
-        document.getElementById('btnOpenSettings').onclick = () => {
-            document.getElementById('btnResume').style.display = 'none';
-            this.show('set');
-        };
-        document.getElementById('btnCloseSettings').onclick = () => { Save.save(); Audio.updateVolumes(); this.show('menu'); };
-        document.getElementById('btnPauseHUD').onclick = () => Events.emit('req_pause');
-        document.getElementById('btnResume').onclick = () => Events.emit('req_resume');
-        document.getElementById('playAgainBtn').onclick = () => Events.emit('req_start');
-        document.getElementById('btnEndToMenu').onclick = () => this.show('menu');
-        
-        // Settings Listeners
-        document.getElementById('volMaster').oninput = (e) => { Save.data.settings.volMaster = e.target.value; Audio.updateVolumes(); };
-        document.getElementById('volSfx').oninput = (e) => { Save.data.settings.volSfx = e.target.value; Audio.updateVolumes(); };
-        document.getElementById('settingParticles').onchange = (e) => { Save.data.settings.particles = e.target.value; };
-    }
-
-    show(key) {
-        Object.values(this.screens).forEach(s => s.classList.remove('active'));
-        if (this.screens[key]) this.screens[key].classList.add('active');
-        this.hud.classList.toggle('active', key === 'hud');
-    }
-
-    updateHUD(s, c, l, st, p) {
-        this.vals.score.innerText = s; this.vals.coins.innerText = c;
-        this.vals.lives.innerText = '❤️'.repeat(Math.max(0, l)) || '💀';
-        this.vals.streak.innerText = `STREAK: ${st}`;
-        this.vals.streak.className = st >= 3 ? 'streak-box high' : 'streak-box';
-        this.vals.activeP.innerText = p ? p.toUpperCase() + " ACTIVE" : "";
-    }
-
-    updateCurrency(c) { this.vals.menuCoins.innerText = c; this.vals.shopCoins.innerText = c; }
-
-    renderShop() {
-        const grid = document.getElementById('shopSkinsGrid'); grid.innerHTML = '';
-        CONFIG.shop.forEach(item => {
-            const owned = Save.data.inventory.includes(item.id);
-            const equipped = Save.data.equippedSkin === item.id;
-            const el = document.createElement('div');
-            el.className = `shop-item ${equipped ? 'equipped' : ''}`;
-            el.innerHTML = `
-                <div class="shop-preview" style="background:${item.color}"></div>
-                <div class="shop-name">${item.name}</div>
-                <div class="shop-price">${equipped ? 'EQUIPPED' : (owned ? 'OWNED' : '🪙 ' + item.price)}</div>
-            `;
-            el.onclick = () => {
-                if (!owned && Save.data.currency >= item.price) {
-                    Save.data.currency -= item.price; Save.data.inventory.push(item.id);
-                    Save.data.equippedSkin = item.id; Audio.powerup(); Save.save();
-                } else if (owned) { Save.data.equippedSkin = item.id; Save.save(); }
-                this.renderShop(); this.updateCurrency(Save.data.currency);
-            };
-            grid.appendChild(el);
-        });
-    }
-
-    toast(ach) {
-        const con = document.getElementById('toast-container');
-        const t = document.createElement('div'); t.className = 'toast';
-        t.innerHTML = `<div class="toast-icon">🏆</div><div><div class="toast-title">Achievement</div><div class="toast-desc">${ach.title}</div></div>`;
-        con.appendChild(t); setTimeout(() => t.remove(), 4000);
-    }
-}
-
-// --- 8. MASTER GAME ENGINE ---
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d');
-        this.ui = new UIManager(); this.input = new InputManager(this.canvas);
-        this.state = 'MENU'; this.lastTime = 0;
-        this.score = 0; this.lives = 0; this.streak = 0; this.coins = 0;
-        this.survivalTime = 0; this.spawnTimer = 0;
-        this.items = []; this.particles = new ParticleSystem();
-        this.activePower = null; this.powerTimer = 0;
-        
-        window.onresize = () => this.resize(); this.resize();
-        this.initEvents(); requestAnimationFrame(t => this.loop(t));
+        this.state = 'MENU'; this.items = []; this.particles = []; this.lastTime = 0;
+        this.score = 0; this.lives = 0; this.coins = 0; this.survivalTime = 0; this.spawnTimer = 0;
+        this.input = { axis: 0, touch: null };
+        this.setupInput(); this.resize(); this.renderShop(); this.updateUI();
+        window.addEventListener('resize', () => this.resize());
+        requestAnimationFrame(t => this.loop(t));
+
+        document.getElementById('startBtn').onclick = () => this.start();
+        document.getElementById('playAgainBtn').onclick = () => this.start();
+        document.getElementById('btnOpenShop').onclick = () => this.showScreen('shopScreen');
+        document.getElementById('btnCloseShop').onclick = () => this.showScreen('startScreen');
+        document.getElementById('btnOpenSettings').onclick = () => this.showScreen('settingsScreen');
+        document.getElementById('btnCloseSettings').onclick = () => this.showScreen('startScreen');
+    }
+
+    setupInput() {
+        window.onkeydown = e => { if(e.key.toLowerCase()==='a') this.input.axis=-1; if(e.key.toLowerCase()==='d') this.input.axis=1; };
+        window.onkeyup = e => this.input.axis=0;
+        this.canvas.ontouchstart = e => this.input.touch = e.touches[0].clientX;
+        this.canvas.ontouchmove = e => this.input.touch = e.touches[0].clientX;
+        this.canvas.ontouchend = () => this.input.touch = null;
     }
 
     resize() {
-        const dpr = window.devicePixelRatio || 1;
         this.width = this.canvas.clientWidth; this.height = this.canvas.clientHeight;
-        this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
-        this.ctx.scale(dpr, dpr);
-    }
-
-    initEvents() {
-        Events.on('req_start', () => this.start());
-        Events.on('req_pause', () => { if (this.state === 'PLAYING') { this.state = 'PAUSED'; this.ui.show('set'); document.getElementById('btnResume').style.display = 'block'; } });
-        Events.on('req_resume', () => { if (this.state === 'PAUSED') { this.state = 'PLAYING'; this.ui.show('hud'); this.lastTime = performance.now(); } });
-        Events.on('toast_achievement', a => this.ui.toast(ach));
+        this.canvas.width = this.width * window.devicePixelRatio; this.canvas.height = this.height * window.devicePixelRatio;
+        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     }
 
     start() {
-        Audio.init(); this.state = 'PLAYING'; this.score = 0; this.streak = 0; this.survivalTime = 0;
-        this.lives = CONFIG.gameplay.maxLives; this.coins = 0; this.items = []; this.particles = new ParticleSystem();
-        this.basket = new Basket(this); this.ui.show('hud');
+        Audio.init(); this.state = 'PLAYING'; this.score = 0; this.lives = CONFIG.gameplay.maxLives;
+        this.coins = 0; this.survivalTime = 0; this.items = [];
+        this.basket = { x: this.width/2 - 55, w: 110, h: 30, color: CONFIG.shop.find(s=>s.id===Save.data.skin).color };
+        this.showScreen('hud'); document.getElementById('hud').classList.add('active');
     }
 
-    end() {
-        this.state = 'END'; Save.addCurrency(this.coins);
-        if (this.score > Save.data.highScore) { Save.data.highScore = this.score; Save.save(); }
-        this.ui.vals.earned.innerText = this.coins; this.ui.vals.fScore.innerText = this.score;
-        this.ui.vals.ch.innerText = CONFIG.challenges[Math.floor(Math.random() * CONFIG.challenges.length)];
-        this.ui.show('end');
+    showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        if(id !== 'hud') document.getElementById(id).classList.add('active');
     }
 
-    update(dt) {
-        if (this.state !== 'PLAYING') return;
-        this.survivalTime += dt; this.spawnTimer += dt;
-        if (this.powerTimer > 0) { this.powerTimer -= dt; if (this.powerTimer <= 0) this.activePower = null; }
-
-        this.basket.update(dt); this.particles.update(dt);
-        
-        const interval = Math.max(0.3, 1.0 - (this.survivalTime / 80));
-        if (this.spawnTimer > interval) { this.items.push(new Item(this)); this.spawnTimer = 0; }
-
-        for (let i = this.items.length - 1; i >= 0; i--) {
-            let it = this.items[i]; it.update(dt);
-            if (it.x < this.basket.x + this.basket.w && it.x + it.w > this.basket.x && it.y + it.h > this.basket.y && it.y < this.basket.y + this.basket.h) {
-                if (it.type === 'good') {
-                    this.streak++; let p = it.foil ? CONFIG.gameplay.ptsFoil : CONFIG.gameplay.basePoints;
-                    if (this.streak >= 3) p += CONFIG.rules.streakBonus;
-                    this.score += p; this.coins += it.foil ? 5 : 1; Audio.good(); Haptics.good();
-                    this.particles.burst(it.x + it.w/2, it.y, it.foil ? '#00e5ff' : '#f5b700');
-                    this.basket.pulse(true);
-                } else if (it.type === 'power') {
-                    this.activePower = it.data.id; this.powerTimer = 6;
-                    if (it.data.id === 'shield') this.basket.shield = true;
-                    Audio.powerup(); Haptics.power();
-                } else {
-                    if (this.basket.shield) { this.basket.shield = false; Audio.powerup(); }
-                    else { this.lives--; this.streak = 0; Audio.bad(); Haptics.bad(); this.basket.pulse(false); }
-                    if (this.lives <= 0) this.end();
-                }
-                this.items.splice(i, 1);
-            } else if (it.dead) this.items.splice(i, 1);
-        }
-        this.ui.updateHUD(this.score, Save.data.currency + this.coins, this.lives, this.streak, this.activePower);
+    renderShop() {
+        const g = document.getElementById('shopSkinsGrid'); g.innerHTML = '';
+        CONFIG.shop.forEach(s => {
+            const owned = Save.data.inventory.includes(s.id);
+            const div = document.createElement('div'); div.className = `shop-item ${Save.data.skin===s.id?'equipped':''}`;
+            div.innerHTML = `<div style="background:${s.color}; height:20px; border-radius:5px;"></div><p>${s.name}</p><p>${owned?'OWNED':'🪙 '+s.price}</p>`;
+            div.onclick = () => {
+                if(!owned && Save.data.currency >= s.price) { Save.data.currency -= s.price; Save.data.inventory.push(s.id); Save.data.skin=s.id; }
+                else if(owned) Save.data.skin = s.id; Save.save(); this.renderShop(); this.updateUI();
+            };
+            g.appendChild(div);
+        });
     }
 
-    draw() {
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        if (this.state === 'PLAYING' || this.state === 'PAUSED') {
-            this.basket.draw(this.ctx); this.items.forEach(it => it.draw(this.ctx)); this.particles.draw(this.ctx);
-        }
+    updateUI() {
+        document.getElementById('menuCoins').innerText = Save.data.currency;
+        document.getElementById('shopCoins').innerText = Save.data.currency;
+        document.getElementById('graceCoinsVal').innerText = Save.data.currency + this.coins;
+        document.getElementById('scoreVal').innerText = this.score;
+        document.getElementById('livesVal').innerText = '❤️'.repeat(this.lives);
     }
 
     loop(ts) {
-        let dt = (ts - this.lastTime) / 1000; if (dt > 0.1) dt = 0.1; this.lastTime = ts;
-        this.update(dt); this.draw(); requestAnimationFrame(t => this.loop(t));
+        if(!this.lastTime) { this.lastTime = ts; requestAnimationFrame(t=>this.loop(t)); return; }
+        let dt = (ts - this.lastTime)/1000; if(dt > 0.1) dt = 0.1; this.lastTime = ts;
+
+        if(this.state === 'PLAYING') {
+            this.survivalTime += dt; this.spawnTimer += dt;
+            
+            // Basket Physics
+            if(this.input.touch) this.basket.x += (this.input.touch - this.basket.w/2 - this.basket.x) * 0.2;
+            else this.basket.x += this.input.axis * 10;
+            this.basket.x = Math.max(0, Math.min(this.width - this.basket.w, this.basket.x));
+
+            // Spawning
+            if(this.spawnTimer > 1) {
+                const isGood = Math.random() > 0.3;
+                const list = isGood ? CONFIG.items.good : CONFIG.items.bad;
+                const d = list[Math.floor(Math.random()*list.length)];
+                this.items.push({ x: Math.random()*(this.width-100), y:-50, isGood, txt: d.e + ' ' + d.t });
+                this.spawnTimer = 0;
+            }
+
+            // Item Physics & Collision
+            this.items.forEach((it, i) => {
+                it.y += 5;
+                if(it.y > this.height) this.items.splice(i, 1);
+                if(it.x < this.basket.x + this.basket.w && it.x + 100 > this.basket.x && it.y + 40 > this.height - 110) {
+                    if(it.isGood) { this.score += 10; this.coins += 1; Audio.play(440); }
+                    else { this.lives--; Audio.play(110); if(this.lives<=0) { this.state='END'; this.showScreen('endScreen'); document.getElementById('finalScore').innerText=this.score; document.getElementById('earnedCoins').innerText=this.coins; Save.data.currency+=this.coins; Save.save(); } }
+                    this.items.splice(i, 1); this.updateUI();
+                }
+            });
+        }
+
+        this.draw();
+        requestAnimationFrame(t => this.loop(t));
+    }
+
+    draw() {
+        this.ctx.clearRect(0,0,this.width,this.height);
+        if(this.state === 'PLAYING') {
+            this.ctx.fillStyle = this.basket.color; this.ctx.fillRect(this.basket.x, this.height-110, this.basket.w, this.basket.h);
+            this.items.forEach(it => {
+                this.ctx.fillStyle = it.isGood ? '#fff' : '#ff4444';
+                this.ctx.font = '14px Montserrat'; this.ctx.fillText(it.txt, it.x, it.y);
+            });
+        }
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => { new Game(); });
+new Game();
 </script>
-
 </body>
 </html>
