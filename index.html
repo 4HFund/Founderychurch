@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Blessing Basket | The Foundery Church</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-dark: #121418;
+            --bg-light: #2a313c;
+            --orange: #d96c06;
+            --gold: #f5b700;
+            --cream: #fdfbf7;
+            --bad-red: #8b0000;
+            --bad-dark: #1e1414;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none; /* Prevent scroll on touch */
+        }
+
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 600px;
+            background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 80%);
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(217, 108, 6, 0.1);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI Overlays */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 5;
+            color: var(--cream);
+            pointer-events: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hud-left { display: flex; flex-direction: column; gap: 5px; }
+        .hud-right { text-align: right; font-size: 1.3rem; color: var(--gold); }
+        .streak { color: var(--orange); font-size: 0.9rem; }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(18, 20, 24, 0.92);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        h1 {
+            color: var(--cream);
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(245, 183, 0, 0.6);
+        }
+
+        h2.subtitle {
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        p.description {
+            color: var(--cream);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 35px;
+            max-width: 400px;
+            opacity: 0.9;
+        }
+
+        .church-tag {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: rgba(253, 251, 247, 0.5);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
+            border: none;
+            padding: 16px 35px;
+            border-radius: 40px;
+            color: var(--bg-dark);
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(217, 108, 6, 0.4);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 8px;
+            width: 100%;
+            max-width: 300px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 183, 0, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(217, 108, 6, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(253, 251, 247, 0.1);
+            color: var(--cream);
+            border: 1px solid rgba(253, 251, 247, 0.3);
+            box-shadow: none;
+            font-size: 1rem;
+            padding: 12px 25px;
+        }
+
+        /* End Screen Specifics */
+        .score-display {
+            font-size: 4rem;
+            color: var(--gold);
+            font-weight: 800;
+            margin: 10px 0;
+            text-shadow: 0 0 20px rgba(245, 183, 0, 0.5);
+        }
+
+        .challenge-box {
+            background: rgba(217, 108, 6, 0.1);
+            border: 1px solid rgba(245, 183, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0 30px 0;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .challenge-box::before {
+            content: 'YOUR CHALLENGE THIS WEEK:';
+            display: block;
+            font-size: 0.75rem;
+            color: var(--orange);
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        #challenge-text {
+            color: var(--cream);
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 5;
+            pointer-events: none; /* Let touches pass through the container */
+        }
+
+        .control-btn {
+            width: 65px;
+            height: 65px;
+            background: rgba(253, 251, 247, 0.1);
+            border: 2px solid rgba(253, 251, 247, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(253, 251, 247, 0.6);
+            font-size: 24px;
+            pointer-events: auto; /* Catch touches on the button */
+            backdrop-filter: blur(4px);
+        }
+
+        .control-btn:active {
+            background: rgba(253, 251, 247, 0.3);
+        }
+
+        @media (min-width: 768px) {
+            #mobile-controls { display: none; }
+            #game-wrapper { border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .button-group { width: 100%; display: flex; flex-direction: column; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div id="game-wrapper">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud" class="hidden">
+        <div class="hud-left">
+            <div>Score: <span id="scoreVal">0</span></div>
+            <div class="streak">Streak: <span id="streakVal">0</span></div>
+        </div>
+        <div class="hud-right">
+            <span id="timeVal">60</span>s
+        </div>
+    </div>
+
+    <div id="mobile-controls" class="hidden">
+        <div class="control-btn" id="btnLeft">◄</div>
+        <div class="control-btn" id="btnRight">►</div>
+    </div>
+
+    <div id="start-screen" class="screen active">
+        <h1>Blessing Basket</h1>
+        <h2 class="subtitle">Catch the blessing. Share the blessing.</h2>
+        <p class="description">Catch as many blessings as you can before time runs out &mdash; but avoid the things that steal joy.</p>
+        <button id="startBtn" class="btn">Start Game</button>
+        <div class="church-tag">A "Bless Someone’s Week" outreach game from The Foundery Church.</div>
+    </div>
+
+    <div id="end-screen" class="screen">
+        <h2 class="subtitle" style="color: var(--cream); margin-bottom: 5px;">You caught the blessings.</h2>
+        <h2 class="subtitle" style="color: var(--gold); margin-bottom: 0;">Now go give one away.</h2>
+        <div class="score-display" id="finalScore">0</div>
+        
+        <div class="challenge-box">
+            <div id="challenge-text">Challenge text goes here.</div>
+        </div>
+
+        <div class="button-group">
+            <button id="playAgainBtn" class="btn">Play Again</button>
+            <button id="shareBtn" class="btn secondary">Share This Challenge</button>
+            <div style="display: flex; gap: 10px; width: 100%; max-width: 300px; margin-top: 5px;">
+                <a href="#" class="btn secondary" style="flex: 1; padding: 12px 10px; font-size: 0.8rem; margin: 0;">Prayer Request</a>
+                <a href="#" class="btn secondary" style="flex: 1; padding: 12px 10px; font-size: 0.8rem; margin: 0;">Nominate</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- CONSTANTS & CONFIG ---
+        const goodItemsList = [
+            { text: 'Prayer', emoji: '🙏' }, { text: 'Kindness', emoji: '🤝' },
+            { text: 'Hope', emoji: '🌟' }, { text: 'Groceries', emoji: '🥖' },
+            { text: 'Encouragement', emoji: '💬' }, { text: 'Coffee', emoji: '☕' },
+            { text: 'A Ride', emoji: '🚗' }, { text: 'Help', emoji: '🛠️' },
+            { text: 'Forgiveness', emoji: '🕊️' }, { text: 'A Smile', emoji: '😊' },
+            { text: 'Grace', emoji: '✨' }, { text: 'Love', emoji: '❤️' }
+        ];
+
+        const badItemsList = [
+            { text: 'Gossip', emoji: '🗣️' }, { text: 'Fear', emoji: '😨' },
+            { text: 'Stress', emoji: '😖' }, { text: 'Negativity', emoji: '🌧️' },
+            { text: 'Excuses', emoji: '🤷' }, { text: 'Anger', emoji: '😡' },
+            { text: 'Pride', emoji: '🦚' }, { text: 'Doubt', emoji: '❓' },
+            { text: 'Isolation', emoji: '🚪' }, { text: 'Bitterness', emoji: '🍋' }
+        ];
+
+        const challengesList = [
+            "Text someone you haven’t checked on in a while.",
+            "Pray for a first responder, veteran, teacher, or neighbor today.",
+            "Bring someone a coffee, snack, or small encouragement.",
+            "Invite someone to church, Good Company, basketball, volleyball, or coffee.",
+            "Donate something useful to Kenny’s Kloset.",
+            "Write a short note of encouragement and give it to someone this week.",
+            "Ask someone, 'How can I pray for you?' and actually follow up.",
+            "Share a kind word publicly about someone who usually goes unnoticed."
+        ];
+
+        // --- DOM ELEMENTS ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('game-wrapper');
+        
+        const uiStart = document.getElementById('start-screen');
+        const uiEnd = document.getElementById('end-screen');
+        const uiHud = document.getElementById('hud');
+        const uiMobileCtrl = document.getElementById('mobile-controls');
+        
+        const scoreVal = document.getElementById('scoreVal');
+        const streakVal = document.getElementById('streakVal');
+        const timeVal = document.getElementById('timeVal');
+        const finalScore = document.getElementById('finalScore');
+        const challengeText = document.getElementById('challenge-text');
+        
+        const btnStart = document.getElementById('startBtn');
+        const btnPlayAgain = document.getElementById('playAgainBtn');
+        const btnShare = document.getElementById('shareBtn');
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+
+        // --- GAME STATE ---
+        let gameState = 'start'; // start, playing, end
+        let animationId;
+        let gameTimer;
+        let spawnTimer;
+        
+        let score = 0;
+        let streak = 0;
+        let timeLeft = 60;
+        let frames = 0;
+
+        // Arrays for rendering
+        let items = [];
+        let particles = [];
+        let floatingTexts = [];
+        let backgroundSparks = [];
+
+        // Basket Object
+        const basket = {
+            x: 0, y: 0, width: 100, height: 35, speed: 7,
+            color: '#f5b700', glow: '#d96c06'
+        };
+
+        // Input Tracking
+        const keys = { left: false, right: false };
+        let touchActive = false;
+        let touchX = 0;
+
+        // --- INITIALIZATION ---
+        function resize() {
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            if(gameState === 'start' || gameState === 'end') {
+                basket.x = canvas.width / 2 - basket.width / 2;
+                basket.y = canvas.height - basket.height - 40;
+            }
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Create initial background sparks
+        for(let i=0; i<30; i++) {
+            backgroundSparks.push(createSpark());
+        }
+
+        // --- INPUT EVENT LISTENERS ---
+        // Keyboard
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+            if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+            if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+        });
+
+        // Mobile On-Screen Buttons
+        const pressLeft = (e) => { e.preventDefault(); keys.left = true; };
+        const releaseLeft = (e) => { e.preventDefault(); keys.left = false; };
+        const pressRight = (e) => { e.preventDefault(); keys.right = true; };
+        const releaseRight = (e) => { e.preventDefault(); keys.right = false; };
+
+        btnLeft.addEventListener('touchstart', pressLeft, {passive: false});
+        btnLeft.addEventListener('mousedown', pressLeft);
+        btnLeft.addEventListener('touchend', releaseLeft, {passive: false});
+        btnLeft.addEventListener('mouseup', releaseLeft);
+
+        btnRight.addEventListener('touchstart', pressRight, {passive: false});
+        btnRight.addEventListener('mousedown', pressRight);
+        btnRight.addEventListener('touchend', releaseRight, {passive: false});
+        btnRight.addEventListener('mouseup', releaseRight);
+
+        // Touch Drag on Canvas
+        canvas.addEventListener('touchstart', (e) => {
+            if(gameState !== 'playing') return;
+            touchActive = true;
+            touchX = e.touches[0].clientX - wrapper.getBoundingClientRect().left;
+        }, {passive: true});
+
+        canvas.addEventListener('touchmove', (e) => {
+            if(gameState !== 'playing') return;
+            touchActive = true;
+            touchX = e.touches[0].clientX - wrapper.getBoundingClientRect().left;
+        }, {passive: true});
+
+        canvas.addEventListener('touchend', () => touchActive = false);
+
+        // UI Buttons
+        btnStart.addEventListener('click', startGame);
+        btnPlayAgain.addEventListener('click', startGame);
+        
+        btnShare.addEventListener('click', async () => {
+            const txt = `I caught the blessing! My challenge this week: "${challengeText.innerText}" - Play Blessing Basket!`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Blessing Basket Challenge',
+                        text: txt,
+                        url: window.location.href
+                    });
+                } catch (e) { console.log('Share canceled'); }
+            } else {
+                navigator.clipboard.writeText(txt);
+                const originalText = btnShare.innerText;
+                btnShare.innerText = "Challenge Copied!";
+                setTimeout(() => btnShare.innerText = originalText, 2000);
+            }
+        });
+
+        // --- GAME LOGIC ---
+
+        function startGame() {
+            // Reset state
+            gameState = 'playing';
+            score = 0;
+            streak = 0;
+            timeLeft = 60;
+            frames = 0;
+            items = [];
+            particles = [];
+            floatingTexts = [];
+            keys.left = false;
+            keys.right = false;
+            touchActive = false;
+            
+            basket.x = canvas.width / 2 - basket.width / 2;
+            basket.y = canvas.height - basket.height - 40;
+
+            // Update UI
+            uiStart.classList.remove('active');
+            uiEnd.classList.remove('active');
+            uiHud.classList.remove('hidden');
+            if(window.innerWidth < 768) uiMobileCtrl.classList.remove('hidden');
+            updateHud();
+
+            // Clear existing timers
+            if(gameTimer) clearInterval(gameTimer);
+            
+            // 1-Second Timer
+            gameTimer = setInterval(() => {
+                if(gameState !== 'playing') return;
+                timeLeft--;
+                timeVal.innerText = timeLeft;
+                if(timeLeft <= 0) endGame();
+            }, 1000);
+
+            // Start Loop
+            if(animationId) cancelAnimationFrame(animationId);
+            loop();
+        }
+
+        function endGame() {
+            gameState = 'end';
+            clearInterval(gameTimer);
+            
+            // Generate Random Challenge
+            const randomChallenge = challengesList[Math.floor(Math.random() * challengesList.length)];
+            challengeText.innerText = randomChallenge;
+            finalScore.innerText = score;
+
+            // Update UI
+            uiHud.classList.add('hidden');
+            uiMobileCtrl.classList.add('hidden');
+            uiEnd.classList.add('active');
+        }
+
+        function spawnItem() {
+            // Difficulty curve: spawn rate increases as time goes down
+            const baseSpawnRate = 60; // frames
+            const spawnRate = Math.max(20, baseSpawnRate - (60 - timeLeft));
+            
+            if (frames % spawnRate === 0) {
+                const isGood = Math.random() > 0.35; // 65% chance for good item
+                const list = isGood ? goodItemsList : badItemsList;
+                const data = list[Math.floor(Math.random() * list.length)];
+                
+                // Speed increases as time goes down
+                const speedMultiplier = 1 + ((60 - timeLeft) / 60) * 1.5; 
+                
+                // Item Box Dimensions
+                const w = 120;
+                const h = 40;
+                const x = Math.random() * (canvas.width - w - 20) + 10;
+                
+                items.push({
+                    x: x, y: -h, width: w, height: h,
+                    type: isGood ? 'good' : 'bad',
+                    text: data.text, emoji: data.emoji,
+                    speed: (Math.random() * 2 + 2) * speedMultiplier
+                });
+            }
+        }
+
+        function createSpark() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                s: Math.random() * 2 + 1,
+                speedY: Math.random() * 0.5 + 0.2,
+                alpha: Math.random() * 0.5 + 0.1
+            };
+        }
+
+        function createParticles(x, y, color) {
+            for(let i=0; i<10; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    life: 1, color: color, size: Math.random() * 4 + 2
+                });
+            }
+        }
+
+        function addFloatingText(x, y, text, color) {
+            floatingTexts.push({ x: x, y: y, text: text, color: color, life: 1 });
+        }
+
+        function updateHud() {
+            scoreVal.innerText = score;
+            streakVal.innerText = streak;
+            streakVal.style.color = streak >= 3 ? 'var(--gold)' : 'var(--orange)';
+        }
+
+        // Add compatibility helper for roundRect
+        function drawRoundRect(ctx, x, y, width, height, radius) {
+            if(ctx.roundRect) {
+                ctx.roundRect(x, y, width, height, radius);
+            } else {
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+            }
+        }
+
+        // --- MAIN LOOP ---
+        function update() {
+            frames++;
+
+            // Basket Movement
+            if (touchActive) {
+                // Smooth follow touch
+                basket.x += (touchX - basket.width/2 - basket.x) * 0.2;
+            } else {
+                if(keys.left) basket.x -= basket.speed;
+                if(keys.right) basket.x += basket.speed;
+            }
+
+            // Constrain Basket
+            if(basket.x < 0) basket.x = 0;
+            if(basket.x + basket.width > canvas.width) basket.x = canvas.width - basket.width;
+
+            // Background Sparks Update
+            backgroundSparks.forEach(spark => {
+                spark.y -= spark.speedY;
+                if(spark.y < 0) { spark.y = canvas.height; spark.x = Math.random() * canvas.width; }
+            });
+
+            // Spawning
+            spawnItem();
+
+            // Items Update & Collision
+            for (let i = items.length - 1; i >= 0; i--) {
+                let item = items[i];
+                item.y += item.speed;
+
+                // Collision Detection (AABB)
+                if (item.x < basket.x + basket.width &&
+                    item.x + item.width > basket.x &&
+                    item.y < basket.y + basket.height &&
+                    item.y + item.height > basket.y) {
+                    
+                    // Collision Effects
+                    if(item.type === 'good') {
+                        streak++;
+                        let points = 10 + (streak > 2 ? 5 : 0); // Bonus for streak
+                        score += points;
+                        createParticles(item.x + item.width/2, item.y + item.height/2, 'var(--gold)');
+                        addFloatingText(item.x + item.width/2, item.y, `+${points}`, 'var(--gold)');
+                    } else {
+                        streak = 0;
+                        score = Math.max(0, score - 15);
+                        createParticles(item.x + item.width/2, item.y + item.height/2, 'var(--bad-red)');
+                        addFloatingText(item.x + item.width/2, item.y, "Avoid that!", 'var(--bad-red)');
+                    }
+                    
+                    updateHud();
+                    items.splice(i, 1);
+                    continue;
+                }
+
+                // Remove if off screen
+                if (item.y > canvas.height) {
+                    items.splice(i, 1);
+                }
+            }
+
+            // Particles Update
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                if(p.life <= 0) particles.splice(i, 1);
+            }
+
+            // Floating Text Update
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i];
+                ft.y -= 1.5; ft.life -= 0.02;
+                if(ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Sparks
+            ctx.fillStyle = '#f5b700';
+            backgroundSparks.forEach(spark => {
+                ctx.globalAlpha = spark.alpha;
+                ctx.beginPath();
+                ctx.arc(spark.x, spark.y, spark.s, 0, Math.PI*2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0; // reset
+
+            // Draw Basket (Forge styling)
+            ctx.shadowColor = basket.glow;
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = basket.color;
+            ctx.beginPath();
+            drawRoundRect(ctx, basket.x, basket.y, basket.width, basket.height, 10);
+            ctx.fill();
+            
+            // Basket inner styling (gives it a container look)
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#1e1a13';
+            ctx.beginPath();
+            drawRoundRect(ctx, basket.x + 5, basket.y + 5, basket.width - 10, basket.height - 15, 5);
+            ctx.fill();
+
+            // Draw Items
+            items.forEach(item => {
+                ctx.save();
+                // Glow & Card background
+                if (item.type === 'good') {
+                    ctx.shadowColor = 'rgba(245, 183, 0, 0.6)';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#fdfbf7'; // Cream bg
+                    ctx.strokeStyle = '#d96c06';
+                } else {
+                    ctx.shadowColor = 'rgba(139, 0, 0, 0.6)';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#1e1414'; // Dark bg
+                    ctx.strokeStyle = '#8b0000';
+                }
+
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                drawRoundRect(ctx, item.x, item.y, item.width, item.height, 20);
+                ctx.fill();
+                ctx.shadowBlur = 0; // Turn off shadow for text drawing
+                ctx.stroke();
+
+                // Draw Text & Emoji
+                ctx.fillStyle = item.type === 'good' ? '#121418' : '#fdfbf7';
+                ctx.font = "bold 13px Montserrat";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(`${item.emoji} ${item.text}`, item.x + item.width / 2, item.y + item.height / 2 + 1);
+                ctx.restore();
+            });
+
+            // Draw Particles
+            particles.forEach(p => {
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+
+            // Draw Floating Texts
+            floatingTexts.forEach(ft => {
+                ctx.globalAlpha = Math.max(0, ft.life);
+                ctx.fillStyle = ft.color;
+                ctx.font = "bold 20px Montserrat";
+                ctx.textAlign = "center";
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 4;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.shadowBlur = 0;
+            });
+            ctx.globalAlpha = 1.0;
+        }
+
+        function loop() {
+            if(gameState !== 'playing') return;
+            update();
+            draw();
+            animationId = requestAnimationFrame(loop);
+        }
+
+        // Optional: Draw a nice background state for the start screen
+        draw(); 
+    });
+</script>
+</body>
+</html>
