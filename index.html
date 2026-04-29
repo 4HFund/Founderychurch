@@ -510,5 +510,556 @@ class Game {
 }
 document.addEventListener("DOMContentLoaded", () => { new Game(); });
 </script>
+    <script type="module">
+/**
+ * ============================================================================
+ * BLESSING BASKET: GLOBAL CORE ENGINE (PART 1)
+ * ============================================================================
+ * Developed for The Foundery Church.
+ * Architecture: Event-Driven Pub/Sub with State Machine.
+ */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+// --- DATABASE INITIALIZATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
+    authDomain: "blessing-basket.firebaseapp.com",
+    projectId: "blessing-basket",
+    storageBucket: "blessing-basket.firebasestorage.app",
+    messagingSenderId: "558241052507",
+    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
+    measurementId: "G-8495PL9SH8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/**
+ * ============================================================================
+ * 1. GLOBAL EVENT BUS
+ * ============================================================================
+ * Allows different systems (Audio, UI, Physics) to communicate without
+ * direct dependencies, preventing the game from freezing.
+ */
+class EventBus {
+    constructor() {
+        this.events = {};
+    }
+
+    /** Subscribe to an event */
+    on(event, listener) {
+        if (!this.events[event]) this.events[event] = [];
+        this.events[event].push(listener);
+    }
+
+    /** Broadcast an event */
+    emit(event, data) {
+        if (!this.events[event]) return;
+        this.events[event].forEach(listener => listener(data));
+    }
+}
+
+const Events = new EventBus();
+
+/**
+ * ============================================================================
+ * 2. GAME SETTINGS & META DATA
+ * ============================================================================
+ */
+const CONFIG = {
+    physics: {
+        gravity: 650,
+        basketSpeed: 1900,
+        basketFriction: 0.82,
+        basketMaxSpeed: 950,
+        touchLerp: 20,
+        baseFallSpeedMin: 220,
+        baseFallSpeedMax: 380,
+        difficultyCapTime: 100 // Seconds until max speed is reached
+    },
+    gameplay: {
+        maxLives: 3,
+        basePoints: 10,
+        foilMultiplier: 5,
+        streakThreshold: 3,
+        streakBonus: 5,
+        foilChance: 0.05,
+        powerupChance: 0.04
+    },
+    shop: [
+        { id: 'skin_classic', name: 'Classic Gold', type: 'skin', price: 0, color: '#f5b700' },
+        { id: 'skin_forged', name: 'Forged Steel', type: 'skin', price: 750, color: '#788594' },
+        { id: 'skin_neon', name: 'Neon Pulse', type: 'skin', price: 1500, color: '#00e5ff' },
+        { id: 'skin_royal', name: 'Royal Grace', type: 'skin', price: 3000, color: '#b300ff' },
+        { id: 'skin_magma', name: 'The Forge', type: 'skin', price: 5000, color: '#ff4e00' }
+    ],
+    items: {
+        good: [
+            { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' },
+            { t: 'Groceries', e: '🥖' }, { t: 'Encouragement', e: '💬' }, { t: 'Grace', e: '✨' },
+            { t: 'Forgiveness', e: '🕊️' }, { t: 'Jeep Ride', e: '🚙' }, { t: 'Love', e: '❤️' }
+        ],
+        bad: [
+            { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' },
+            { t: 'Negativity', e: '🌧️' }, { t: 'Pride', e: '🦚' }, { t: 'Anger', e: '😡' }
+        ],
+        powers: [
+            { id: 'shield', t: 'Shield', e: '🛡️', color: '#00e5ff', desc: 'Blocks one hit' },
+            { id: 'magnet', t: 'Magnet', e: '🧲', color: '#b300ff', desc: 'Pulls blessings' },
+            { id: 'time', t: 'Time Warp', e: '⏳', color: '#f5b700', desc: 'Slows falling' }
+        ]
+    },
+    achievements: [
+        { id: 'first_mission', title: 'Mission Start', desc: 'Complete your first match.', reward: 100 },
+        { id: 'blessed_streak', title: 'Consistent Grace', desc: 'Reach a 10x streak.', reward: 250 },
+        { id: 'high_score_500', title: 'Pillar of Light', desc: 'Score 500 points.', reward: 500 },
+        { id: 'collector', title: 'Gear Up', desc: 'Buy your first shop item.', reward: 0 },
+        { id: 'survivor_90', title: 'Unyielding', desc: 'Survive for 90 seconds.', reward: 1000 }
+    ],
+    challenges: [
+        "Text someone you haven't checked on in a while.",
+        "Pray for a first responder, veteran, or teacher today.",
+        "Bring someone a coffee, snack, or small encouragement.",
+        "Invite someone to church or a Good Company event.",
+        "Donate something useful to Kenny's Kloset this week.",
+        "Write a handwritten note of thanks to a neighbor."
+    ]
+};
+
+/**
+ * ============================================================================
+ * 3. SAVE & PROGRESSION SYSTEM
+ * ============================================================================
+ */
+class SaveSystem {
+    constructor() {
+        this.data = {
+            highScore: 0,
+            currency: 0,
+            inventory: ['skin_classic'],
+            equippedSkin: 'skin_classic',
+            achievements: [],
+            settings: {
+                volMaster: 50,
+                volSfx: 100,
+                particles: 'high',
+                keyLeft: 'a',
+                keyRight: 'd',
+                keyPause: 'escape'
+            }
+        };
+        this.load();
+    }
+
+    load() {
+        const saved = localStorage.getItem('blessing_basket_pro_save');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                this.data = { ...this.data, ...parsed };
+            } catch (e) { console.error("Save corrupted, resetting."); }
+        }
+    }
+
+    save() {
+        localStorage.setItem('blessing_basket_pro_save', JSON.stringify(this.data));
+    }
+
+    addCurrency(amt) {
+        this.data.currency += amt;
+        this.save();
+        Events.emit('ui_update_currency', this.data.currency);
+    }
+
+    unlockAchievement(id) {
+        if (!this.data.achievements.includes(id)) {
+            const ach = CONFIG.achievements.find(a => a.id === id);
+            this.data.achievements.push(id);
+            if (ach && ach.reward > 0) this.addCurrency(ach.reward);
+            this.save();
+            Events.emit('toast_achievement', ach);
+        }
+    }
+}
+
+const Save = new SaveSystem();
+
+/**
+ * ============================================================================
+ * 4. AUDIO ENGINE (WEB AUDIO API)
+ * ============================================================================
+ */
+class AudioEngine {
+    constructor() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterNode = this.ctx.createGain();
+        this.sfxNode = this.ctx.createGain();
+        this.sfxNode.connect(this.masterNode);
+        this.masterNode.connect(this.ctx.destination);
+        this.updateVolumes();
+    }
+
+    init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
+
+    updateVolumes() {
+        this.masterNode.gain.value = Save.data.settings.volMaster / 100;
+        this.sfxNode.gain.value = Save.data.settings.volSfx / 100;
+    }
+
+    play(freq, type = 'sine', dur = 0.2, vol = 0.2) {
+        if (this.ctx.state === 'suspended') return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+        osc.connect(gain); gain.connect(this.sfxNode);
+        osc.start(); osc.stop(this.ctx.currentTime + dur);
+    }
+
+    good() { this.play(523.25, 'sine', 0.2, 0.3); setTimeout(() => this.play(659.25, 'sine', 0.3, 0.2), 60); }
+    bad() { this.play(110, 'sawtooth', 0.5, 0.4); }
+    powerup() { [440, 554, 659, 880].forEach((f, i) => setTimeout(() => this.play(f, 'triangle', 0.4, 0.2), i * 100)); }
+    click() { this.play(800, 'sine', 0.05, 0.1); }
+}
+
+const Audio = new AudioEngine();
+
+// --- END PART 1 ---
+// (Let the user know we are waiting for Part 2)
+<script type="module">
+/**
+ * ============================================================================
+ * BLESSING BASKET: GLOBAL CORE ENGINE (PART 2)
+ * ============================================================================
+ * Physics, Shop Logic, and the Master Game Loop.
+ */
+
+// --- 5. VISUAL & PARTICLE SYSTEMS ---
+class ParticleSystem {
+    constructor() { this.p = []; this.t = []; }
+    
+    burst(x, y, color, count = 15) {
+        if (Save.data.settings.particles === 'off') return;
+        const mult = Save.data.settings.particles === 'low' ? 0.5 : 1;
+        for (let i = 0; i < count * mult; i++) {
+            this.p.push({
+                x, y,
+                vx: (Math.random() - 0.5) * 350,
+                vy: (Math.random() - 0.5) * 350 - 100,
+                life: 1, decay: Math.random() * 1.5 + 0.5,
+                color, size: Math.random() * 4 + 2
+            });
+        }
+    }
+
+    text(x, y, txt, color) {
+        this.t.push({ x, y, txt, color, life: 1.5, vy: -70 });
+    }
+
+    update(dt) {
+        for (let i = this.p.length - 1; i >= 0; i--) {
+            let p = this.p[i]; p.vy += CONFIG.physics.gravity * dt;
+            p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt;
+            if (p.life <= 0) this.p.splice(i, 1);
+        }
+        for (let i = this.t.length - 1; i >= 0; i--) {
+            let t = this.t[i]; t.y += t.vy * dt; t.life -= dt;
+            if (t.life <= 0) this.t.splice(i, 1);
+        }
+    }
+
+    draw(ctx) {
+        this.p.forEach(p => {
+            ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+        });
+        this.t.forEach(t => {
+            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color;
+            ctx.font = "900 22px Montserrat"; ctx.textAlign = "center";
+            ctx.shadowColor = '#000'; ctx.shadowBlur = 5; ctx.fillText(t.txt, t.x, t.y);
+        });
+        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
+}
+
+// --- 6. GAME ENTITIES ---
+class Basket {
+    constructor(game) {
+        this.game = game; this.w = 110; this.h = 30;
+        this.x = game.width / 2 - this.w / 2; this.y = game.height - this.h - 80;
+        this.vx = 0; this.sx = 1; this.sy = 1;
+        this.shield = false;
+        this.color = CONFIG.shop.find(s => s.id === Save.data.equippedSkin)?.color || '#f5b700';
+    }
+
+    update(dt) {
+        const p = CONFIG.physics;
+        if (this.game.input.touchTarget !== null) {
+            this.x += (this.game.input.touchTarget - this.w / 2 - this.x) * p.touchLerp * dt;
+        } else {
+            this.vx += this.game.input.axisX * p.basketSpeed * dt;
+            this.vx *= p.basketFriction;
+            this.vx = Math.min(Math.max(this.vx, -p.basketMaxSpeed), p.basketMaxSpeed);
+            this.x += this.vx * dt;
+        }
+        if (this.x < 0) this.x = 0; if (this.x + this.w > this.game.width) this.x = this.game.width - this.w;
+        this.sx += (1 - this.sx) * 12 * dt; this.sy += (1 - this.sy) * 12 * dt;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.shadowColor = this.shield ? '#00e5ff' : this.color;
+        ctx.shadowBlur = this.shield ? 35 : 20;
+        ctx.fillStyle = this.color;
+        const dw = this.w * this.sx; const dh = this.h * this.sy;
+        const dx = this.x + (this.w - dw) / 2;
+        ctx.beginPath(); ctx.roundRect(dx, this.y, dw, dh, 10); ctx.fill();
+        if (this.shield) {
+            ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.roundRect(dx - 5, this.y - 5, dw + 10, dh + 10, 15); ctx.stroke();
+        }
+        ctx.restore();
+    }
+}
+
+class Item {
+    constructor(game) {
+        this.game = game; this.w = 130; this.h = 42;
+        this.x = Math.random() * (game.width - this.w - 20) + 10; this.y = -this.h - 10;
+        this.dead = false;
+        
+        const roll = Math.random();
+        if (roll < CONFIG.gameplay.powerupChance) {
+            this.type = 'power'; this.data = CONFIG.items.powers[Math.floor(Math.random() * CONFIG.items.powers.length)];
+        } else if (roll < 0.38) {
+            this.type = 'bad'; this.data = CONFIG.items.bad[Math.floor(Math.random() * CONFIG.items.bad.length)];
+        } else {
+            this.type = 'good'; this.data = CONFIG.items.good[Math.floor(Math.random() * CONFIG.items.good.length)];
+        }
+        
+        this.foil = (this.type === 'good' && Math.random() < CONFIG.gameplay.foilChance);
+        const progress = Math.min(1, this.game.survivalTime / CONFIG.physics.difficultyCapTime);
+        this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.6);
+        if (this.game.activePower === 'time') this.vy *= 0.5;
+    }
+
+    update(dt) {
+        if (this.game.activePower === 'magnet' && (this.type === 'good' || this.type === 'power')) {
+            this.x += (this.game.basket.x + this.game.basket.w/2 - (this.x + this.w/2)) * 3 * dt;
+        }
+        this.y += this.vy * dt;
+        if (this.y > this.game.height + 50) this.dead = true;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.shadowBlur = 15;
+        if (this.type === 'power') {
+            ctx.shadowColor = this.data.color; ctx.fillStyle = '#111'; ctx.strokeStyle = this.data.color;
+        } else if (this.foil) {
+            ctx.shadowColor = '#00e5ff'; ctx.fillStyle = '#fff'; ctx.strokeStyle = '#00e5ff';
+        } else {
+            ctx.shadowColor = this.type === 'good' ? '#f5b700' : '#cc0000';
+            ctx.fillStyle = this.type === 'good' ? '#fdfbf7' : '#1e1414';
+            ctx.strokeStyle = this.type === 'good' ? '#d96c06' : '#8b0000';
+        }
+        ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.w, this.h, 21); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = (this.type === 'good' && !this.foil) ? '#000' : '#fff';
+        ctx.font = "bold 14px Montserrat"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(`${this.foil ? '✨' : this.data.e} ${this.data.t}`, this.x + this.w / 2, this.y + this.h / 2);
+        ctx.restore();
+    }
+}
+
+// --- 7. UI CONTROLLER ---
+class UIManager {
+    constructor() {
+        this.cacheEls();
+        this.bindEvents();
+        this.updateCurrency(Save.data.currency);
+        this.renderShop();
+    }
+
+    cacheEls() {
+        this.hud = document.getElementById('hud');
+        this.screens = {
+            menu: document.getElementById('startScreen'), shop: document.getElementById('shopScreen'),
+            set: document.getElementById('settingsScreen'), end: document.getElementById('endScreen'),
+            lb: document.getElementById('leaderboardScreen')
+        };
+        this.vals = {
+            score: document.getElementById('scoreVal'), coins: document.getElementById('graceCoinsVal'),
+            lives: document.getElementById('livesVal'), streak: document.getElementById('streakVal'),
+            menuCoins: document.getElementById('menuCoins'), shopCoins: document.getElementById('shopCoins'),
+            earned: document.getElementById('earnedCoins'), fScore: document.getElementById('finalScore'),
+            ch: document.getElementById('challengeText'), activeP: document.getElementById('activePowerup')
+        };
+    }
+
+    bindEvents() {
+        document.getElementById('startBtn').onclick = () => Events.emit('req_start');
+        document.getElementById('btnOpenShop').onclick = () => this.show('shop');
+        document.getElementById('btnCloseShop').onclick = () => this.show('menu');
+        document.getElementById('btnOpenSettings').onclick = () => {
+            document.getElementById('btnResume').style.display = 'none';
+            this.show('set');
+        };
+        document.getElementById('btnCloseSettings').onclick = () => { Save.save(); Audio.updateVolumes(); this.show('menu'); };
+        document.getElementById('btnPauseHUD').onclick = () => Events.emit('req_pause');
+        document.getElementById('btnResume').onclick = () => Events.emit('req_resume');
+        document.getElementById('playAgainBtn').onclick = () => Events.emit('req_start');
+        document.getElementById('btnEndToMenu').onclick = () => this.show('menu');
+        
+        // Settings Listeners
+        document.getElementById('volMaster').oninput = (e) => { Save.data.settings.volMaster = e.target.value; Audio.updateVolumes(); };
+        document.getElementById('volSfx').oninput = (e) => { Save.data.settings.volSfx = e.target.value; Audio.updateVolumes(); };
+        document.getElementById('settingParticles').onchange = (e) => { Save.data.settings.particles = e.target.value; };
+    }
+
+    show(key) {
+        Object.values(this.screens).forEach(s => s.classList.remove('active'));
+        if (this.screens[key]) this.screens[key].classList.add('active');
+        this.hud.classList.toggle('active', key === 'hud');
+    }
+
+    updateHUD(s, c, l, st, p) {
+        this.vals.score.innerText = s; this.vals.coins.innerText = c;
+        this.vals.lives.innerText = '❤️'.repeat(Math.max(0, l)) || '💀';
+        this.vals.streak.innerText = `STREAK: ${st}`;
+        this.vals.streak.className = st >= 3 ? 'streak-box high' : 'streak-box';
+        this.vals.activeP.innerText = p ? p.toUpperCase() + " ACTIVE" : "";
+    }
+
+    updateCurrency(c) { this.vals.menuCoins.innerText = c; this.vals.shopCoins.innerText = c; }
+
+    renderShop() {
+        const grid = document.getElementById('shopSkinsGrid'); grid.innerHTML = '';
+        CONFIG.shop.forEach(item => {
+            const owned = Save.data.inventory.includes(item.id);
+            const equipped = Save.data.equippedSkin === item.id;
+            const el = document.createElement('div');
+            el.className = `shop-item ${equipped ? 'equipped' : ''}`;
+            el.innerHTML = `
+                <div class="shop-preview" style="background:${item.color}"></div>
+                <div class="shop-name">${item.name}</div>
+                <div class="shop-price">${equipped ? 'EQUIPPED' : (owned ? 'OWNED' : '🪙 ' + item.price)}</div>
+            `;
+            el.onclick = () => {
+                if (!owned && Save.data.currency >= item.price) {
+                    Save.data.currency -= item.price; Save.data.inventory.push(item.id);
+                    Save.data.equippedSkin = item.id; Audio.powerup(); Save.save();
+                } else if (owned) { Save.data.equippedSkin = item.id; Save.save(); }
+                this.renderShop(); this.updateCurrency(Save.data.currency);
+            };
+            grid.appendChild(el);
+        });
+    }
+
+    toast(ach) {
+        const con = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className = 'toast';
+        t.innerHTML = `<div class="toast-icon">🏆</div><div><div class="toast-title">Achievement</div><div class="toast-desc">${ach.title}</div></div>`;
+        con.appendChild(t); setTimeout(() => t.remove(), 4000);
+    }
+}
+
+// --- 8. MASTER GAME ENGINE ---
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d');
+        this.ui = new UIManager(); this.input = new InputManager(this.canvas);
+        this.state = 'MENU'; this.lastTime = 0;
+        this.score = 0; this.lives = 0; this.streak = 0; this.coins = 0;
+        this.survivalTime = 0; this.spawnTimer = 0;
+        this.items = []; this.particles = new ParticleSystem();
+        this.activePower = null; this.powerTimer = 0;
+        
+        window.onresize = () => this.resize(); this.resize();
+        this.initEvents(); requestAnimationFrame(t => this.loop(t));
+    }
+
+    resize() {
+        const dpr = window.devicePixelRatio || 1;
+        this.width = this.canvas.clientWidth; this.height = this.canvas.clientHeight;
+        this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
+        this.ctx.scale(dpr, dpr);
+    }
+
+    initEvents() {
+        Events.on('req_start', () => this.start());
+        Events.on('req_pause', () => { if (this.state === 'PLAYING') { this.state = 'PAUSED'; this.ui.show('set'); document.getElementById('btnResume').style.display = 'block'; } });
+        Events.on('req_resume', () => { if (this.state === 'PAUSED') { this.state = 'PLAYING'; this.ui.show('hud'); this.lastTime = performance.now(); } });
+        Events.on('toast_achievement', a => this.ui.toast(ach));
+    }
+
+    start() {
+        Audio.init(); this.state = 'PLAYING'; this.score = 0; this.streak = 0; this.survivalTime = 0;
+        this.lives = CONFIG.gameplay.maxLives; this.coins = 0; this.items = []; this.particles = new ParticleSystem();
+        this.basket = new Basket(this); this.ui.show('hud');
+    }
+
+    end() {
+        this.state = 'END'; Save.addCurrency(this.coins);
+        if (this.score > Save.data.highScore) { Save.data.highScore = this.score; Save.save(); }
+        this.ui.vals.earned.innerText = this.coins; this.ui.vals.fScore.innerText = this.score;
+        this.ui.vals.ch.innerText = CONFIG.challenges[Math.floor(Math.random() * CONFIG.challenges.length)];
+        this.ui.show('end');
+    }
+
+    update(dt) {
+        if (this.state !== 'PLAYING') return;
+        this.survivalTime += dt; this.spawnTimer += dt;
+        if (this.powerTimer > 0) { this.powerTimer -= dt; if (this.powerTimer <= 0) this.activePower = null; }
+
+        this.basket.update(dt); this.particles.update(dt);
+        
+        const interval = Math.max(0.3, 1.0 - (this.survivalTime / 80));
+        if (this.spawnTimer > interval) { this.items.push(new Item(this)); this.spawnTimer = 0; }
+
+        for (let i = this.items.length - 1; i >= 0; i--) {
+            let it = this.items[i]; it.update(dt);
+            if (it.x < this.basket.x + this.basket.w && it.x + it.w > this.basket.x && it.y + it.h > this.basket.y && it.y < this.basket.y + this.basket.h) {
+                if (it.type === 'good') {
+                    this.streak++; let p = it.foil ? CONFIG.gameplay.ptsFoil : CONFIG.gameplay.basePoints;
+                    if (this.streak >= 3) p += CONFIG.rules.streakBonus;
+                    this.score += p; this.coins += it.foil ? 5 : 1; Audio.good(); Haptics.good();
+                    this.particles.burst(it.x + it.w/2, it.y, it.foil ? '#00e5ff' : '#f5b700');
+                    this.basket.pulse(true);
+                } else if (it.type === 'power') {
+                    this.activePower = it.data.id; this.powerTimer = 6;
+                    if (it.data.id === 'shield') this.basket.shield = true;
+                    Audio.powerup(); Haptics.power();
+                } else {
+                    if (this.basket.shield) { this.basket.shield = false; Audio.powerup(); }
+                    else { this.lives--; this.streak = 0; Audio.bad(); Haptics.bad(); this.basket.pulse(false); }
+                    if (this.lives <= 0) this.end();
+                }
+                this.items.splice(i, 1);
+            } else if (it.dead) this.items.splice(i, 1);
+        }
+        this.ui.updateHUD(this.score, Save.data.currency + this.coins, this.lives, this.streak, this.activePower);
+    }
+
+    draw() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        if (this.state === 'PLAYING' || this.state === 'PAUSED') {
+            this.basket.draw(this.ctx); this.items.forEach(it => it.draw(this.ctx)); this.particles.draw(this.ctx);
+        }
+    }
+
+    loop(ts) {
+        let dt = (ts - this.lastTime) / 1000; if (dt > 0.1) dt = 0.1; this.lastTime = ts;
+        this.update(dt); this.draw(); requestAnimationFrame(t => this.loop(t));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => { new Game(); });
+</script>
+
 </body>
 </html>
