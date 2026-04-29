@@ -26,9 +26,9 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            height: 100dvh; /* Fixes mobile browser bottom bar cutoff */
+            height: 100dvh;
             overflow: hidden;
-            touch-action: none; /* Prevents pull-to-refresh and scrolling */
+            touch-action: none;
         }
 
         #game-wrapper {
@@ -76,7 +76,7 @@
         .streak-box.high { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
         
         .hud-right { text-align: right; font-size: 1.2rem; color: rgba(253, 251, 247, 0.7); }
-        .time-val { color: var(--cream); font-size: 2.2rem; font-weight: 900; }
+        .lives-val { font-size: 1.6rem; letter-spacing: 3px; margin-bottom: 2px; }
 
         /* Screens */
         .screen {
@@ -108,6 +108,7 @@
             transition: transform 0.1s, box-shadow 0.2s, filter 0.2s;
             text-transform: uppercase; letter-spacing: 2px; width: 100%; max-width: 320px;
             margin-bottom: 15px; position: relative; overflow: hidden;
+            display: inline-block; text-decoration: none; text-align: center;
         }
         .btn:active { transform: scale(0.96); box-shadow: 0 5px 15px var(--orange-glow); }
         .btn::after {
@@ -119,24 +120,28 @@
 
         .btn-outline {
             background: transparent; border: 2px solid rgba(253, 251, 247, 0.2);
-            color: var(--cream); box-shadow: none; font-size: 0.9rem; padding: 15px 30px;
+            color: var(--cream); box-shadow: none; font-size: 0.85rem; padding: 15px 30px;
         }
 
         .footer-text { position: absolute; bottom: 25px; font-size: 0.75rem; color: rgba(253, 251, 247, 0.4); text-transform: uppercase; letter-spacing: 1px; }
 
         /* End Screen Specifics */
-        .final-score { font-size: 5rem; color: var(--gold); font-weight: 900; line-height: 1; margin: 10px 0; text-shadow: 0 0 40px rgba(245, 183, 0, 0.4); }
+        .final-score { font-size: 5rem; color: var(--gold); font-weight: 900; line-height: 1; margin: 10px 0 5px 0; text-shadow: 0 0 40px rgba(245, 183, 0, 0.4); }
+        .high-score { font-size: 0.9rem; color: rgba(253, 251, 247, 0.6); font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; }
+        .new-high-score { color: var(--gold); text-shadow: 0 0 10px var(--gold); animation: pulse 1.5s infinite; }
         
+        @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
+
         .challenge-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(217, 108, 6, 0.3);
-            border-radius: 20px; padding: 25px; margin: 20px 0 35px 0; max-width: 450px;
+            border-radius: 20px; padding: 25px; margin: 10px 0 25px 0; max-width: 450px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
         .challenge-label { font-size: 0.75rem; color: var(--orange); font-weight: 800; margin-bottom: 12px; letter-spacing: 2px; }
         .challenge-text { color: var(--cream); font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
 
         .action-row { display: flex; gap: 10px; width: 100%; max-width: 320px; }
-        .action-row .btn-outline { flex: 1; padding: 12px 0; font-size: 0.8rem; margin-bottom: 0; letter-spacing: 0; }
+        .action-row .btn-outline { flex: 1; padding: 12px 0; margin-bottom: 0; letter-spacing: 0; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -151,36 +156,37 @@
                 <div class="streak-box" id="streakVal">Streak: 0</div>
             </div>
             <div class="hud-right">
-                <div class="time-val" id="timeVal">60</div>
-                <div style="font-size: 0.8rem; letter-spacing: 1px;">SECONDS</div>
+                <div class="lives-val" id="livesVal">❤️❤️❤️</div>
+                <div style="font-size: 0.8rem; letter-spacing: 1px; color: var(--cream);">LIVES</div>
             </div>
         </div>
 
         <div class="screen active" id="startScreen">
             <h1>Blessing Basket</h1>
             <h2>CATCH THE BLESSING. SHARE THE BLESSING.</h2>
-            <p>Catch as many blessings as you can before time runs out &mdash; but avoid the things that steal joy.</p>
+            <p>Catch as many blessings as you can &mdash; but avoid the things that steal joy. <strong>3 strikes and you're out!</strong></p>
             <button class="btn" id="startBtn">START GAME</button>
             <div class="footer-text">An outreach game by The Foundery Church</div>
         </div>
 
         <div class="screen" id="endScreen">
-            <h2 style="color: var(--cream); margin-bottom: 0;">YOU CAUGHT THE BLESSINGS.</h2>
-            <h2 style="color: var(--gold); margin-bottom: 10px;">NOW GO GIVE ONE AWAY.</h2>
+            <h2 style="color: var(--cream); margin-bottom: 0;">GREAT JOB CATCHING BLESSINGS.</h2>
+            <h2 style="color: var(--gold); margin-bottom: 5px;">NOW GO GIVE ONE AWAY.</h2>
             
             <div class="final-score" id="finalScore">0</div>
+            <div class="high-score" id="highScoreDisplay">PERSONAL BEST: <span id="highScoreVal">0</span></div>
             
             <div class="challenge-card">
                 <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
                 <div class="challenge-text" id="challengeText">...</div>
             </div>
 
-            <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-            <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 15px;">SHARE CHALLENGE</button>
+            <button class="btn" id="playAgainBtn" style="margin-bottom: 10px;">PLAY AGAIN</button>
+            <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 15px; width: 100%; max-width: 320px;">SHARE CHALLENGE</button>
             
             <div class="action-row">
-                <button class="btn btn-outline">PRAYER REQUEST</button>
-                <button class="btn btn-outline">NOMINATE</button>
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1045720" target="_blank" class="btn btn-outline">PRAYER REQUEST</a>
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1070525" target="_blank" class="btn btn-outline">NOMINATE</a>
             </div>
         </div>
     </div>
@@ -189,7 +195,7 @@
 <script>
 // --- CONFIGURATION DATA ---
 const GAME_CONFIG = {
-    duration: 60,
+    maxLives: 3,
     colors: {
         good: '#fdfbf7', goodGlow: '#f5b700', goodBorder: '#d96c06',
         bad: '#1e1414', badGlow: '#cc0000', badBorder: '#8b0000',
@@ -243,7 +249,7 @@ class AudioManager {
         this.playTone(600, 'sine', 0.15, 0.1);
         setTimeout(() => this.playTone(800, 'sine', 0.2, 0.1), 50);
     }
-    playBad() { this.playTone(150, 'sawtooth', 0.3, 0.15); }
+    playBad() { this.playTone(150, 'sawtooth', 0.4, 0.2); }
     playLevelUp() {
         [400, 500, 600, 800].forEach((f, i) => setTimeout(() => this.playTone(f, 'square', 0.1, 0.05), i * 80));
     }
@@ -255,11 +261,9 @@ class InputManager {
         this.axisX = 0; 
         this.touchTarget = null;
 
-        // Keyboard
         window.addEventListener('keydown', e => this.handleKey(e, true));
         window.addEventListener('keyup', e => this.handleKey(e, false));
 
-        // Touch Canvas (Drag anywhere on screen)
         canvas.addEventListener('touchstart', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchmove', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchend', () => { this.touchTarget = null; this.axisX = 0; });
@@ -283,10 +287,8 @@ class Basket {
         this.game = game;
         this.width = 110; this.height = 30;
         this.x = game.width / 2 - this.width / 2;
-        // Raised basket to 80px above bottom to avoid mobile browser bars cutting it off
         this.y = game.height - this.height - 80; 
         
-        // Kinematics
         this.vx = 0;
         this.speed = 1500;    
         this.friction = 0.82; 
@@ -294,24 +296,18 @@ class Basket {
     }
 
     update(dt) {
-        // Handle input
         if (this.game.input.touchTarget !== null) {
-            // Smooth lerp to touch position
             const targetX = this.game.input.touchTarget - this.width / 2;
             this.x += (targetX - this.x) * 15 * dt;
             this.vx = 0; 
         } else {
-            // Physics-based keyboard movement
             this.vx += this.game.input.axisX * this.speed * dt;
             this.vx *= this.friction; 
-            
             if (this.vx > this.maxSpeed) this.vx = this.maxSpeed;
             if (this.vx < -this.maxSpeed) this.vx = -this.maxSpeed;
-            
             this.x += this.vx * dt;
         }
 
-        // Bounds checking
         if (this.x < 0) { this.x = 0; this.vx = 0; }
         if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
     }
@@ -346,8 +342,8 @@ class FallingItem {
         this.text = data.t;
         this.emoji = data.e;
         
-        const progress = 1 - (this.game.timeLeft / GAME_CONFIG.duration);
-        this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.2);
+        const progress = Math.min(1, this.game.survivalTime / 60);
+        this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.5);
         this.markedForDeletion = false;
     }
 
@@ -400,16 +396,13 @@ class ParticleManager {
 
     update(dt) {
         this.particles.forEach(p => {
-            p.x += p.vx * dt;
-            p.y += p.vy * dt;
-            p.vy += 600 * dt; 
-            p.life -= dt * 1.5;
+            p.x += p.vx * dt; p.y += p.vy * dt;
+            p.vy += 600 * dt; p.life -= dt * 1.5;
         });
         this.particles = this.particles.filter(p => p.life > 0);
 
         this.texts.forEach(t => {
-            t.y += t.vy * dt;
-            t.life -= dt;
+            t.y += t.vy * dt; t.life -= dt;
         });
         this.texts = this.texts.filter(t => t.life > 0);
     }
@@ -477,11 +470,17 @@ class Game {
         
         this.state = 'MENU';
         this.lastTime = 0;
+        
+        // Game Stats
         this.score = 0;
         this.streak = 0;
-        this.timeLeft = GAME_CONFIG.duration;
-        this.shakeTimer = 0;
+        this.lives = GAME_CONFIG.maxLives;
+        this.survivalTime = 0;
         
+        // Load High Score from Browser Storage
+        this.personalBest = parseInt(localStorage.getItem('blessingBasketHighScore')) || 0;
+        
+        this.shakeTimer = 0;
         this.itemTimer = 0;
         this.itemInterval = 1.0; 
         
@@ -491,8 +490,10 @@ class Game {
             hud: document.getElementById('hud'),
             scoreVal: document.getElementById('scoreVal'),
             streakVal: document.getElementById('streakVal'),
-            timeVal: document.getElementById('timeVal'),
+            livesVal: document.getElementById('livesVal'),
             finalScore: document.getElementById('finalScore'),
+            highScoreDisplay: document.getElementById('highScoreDisplay'),
+            highScoreVal: document.getElementById('highScoreVal'),
             challengeText: document.getElementById('challengeText')
         };
 
@@ -526,7 +527,13 @@ class Game {
     start() {
         this.audio.init();
         this.state = 'PLAYING';
-        this.score = 0; this.streak = 0; this.timeLeft = GAME_CONFIG.duration;
+        
+        this.score = 0; 
+        this.streak = 0; 
+        this.lives = GAME_CONFIG.maxLives;
+        this.survivalTime = 0;
+        this.itemTimer = 0;
+        
         this.basket = new Basket(this);
         this.items = [];
         this.particles = new ParticleManager();
@@ -536,22 +543,23 @@ class Game {
         this.ui.hud.classList.add('active');
         
         this.updateHUD();
-        
-        if (this.clock) clearInterval(this.clock);
-        this.clock = setInterval(() => {
-            if (this.state === 'PLAYING') {
-                this.timeLeft--;
-                this.ui.timeVal.innerText = this.timeLeft;
-                if (this.timeLeft <= 0) this.end();
-            }
-        }, 1000);
     }
 
     end() {
         this.state = 'END';
-        clearInterval(this.clock);
-        
         this.ui.finalScore.innerText = this.score;
+        
+        // Check High Score logic
+        if (this.score > this.personalBest) {
+            this.personalBest = this.score;
+            localStorage.setItem('blessingBasketHighScore', this.personalBest);
+            this.ui.highScoreDisplay.classList.add('new-high-score');
+            this.ui.highScoreVal.innerText = this.personalBest + " (NEW!)";
+        } else {
+            this.ui.highScoreDisplay.classList.remove('new-high-score');
+            this.ui.highScoreVal.innerText = this.personalBest;
+        }
+
         this.currentChallenge = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
         this.ui.challengeText.innerText = this.currentChallenge;
         
@@ -560,7 +568,7 @@ class Game {
     }
 
     async share(btn) {
-        const txt = `I caught the blessing! My challenge this week: "${this.currentChallenge}" - Play Blessing Basket!`;
+        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`;
         if (navigator.share) {
             try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: window.location.href }); } 
             catch (e) {} 
@@ -579,6 +587,8 @@ class Game {
         this.ui.streakVal.innerText = `Streak: ${this.streak}`;
         if (this.streak >= 3) this.ui.streakVal.classList.add('high');
         else this.ui.streakVal.classList.remove('high');
+        
+        this.ui.livesVal.innerText = '❤️'.repeat(Math.max(0, this.lives)) || '💀';
     }
 
     update(dt) {
@@ -586,14 +596,15 @@ class Game {
         
         if (this.state !== 'PLAYING') return;
 
+        this.survivalTime += dt;
         if (this.shakeTimer > 0) this.shakeTimer -= dt;
 
         this.basket.update(dt);
         this.particles.update(dt);
 
         this.itemTimer += dt;
-        const progress = 1 - (this.timeLeft / GAME_CONFIG.duration);
-        const currentInterval = Math.max(0.3, this.itemInterval - (progress * 0.6)); 
+        const progress = Math.min(1, this.survivalTime / 60);
+        const currentInterval = Math.max(0.35, this.itemInterval - (progress * 0.65)); 
         
         if (this.itemTimer > currentInterval) {
             this.items.push(new FallingItem(this));
@@ -619,11 +630,16 @@ class Game {
                     this.particles.addText(item.x + item.width/2, item.y, `+${10+bonus}`, GAME_CONFIG.colors.goodGlow);
                 } else {
                     this.streak = 0;
-                    this.score = Math.max(0, this.score - 15);
+                    this.lives--;
                     this.audio.playBad();
                     this.triggerShake();
                     this.particles.addBurst(item.x + item.width/2, item.y + item.height, GAME_CONFIG.colors.badGlow);
-                    this.particles.addText(item.x + item.width/2, item.y, "-15", GAME_CONFIG.colors.badGlow);
+                    this.particles.addText(item.x + item.width/2, item.y, "-1 LIFE", GAME_CONFIG.colors.badGlow);
+                    
+                    if (this.lives <= 0) {
+                        this.updateHUD();
+                        setTimeout(() => this.end(), 150); 
+                    }
                 }
                 
                 this.updateHUD();
