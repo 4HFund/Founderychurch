@@ -4,136 +4,452 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Blessing Basket | The Foundery Church</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap');
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
 
+    <style>
+        /* CSS Variables for The Foundery Church Brand Guidelines */
         :root {
             --bg-dark: #0f1115;
             --bg-light: #2a313c;
-            --orange: #d96c06;
-            --orange-glow: rgba(217, 108, 6, 0.6);
-            --gold: #f5b700;
-            --cream: #fdfbf7;
+            
+            --brand-orange: #d96c06;
+            --brand-orange-glow: rgba(217, 108, 6, 0.6);
+            --brand-orange-glass: rgba(217, 108, 6, 0.15);
+            
+            --brand-gold: #f5b700;
+            --brand-gold-glow: rgba(245, 183, 0, 0.5);
+            
+            --brand-cream: #fdfbf7;
+            --brand-cream-dim: rgba(253, 251, 247, 0.7);
+            
             --bad-red: #cc0000;
             --bad-dark: #1e1414;
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* Global Reset & Box Sizing */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            user-select: none; 
+            font-family: 'Montserrat', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
 
+        /* Body & Layout Setup */
         body {
             background-color: #000;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; height: 100dvh; overflow: hidden; touch-action: none;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; 
+            height: 100dvh; /* Dynamic viewport height for mobile browser bars */
+            overflow: hidden; 
+            touch-action: none; /* Prevents pull-to-refresh on mobile */
+            color: var(--brand-cream);
         }
 
+        /* Main Game Container */
         #game-wrapper {
-            position: relative; width: 100vw; height: 100vh; height: 100dvh; max-width: 600px;
+            position: relative; 
+            width: 100vw; 
+            height: 100vh; 
+            height: 100dvh; 
+            max-width: 600px;
             background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
-            overflow: hidden; box-shadow: 0 0 80px rgba(217, 108, 6, 0.05);
+            overflow: hidden; 
+            box-shadow: 0 0 100px rgba(217, 108, 6, 0.1);
         }
 
+        /* Desktop specific styling */
         @media (min-width: 768px) {
-            #game-wrapper { height: 90vh; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.05); }
+            #game-wrapper { 
+                height: 90vh; 
+                border-radius: 28px; 
+                border: 1px solid var(--glass-border); 
+            }
         }
 
-        canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        /* HTML5 Canvas */
+        canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+        }
 
-        /* UI Layer */
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+        /* ------------------------------------------------------------------------
+                                UI LAYER & HUD
+        ------------------------------------------------------------------------
+        */
+        #ui-layer { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 10; 
+            pointer-events: none; 
+        }
 
         .hud {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
-            display: flex; justify-content: space-between;
-            color: var(--cream); font-weight: 800; text-shadow: 0px 4px 10px rgba(0,0,0,0.8);
-            opacity: 0; transition: opacity 0.5s ease;
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            padding: 25px;
+            display: flex; 
+            justify-content: space-between;
+            font-weight: 800; 
+            text-shadow: 0px 4px 15px rgba(0,0,0,0.9);
+            opacity: 0; 
+            transform: translateY(-20px);
+            transition: var(--transition-smooth);
         }
-        .hud.active { opacity: 1; }
+        
+        .hud.active { 
+            opacity: 1; 
+            transform: translateY(0);
+        }
 
         .hud-left { display: flex; flex-direction: column; gap: 4px; }
-        .score-box { font-size: 1.4rem; }
-        .score-val { color: var(--gold); font-size: 1.8rem; }
-        .streak-box { font-size: 0.9rem; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; }
-        .streak-box.high { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .score-box { font-size: 1.4rem; letter-spacing: 1px; color: var(--brand-cream-dim); }
+        .score-val { color: var(--brand-gold); font-size: 2rem; font-weight: 900; }
         
-        .hud-right { text-align: right; font-size: 1.2rem; color: rgba(253, 251, 247, 0.7); }
-        .lives-val { font-size: 1.6rem; letter-spacing: 3px; margin-bottom: 2px; }
+        .streak-box { 
+            font-size: 0.9rem; 
+            color: var(--brand-orange); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            transition: var(--transition-smooth); 
+        }
+        .streak-box.high { 
+            color: var(--brand-gold); 
+            text-shadow: 0 0 15px var(--brand-gold); 
+            transform: scale(1.05);
+            transform-origin: left;
+        }
+        
+        .hud-right { text-align: right; }
+        .lives-val { font-size: 1.8rem; letter-spacing: 4px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .lives-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--brand-cream-dim); }
 
-        /* Screens */
+        /* ------------------------------------------------------------------------
+                                SCREENS & MODALS
+        ------------------------------------------------------------------------
+        */
         .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
             background: rgba(15, 17, 21, 0.95);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 30px; text-align: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(1.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            padding: 30px; 
+            text-align: center;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(1.08); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
         }
-        .screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+        
+        .screen.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+            transform: scale(1); 
+        }
 
+        /* Typography */
         h1 {
-            color: var(--cream); font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 900;
-            text-transform: uppercase; letter-spacing: 1px; line-height: 1.1; margin-bottom: 10px;
-            text-shadow: 0 0 30px var(--orange-glow);
+            color: var(--brand-cream); 
+            font-size: clamp(2.5rem, 8vw, 3.8rem); 
+            font-weight: 900;
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            line-height: 1; 
+            margin-bottom: 12px;
+            text-shadow: 0 0 40px var(--brand-orange-glow);
         }
 
-        h2 { color: var(--gold); font-size: 1.1rem; font-weight: 600; margin-bottom: 25px; letter-spacing: 1px; }
-        p { color: rgba(253, 251, 247, 0.8); font-size: 1rem; line-height: 1.6; margin-bottom: 30px; max-width: 400px; }
+        h2 { 
+            color: var(--brand-gold); 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+        }
+        
+        p { 
+            color: var(--brand-cream-dim); 
+            font-size: 1.05rem; 
+            line-height: 1.7; 
+            margin-bottom: 40px; 
+            max-width: 420px; 
+            font-weight: 600;
+        }
 
-        /* Buttons & Inputs */
+        /* ------------------------------------------------------------------------
+                                BUTTONS & INPUTS
+        ------------------------------------------------------------------------
+        */
         .btn {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
-            border: none; padding: 18px 40px; border-radius: 50px;
-            color: var(--bg-dark); font-size: 1.2rem; font-weight: 800; cursor: pointer;
-            box-shadow: 0 10px 30px var(--orange-glow); transition: transform 0.1s, box-shadow 0.2s, filter 0.2s;
-            text-transform: uppercase; letter-spacing: 2px; width: 100%; max-width: 320px;
-            margin-bottom: 15px; position: relative; overflow: hidden; display: inline-block; text-decoration: none; text-align: center;
+            background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
+            border: none; 
+            padding: 20px 40px; 
+            border-radius: 50px;
+            color: var(--bg-dark); 
+            font-size: 1.25rem; 
+            font-weight: 900; 
+            cursor: pointer;
+            box-shadow: 0 10px 30px var(--brand-orange-glow), inset 0 -3px 0 rgba(0,0,0,0.2); 
+            transition: var(--transition-smooth);
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            width: 100%; 
+            max-width: 320px;
+            margin-bottom: 15px; 
+            position: relative; 
+            overflow: hidden; 
+            display: inline-block; 
+            text-decoration: none; 
+            text-align: center;
+            pointer-events: auto;
         }
-        .btn:active { transform: scale(0.96); box-shadow: 0 5px 15px var(--orange-glow); }
+        
+        .btn:active { 
+            transform: translateY(2px) scale(0.97); 
+            box-shadow: 0 5px 15px var(--brand-orange-glow), inset 0 -1px 0 rgba(0,0,0,0.2); 
+        }
+        
+        /* Premium Button Shine Effect */
+        .btn::after {
+            content: ''; 
+            position: absolute; 
+            top: -50%; 
+            left: -50%; 
+            width: 200%; 
+            height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg) translateY(-100%); 
+            transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .btn:hover::after { 
+            transform: rotate(45deg) translateY(100%); 
+        }
+
         .btn-outline {
-            background: transparent; border: 2px solid rgba(253, 251, 247, 0.2);
-            color: var(--cream); box-shadow: none; font-size: 0.85rem; padding: 15px 30px;
+            background: var(--glass-bg); 
+            border: 2px solid var(--glass-border);
+            color: var(--brand-cream); 
+            box-shadow: none; 
+            font-size: 0.9rem; 
+            padding: 16px 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* Form Inputs */
         input[type="text"] {
-            background: rgba(253, 251, 247, 0.1); border: 2px solid rgba(253, 251, 247, 0.3);
-            color: var(--cream); font-family: 'Montserrat', sans-serif; font-weight: 800; outline: none;
-            padding: 15px; border-radius: 50px; width: 100%; text-align: center; font-size: 1.1rem; text-transform: uppercase;
+            background: var(--brand-orange-glass); 
+            border: 2px solid rgba(217, 108, 6, 0.4);
+            color: var(--brand-cream); 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 800; 
+            outline: none;
+            padding: 18px; 
+            border-radius: 50px; 
+            width: 100%; 
+            text-align: center; 
+            font-size: 1.15rem; 
+            text-transform: uppercase;
+            transition: var(--transition-smooth);
+            pointer-events: auto;
         }
-        input[type="text"]::placeholder { color: rgba(253, 251, 247, 0.5); font-weight: 600; }
-        input[type="text"]:focus { border-color: var(--gold); background: rgba(253, 251, 247, 0.15); }
+        
+        input[type="text"]::placeholder { color: rgba(253, 251, 247, 0.4); font-weight: 600; }
+        input[type="text"]:focus { 
+            border-color: var(--brand-gold); 
+            background: rgba(245, 183, 0, 0.15); 
+            box-shadow: 0 0 20px var(--brand-gold-glow);
+        }
 
-        .footer-text { position: absolute; bottom: 25px; font-size: 0.75rem; color: rgba(253, 251, 247, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .footer-text { 
+            position: absolute; 
+            bottom: 25px; 
+            font-size: 0.75rem; 
+            color: rgba(253, 251, 247, 0.3); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-weight: 800;
+        }
 
-        /* End Screen Specifics */
-        .final-score { font-size: 5rem; color: var(--gold); font-weight: 900; line-height: 1; margin: 10px 0 5px 0; text-shadow: 0 0 40px rgba(245, 183, 0, 0.4); }
-        .high-score { font-size: 0.9rem; color: rgba(253, 251, 247, 0.6); font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; }
-        .new-high-score { color: var(--gold); text-shadow: 0 0 10px var(--gold); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
+        /* ------------------------------------------------------------------------
+                                END SCREEN SPECIFICS
+        ------------------------------------------------------------------------
+        */
+        .final-score { 
+            font-size: 6rem; 
+            color: var(--brand-gold); 
+            font-weight: 900; 
+            line-height: 0.9; 
+            margin: 15px 0 5px 0; 
+            text-shadow: 0 0 50px var(--brand-gold-glow); 
+        }
+        
+        .high-score { 
+            font-size: 0.95rem; 
+            color: var(--brand-cream-dim); 
+            font-weight: 800; 
+            letter-spacing: 2px; 
+            margin-bottom: 20px; 
+        }
+        
+        .new-high-score { 
+            color: var(--brand-gold); 
+            text-shadow: 0 0 15px var(--brand-gold); 
+            animation: pulse 1.5s infinite; 
+        }
+        
+        @keyframes pulse { 
+            0% { opacity: 0.8; transform: scale(1); } 
+            50% { opacity: 1; transform: scale(1.08); } 
+            100% { opacity: 0.8; transform: scale(1); } 
+        }
 
         .challenge-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(217, 108, 6, 0.3);
-            border-radius: 20px; padding: 25px; margin: 5px 0 20px 0; max-width: 450px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.2) 100%); 
+            border: 1px solid rgba(217, 108, 6, 0.3);
+            border-top: 1px solid rgba(245, 183, 0, 0.5);
+            border-radius: 24px; 
+            padding: 30px 25px; 
+            margin: 10px 0 25px 0; 
+            max-width: 450px; 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
         }
-        .challenge-label { font-size: 0.75rem; color: var(--orange); font-weight: 800; margin-bottom: 12px; letter-spacing: 2px; }
-        .challenge-text { color: var(--cream); font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
+        
+        .challenge-label { 
+            font-size: 0.8rem; 
+            color: var(--brand-orange); 
+            font-weight: 900; 
+            margin-bottom: 15px; 
+            letter-spacing: 3px; 
+        }
+        
+        .challenge-text { 
+            color: var(--brand-cream); 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            line-height: 1.6; 
+        }
 
-        .action-row { display: flex; gap: 10px; width: 100%; max-width: 320px; }
-        .action-row .btn-outline { flex: 1; padding: 12px 0; margin-bottom: 0; letter-spacing: 0; pointer-events: auto; }
+        .action-row { 
+            display: flex; 
+            gap: 12px; 
+            width: 100%; 
+            max-width: 320px; 
+        }
+        
+        .action-row .btn, .action-row .btn-outline { 
+            flex: 1; 
+            padding: 16px 0; 
+            margin-bottom: 0; 
+            letter-spacing: 1px; 
+            font-size: 0.9rem;
+        }
 
-        /* Leaderboard Specifics */
+        /* ------------------------------------------------------------------------
+                                LEADERBOARD UI
+        ------------------------------------------------------------------------
+        */
         #leaderboardList {
-            width: 100%; max-width: 350px; max-height: 50vh; overflow-y: auto; overflow-x: hidden;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(245, 183, 0, 0.2);
-            border-radius: 15px; padding: 10px; margin: 20px 0;
+            width: 100%; 
+            max-width: 400px; 
+            height: 50vh; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; 
+            padding: 15px; 
+            margin: 25px 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            
+            /* Custom Scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--brand-orange) rgba(0,0,0,0.2);
         }
+        
+        #leaderboardList::-webkit-scrollbar { width: 6px; }
+        #leaderboardList::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        #leaderboardList::-webkit-scrollbar-thumb { background: var(--brand-orange); border-radius: 10px; }
+
         .lb-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: var(--cream); font-weight: 600; font-size: 1.1rem;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 16px 20px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--brand-cream); 
+            font-weight: 600; 
+            font-size: 1.15rem;
+            transition: background 0.2s;
+            border-radius: 12px;
         }
+        
+        .lb-row:hover { background: rgba(255,255,255,0.05); }
         .lb-row:last-child { border-bottom: none; }
-        .lb-rank { color: var(--orange); font-weight: 800; width: 30px; text-align: left; }
-        .lb-name { flex: 1; text-transform: uppercase; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .lb-score { color: var(--gold); font-weight: 900; text-align: right; }
+        
+        /* Rank Colors */
+        .lb-rank { font-weight: 900; width: 40px; text-align: left; color: var(--brand-cream-dim); }
+        .lb-row[data-rank="1"] .lb-rank { color: var(--brand-gold); text-shadow: 0 0 10px var(--brand-gold); font-size: 1.4rem; }
+        .lb-row[data-rank="2"] .lb-rank { color: #e0e0e0; font-size: 1.3rem; }
+        .lb-row[data-rank="3"] .lb-rank { color: #cd7f32; font-size: 1.2rem; }
+        
+        .lb-name { 
+            flex: 1; 
+            text-transform: uppercase; 
+            text-align: left; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            padding-right: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .lb-score { color: var(--brand-gold); font-weight: 900; text-align: right; letter-spacing: 1px; }
+
+        /* Status Messages */
+        .status-msg {
+            color: var(--brand-cream-dim);
+            text-align: center;
+            padding: 40px 20px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .status-error { color: var(--bad-red); }
     </style>
 </head>
 <body>
@@ -142,6 +458,7 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui-layer">
+        
         <div class="hud" id="hud">
             <div class="hud-left">
                 <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
@@ -149,7 +466,7 @@
             </div>
             <div class="hud-right">
                 <div class="lives-val" id="livesVal">❤️❤️❤️</div>
-                <div style="font-size: 0.8rem; letter-spacing: 1px; color: var(--cream);">LIVES</div>
+                <div class="lives-label">LIVES</div>
             </div>
         </div>
 
@@ -157,55 +474,69 @@
             <h1>Blessing Basket</h1>
             <h2>CATCH THE BLESSING. SHARE THE BLESSING.</h2>
             <p>Catch as many blessings as you can &mdash; but avoid the things that steal joy. <strong>3 strikes and you're out!</strong></p>
+            
             <button class="btn" id="startBtn">START GAME</button>
             <button class="btn btn-outline" id="lbStartBtn">VIEW LEADERBOARD</button>
+            
             <div class="footer-text">An outreach game by The Foundery Church</div>
         </div>
 
         <div class="screen" id="leaderboardScreen">
-            <h1>TOP 10 BLESSERS</h1>
+            <h1 style="font-size: 2.5rem; margin-bottom: 0;">TOP BLESSERS</h1>
+            <h2>GLOBAL HIGHSCORES</h2>
+            
             <div id="leaderboardList">
-                <div style="color: var(--cream); text-align: center; padding: 20px;">Loading scores...</div>
+                <div class="status-msg">Connecting to database...</div>
             </div>
-            <button class="btn btn-outline" id="lbCloseBtn">BACK</button>
+            
+            <button class="btn btn-outline" id="lbCloseBtn" style="max-width: 400px;">GO BACK</button>
         </div>
 
         <div class="screen" id="endScreen">
-            <h2 style="color: var(--gold); margin-bottom: 0;">GREAT JOB CATCHING BLESSINGS.</h2>
+            <h2 style="color: var(--brand-cream); margin-bottom: 0; font-size: 1rem;">GREAT JOB CATCHING BLESSINGS.</h2>
+            
             <div class="final-score" id="finalScore">0</div>
             <div class="high-score" id="highScoreDisplay">PERSONAL BEST: <span id="highScoreVal">0</span></div>
             
-            <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none; margin-bottom: 10px;">
-                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" style="margin-bottom: 10px;">
-                <button class="btn" id="submitScoreBtn" style="padding: 14px 20px; font-size: 1rem;">SUBMIT SCORE</button>
+            <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none; margin-bottom: 5px;">
+                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom: 12px;">
+                <button class="btn" id="submitScoreBtn" style="padding: 16px 20px; font-size: 1.1rem;">SUBMIT TO LEADERBOARD</button>
             </div>
-            <div id="scoreSavedMsg" style="display: none; color: var(--gold); font-weight: 800; margin-bottom: 20px;">SCORE SAVED!</div>
+            <div id="scoreSavedMsg" style="display: none; color: var(--brand-gold); font-weight: 900; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(245,183,0,0.5);">SCORE SAVED!</div>
 
             <div class="challenge-card">
                 <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
                 <div class="challenge-text" id="challengeText">...</div>
             </div>
 
-            <div class="action-row" style="margin-bottom: 10px;">
-                <button class="btn" id="playAgainBtn" style="margin: 0; flex: 1; padding: 14px 0; font-size: 1rem;">PLAY AGAIN</button>
-                <button class="btn btn-outline" id="lbEndBtn" style="margin: 0; flex: 1; padding: 14px 0; font-size: 1rem; background: rgba(0,0,0,0.5);">LEADERBOARD</button>
+            <div class="action-row" style="margin-bottom: 12px;">
+                <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
+                <button class="btn btn-outline" id="lbEndBtn" style="background: rgba(0,0,0,0.4);">LEADERBOARD</button>
             </div>
-            <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 15px; width: 100%; max-width: 320px;">SHARE CHALLENGE</button>
+            
+            <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 25px; width: 100%; max-width: 320px; border-color: rgba(217, 108, 6, 0.5);">SHARE CHALLENGE</button>
             
             <div class="action-row">
-                <a href="https://thefounderychurch.churchcenter.com/people/forms/1045720" target="_blank" class="btn btn-outline">PRAYER REQUEST</a>
-                <a href="https://thefounderychurch.churchcenter.com/people/forms/1070525" target="_blank" class="btn btn-outline">NOMINATE</a>
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1045720" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.8rem; padding: 14px 0;">PRAYER REQUEST</a>
+                <a href="https://thefounderychurch.churchcenter.com/people/forms/1070525" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.8rem; padding: 14px 0;">NOMINATE</a>
             </div>
         </div>
     </div>
 </div>
 
 <script type="module">
-// Web-friendly Firebase SDK imports
+/**
+ * FIREBASE SDK IMPORTS
+ * We import directly from Google's static CDN so a bundler (Webpack/Vite) is not required.
+ * This makes the HTML file 100% standalone.
+ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-// The config you copied!
+/**
+ * FIREBASE CONFIGURATION
+ * Maps the web client to the specific Firestore backend project.
+ */
 const firebaseConfig = {
     apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
     authDomain: "blessing-basket.firebaseapp.com",
@@ -216,29 +547,64 @@ const firebaseConfig = {
     measurementId: "G-8495PL9SH8"
 };
 
-// Initialize Firebase Database
+// Initialize Firebase App & Database Instance
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- CONFIGURATION DATA ---
+
+/**
+ * ========================================================================
+ * GAME CONFIGURATION & DATA
+ * ========================================================================
+ * Centralized data object allowing easy tweaking of game balance and content.
+ */
 const GAME_CONFIG = {
-    maxLives: 3,
-    colors: {
-        good: '#fdfbf7', goodGlow: '#f5b700', goodBorder: '#d96c06',
-        bad: '#1e1414', badGlow: '#cc0000', badBorder: '#8b0000',
-        basket: '#f5b700', basketInner: '#1e1a13'
+    physics: {
+        gravity: 600,             // Downward force applied to particles
+        basketSpeed: 1800,        // Acceleration of the basket via keyboard
+        basketFriction: 0.80,     // Damping applied to basket velocity
+        basketMaxSpeed: 900,      // Terminal velocity of basket
+        touchFollowSpeed: 18,     // How fast basket snaps to finger (Lerp factor)
+        itemBaseSpeedMin: 200,    // Minimum starting fall speed for items
+        itemBaseSpeedMax: 350,    // Maximum starting fall speed for items
+        maxDifficultyTime: 75     // Seconds until items hit maximum fall speed
     },
+    rules: {
+        maxLives: 3,
+        pointsPerGood: 10,
+        pointsStreakBonus: 5,     // Added on top of base points if streak > 2
+        pointsLostPerBad: 15,
+        streakRequiredForBonus: 3
+    },
+    colors: {
+        goodBg: '#fdfbf7',       // Cream
+        goodGlow: '#f5b700',     // Gold
+        goodBorder: '#d96c06',   // Orange
+        goodText: '#0f1115',     // Dark
+        badBg: '#1e1414',        // Dark Red tint
+        badGlow: '#cc0000',      // Bright Red
+        badBorder: '#8b0000',    // Deep Red
+        badText: '#fdfbf7',      // Cream
+        basket: '#f5b700',       // Gold
+        basketInner: '#1e1a13',  // Dark core
+        forgeSparks: '#f5b700'   // Gold sparks
+    },
+    // The items players want to catch
     goodItems: [
         { t: 'Prayer', e: '🙏' }, { t: 'Kindness', e: '🤝' }, { t: 'Hope', e: '🌟' },
         { t: 'Groceries', e: '🥖' }, { t: 'Encouragement', e: '💬' }, { t: 'Coffee', e: '☕' },
         { t: 'A Ride', e: '🚗' }, { t: 'Help', e: '🛠️' }, { t: 'Forgiveness', e: '🕊️' },
-        { t: 'Smile', e: '😊' }, { t: 'Grace', e: '✨' }, { t: 'Love', e: '❤️' }
+        { t: 'Smile', e: '😊' }, { t: 'Grace', e: '✨' }, { t: 'Love', e: '❤️' },
+        { t: 'Patience', e: '⏳' }, { t: 'Generosity', e: '🎁' }, { t: 'Joy', e: '☀️' }
     ],
+    // The items players must avoid
     badItems: [
         { t: 'Gossip', e: '🗣️' }, { t: 'Fear', e: '😨' }, { t: 'Stress', e: '😖' },
         { t: 'Negativity', e: '🌧️' }, { t: 'Excuses', e: '🤷' }, { t: 'Anger', e: '😡' },
-        { t: 'Pride', e: '🦚' }, { t: 'Doubt', e: '❓' }, { t: 'Isolation', e: '🚪' }
+        { t: 'Pride', e: '🦚' }, { t: 'Doubt', e: '❓' }, { t: 'Isolation', e: '🚪' },
+        { t: 'Envy', e: '😒' }, { t: 'Bitterness', e: '🍋' }, { t: 'Apathy', e: '🥱' }
     ],
+    // Randomized real-world calls to action shown on Game Over
     challenges: [
         "Text someone you haven’t checked on in a while.",
         "Pray for a first responder, veteran, teacher, or neighbor today.",
@@ -247,258 +613,841 @@ const GAME_CONFIG = {
         "Donate something useful to Kenny’s Kloset.",
         "Write a short note of encouragement and give it to someone this week.",
         "Ask someone, 'How can I pray for you?' and actually follow up.",
-        "Share a kind word publicly about someone who usually goes unnoticed."
+        "Share a kind word publicly about someone who usually goes unnoticed.",
+        "Forgive someone who hasn't asked for it.",
+        "Pay for the coffee or meal of the person behind you in line."
     ]
 };
 
-class AudioManager {
-    constructor() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.enabled = true; }
-    init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
+
+/**
+ * ========================================================================
+ * UTILITY MATH FUNCTIONS
+ * ========================================================================
+ * Standard game dev math helpers for smooth animations and calculations.
+ */
+const MathUtils = {
+    // Linear Interpolation: smoothly transition from A to B
+    lerp: (a, b, t) => a + (b - a) * t,
+    // Keep a value strictly within a min/max range
+    clamp: (val, min, max) => Math.min(Math.max(val, min), max),
+    // Get a random float between min and max
+    randomRange: (min, max) => Math.random() * (max - min) + min,
+    // Easing function for floating text (Starts fast, slows down)
+    easeOutCubic: (t) => 1 - Math.pow(1 - t, 3)
+};
+
+
+/**
+ * ========================================================================
+ * ADVANCED AUDIO SYNTHESIZER (ADSR)
+ * ========================================================================
+ * Generates sound effects dynamically using the browser's Web Audio API.
+ * Uses ADSR Envelopes (Attack, Decay, Sustain, Release) to make sounds
+ * feel professional, rounded, and pleasant rather than harsh retro beeps.
+ */
+class AudioEngine {
+    constructor() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.4; // Global volume 40%
+        this.masterGain.connect(this.ctx.destination);
+        this.enabled = true;
+    }
+
+    /** Ensure AudioContext is running (browsers suspend it until user interaction) */
+    init() {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+    }
+
+    /**
+     * Core Synthesizer function using an Envelope Generator
+     * @param {number} freq - Frequency in Hz (Pitch)
+     * @param {string} type - Oscillator type ('sine', 'square', 'sawtooth', 'triangle')
+     * @param {number} duration - Total length of sound in seconds
+     * @param {number} vol - Peak volume (0.0 to 1.0)
+     */
     playTone(freq, type, duration, vol) {
         if (!this.enabled || this.ctx.state === 'suspended') return;
-        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + duration);
+        
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        
+        // ADSR Envelope Construction
+        const attackTime = 0.02;
+        const releaseTime = 0.1;
+        const now = this.ctx.currentTime;
+        
+        // Start at 0
+        gainNode.gain.setValueAtTime(0, now);
+        // Attack (Ramp up to peak volume)
+        gainNode.gain.linearRampToValueAtTime(vol, now + attackTime);
+        // Sustain & Decay (Hold, then ramp down smoothly)
+        gainNode.gain.setTargetAtTime(0, now + duration - releaseTime, releaseTime / 3);
+        
+        osc.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        osc.start(now);
+        osc.stop(now + duration);
     }
-    playGood() { this.playTone(600, 'sine', 0.15, 0.1); setTimeout(() => this.playTone(800, 'sine', 0.2, 0.1), 50); }
-    playBad() { this.playTone(150, 'sawtooth', 0.4, 0.2); }
-    playLevelUp() { [400, 500, 600, 800].forEach((f, i) => setTimeout(() => this.playTone(f, 'square', 0.1, 0.05), i * 80)); }
+
+    // A pleasant two-tone chime for catching a blessing
+    playGood() {
+        this.playTone(659.25, 'sine', 0.15, 0.3); // E5
+        setTimeout(() => this.playTone(880.00, 'sine', 0.25, 0.2), 50); // A5
+    }
+
+    // A low, dissonant buzz for catching a bad item
+    playBad() {
+        this.playTone(150, 'sawtooth', 0.4, 0.4);
+        setTimeout(() => this.playTone(145, 'square', 0.4, 0.2), 20); // Phasing effect
+    }
+
+    // An ascending arpeggio played when a streak hits 3
+    playLevelUp() {
+        // Notes: C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.25), i * 70);
+        });
+    }
 }
 
+
+/**
+ * ========================================================================
+ * LOCAL STORAGE MANAGER
+ * ========================================================================
+ * Wraps localStorage interactions safely to prevent errors in private browsing.
+ */
+class StorageManager {
+    static getHighScore() {
+        try { return parseInt(localStorage.getItem('blessingBasketHighScore')) || 0; } 
+        catch (e) { return 0; }
+    }
+    static setHighScore(score) {
+        try { localStorage.setItem('blessingBasketHighScore', score); } 
+        catch (e) { console.warn("Local storage disabled."); }
+    }
+}
+
+
+/**
+ * ========================================================================
+ * INPUT MANAGER
+ * ========================================================================
+ * Normalizes Keyboard and Touch events into a single axis variable (-1 to 1).
+ */
 class InputManager {
     constructor(canvas) {
-        this.axisX = 0; this.touchTarget = null;
+        this.axisX = 0;             // Represents movement direction (-1 left, 1 right, 0 idle)
+        this.touchTarget = null;    // Absolute X coordinate the user is touching
+        
+        this.keys = { left: false, right: false };
+
+        // Keyboard Event Listeners
         window.addEventListener('keydown', e => this.handleKey(e, true));
         window.addEventListener('keyup', e => this.handleKey(e, false));
+
+        // Touch Event Listeners (Bound to Canvas)
         canvas.addEventListener('touchstart', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchmove', e => this.handleTouch(e), {passive: false});
-        canvas.addEventListener('touchend', () => { this.touchTarget = null; this.axisX = 0; });
+        canvas.addEventListener('touchend', () => { this.touchTarget = null; });
+        canvas.addEventListener('touchcancel', () => { this.touchTarget = null; });
     }
+
     handleKey(e, isDown) {
-        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') this.axisX = isDown ? -1 : (this.axisX === -1 ? 0 : this.axisX);
-        if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') this.axisX = isDown ? 1 : (this.axisX === 1 ? 0 : this.axisX);
+        const key = e.key.toLowerCase();
+        if (key === 'arrowleft' || key === 'a') this.keys.left = isDown;
+        if (key === 'arrowright' || key === 'd') this.keys.right = isDown;
+        
+        // Resolve conflicting key presses
+        if (this.keys.left && this.keys.right) this.axisX = 0;
+        else if (this.keys.left) this.axisX = -1;
+        else if (this.keys.right) this.axisX = 1;
+        else this.axisX = 0;
     }
+
     handleTouch(e) {
-        e.preventDefault(); const rect = e.target.getBoundingClientRect();
-        this.touchTarget = e.touches[0].clientX - rect.left;
+        e.preventDefault(); // Stop scrolling/zooming
+        if (e.touches.length > 0) {
+            const rect = e.target.getBoundingClientRect();
+            // Calculate touch relative to the canvas left edge
+            this.touchTarget = e.touches[0].clientX - rect.left;
+        }
     }
 }
 
+
+/**
+ * ========================================================================
+ * UI MANAGER
+ * ========================================================================
+ * Handles all DOM element caching, CSS class toggling, and data binding.
+ * Keeps the main Game class clean from HTML manipulation.
+ */
+class UIManager {
+    constructor() {
+        // Cache DOM elements
+        this.screens = {
+            start: document.getElementById('startScreen'),
+            end: document.getElementById('endScreen'),
+            leaderboard: document.getElementById('leaderboardScreen')
+        };
+        
+        this.hud = document.getElementById('hud');
+        this.els = {
+            score: document.getElementById('scoreVal'),
+            streak: document.getElementById('streakVal'),
+            lives: document.getElementById('livesVal'),
+            finalScore: document.getElementById('finalScore'),
+            highScoreDisp: document.getElementById('highScoreDisplay'),
+            highScoreVal: document.getElementById('highScoreVal'),
+            challengeTxt: document.getElementById('challengeText'),
+            submitBlock: document.getElementById('submitScoreBlock'),
+            nameInput: document.getElementById('playerNameInput'),
+            saveMsg: document.getElementById('scoreSavedMsg'),
+            lbList: document.getElementById('leaderboardList'),
+            submitBtn: document.getElementById('submitScoreBtn')
+        };
+        
+        this.activeScreen = this.screens.start;
+    }
+
+    /** Switches the visible modal screen */
+    switchScreen(screenName) {
+        // Hide current
+        if (this.activeScreen) this.activeScreen.classList.remove('active');
+        // Show new
+        const nextScreen = this.screens[screenName];
+        if (nextScreen) {
+            nextScreen.classList.add('active');
+            this.activeScreen = nextScreen;
+        }
+    }
+
+    /** Toggles the in-game Heads Up Display overlay */
+    setHUDVisible(isVisible) {
+        if (isVisible) this.hud.classList.add('active');
+        else this.hud.classList.remove('active');
+    }
+
+    /** Updates in-game numbers */
+    updateHUD(score, streak, lives) {
+        this.els.score.innerText = score;
+        this.els.streak.innerText = `Streak: ${streak}`;
+        
+        // Pulse gold logic
+        if (streak >= GAME_CONFIG.rules.streakRequiredForBonus) {
+            this.els.streak.classList.add('high');
+        } else {
+            this.els.streak.classList.remove('high');
+        }
+        
+        // Update heart emojis
+        this.els.lives.innerText = '❤️'.repeat(Math.max(0, lives)) || '💀';
+    }
+
+    /** Populates the Game Over screen data */
+    setupEndScreen(score, personalBest, isNewBest, challenge) {
+        this.els.finalScore.innerText = score;
+        this.els.challengeTxt.innerText = challenge;
+        
+        if (isNewBest) {
+            this.els.highScoreDisp.classList.add('new-high-score');
+            this.els.highScoreVal.innerText = personalBest + " (NEW!)";
+        } else {
+            this.els.highScoreDisp.classList.remove('new-high-score');
+            this.els.highScoreVal.innerText = personalBest;
+        }
+
+        // Only allow database submission if they scored points
+        if (score > 0) {
+            this.els.submitBlock.style.display = 'block';
+            this.els.saveMsg.style.display = 'none';
+            this.els.nameInput.value = ''; 
+        } else {
+            this.els.submitBlock.style.display = 'none';
+            this.els.saveMsg.style.display = 'none';
+        }
+    }
+
+    /** Renders the fetched database array into HTML rows */
+    renderLeaderboard(dataArray, error = null) {
+        if (error) {
+            this.els.lbList.innerHTML = `<div class="status-msg status-error">${error}</div>`;
+            return;
+        }
+        
+        if (dataArray.length === 0) {
+            this.els.lbList.innerHTML = `<div class="status-msg">Be the first to get a high score!</div>`;
+            return;
+        }
+
+        let html = '';
+        dataArray.forEach((row, index) => {
+            const rank = index + 1;
+            // Sanitize name injection to prevent basic XSS
+            const safeName = row.name.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 15);
+            html += `
+                <div class="lb-row" data-rank="${rank}">
+                    <div class="lb-rank">#${rank}</div>
+                    <div class="lb-name">${safeName}</div>
+                    <div class="lb-score">${row.score}</div>
+                </div>
+            `;
+        });
+        this.els.lbList.innerHTML = html;
+    }
+}
+
+
+/**
+ * ========================================================================
+ * PARALLAX BACKGROUND SYSTEM
+ * ========================================================================
+ * Manages multiple layers of floating objects to create depth (z-index illusion).
+ */
+class ParallaxBackground {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+        this.layers = [];
+        
+        // Layer 1: Slow, tiny, dim background embers (Far away)
+        this.layers.push(this.createLayer(30, { sizeMin: 0.5, sizeMax: 1.5, speedMult: 0.3, alphaMin: 0.1, alphaMax: 0.3 }));
+        
+        // Layer 2: Medium, standard embers (Midground)
+        this.layers.push(this.createLayer(20, { sizeMin: 1.5, sizeMax: 2.5, speedMult: 0.8, alphaMin: 0.3, alphaMax: 0.6 }));
+        
+        // Layer 3: Fast, large, bright embers (Foreground/Out of focus)
+        this.layers.push(this.createLayer(10, { sizeMin: 3.0, sizeMax: 5.0, speedMult: 1.5, alphaMin: 0.5, alphaMax: 0.8 }));
+    }
+
+    createLayer(count, config) {
+        let particles = [];
+        for (let i = 0; i < count; i++) {
+            particles.push(this.spawnParticle(config, true));
+        }
+        return { particles, config };
+    }
+
+    spawnParticle(config, randomY = false) {
+        return {
+            x: Math.random() * this.width,
+            // If randomY is true (init), spawn anywhere. If false (respawn), spawn just below screen.
+            y: randomY ? Math.random() * this.height : this.height + 10,
+            s: MathUtils.randomRange(config.sizeMin, config.sizeMax),
+            vy: -MathUtils.randomRange(20, 50) * config.speedMult,
+            vx: MathUtils.randomRange(-5, 5) * config.speedMult,
+            alpha: MathUtils.randomRange(config.alphaMin, config.alphaMax),
+            wobbleSpeed: MathUtils.randomRange(0.5, 2.0),
+            wobbleTime: Math.random() * Math.PI * 2
+        };
+    }
+
+    update(dt) {
+        this.layers.forEach(layer => {
+            layer.particles.forEach(p => {
+                // Sine wave wobble applied to X axis
+                p.wobbleTime += dt * p.wobbleSpeed;
+                p.x += (p.vx + Math.sin(p.wobbleTime) * 10) * dt;
+                p.y += p.vy * dt;
+                
+                // Wrap around when reaching top
+                if (p.y < -20) Object.assign(p, this.spawnParticle(layer.config, false));
+            });
+        });
+    }
+
+    draw(ctx) {
+        ctx.fillStyle = GAME_CONFIG.colors.forgeSparks;
+        this.layers.forEach(layer => {
+            layer.particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath(); 
+                ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); 
+                ctx.fill();
+            });
+        });
+        ctx.globalAlpha = 1.0; // Reset
+    }
+}
+
+
+/**
+ * ========================================================================
+ * PARTICLE FX SYSTEM
+ * ========================================================================
+ * Handles explosive bursts and floating combat text (+10, -1 LIFE).
+ */
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.texts = [];
+    }
+
+    /** Emits a burst of physical particles */
+    emitBurst(x, y, color, isGood) {
+        const count = isGood ? 20 : 30; // Bad hits are more explosive
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: x, 
+                y: y,
+                // Circular explosion vector
+                vx: MathUtils.randomRange(-300, 300),
+                vy: MathUtils.randomRange(-400, 50),
+                life: 1.0, 
+                decay: MathUtils.randomRange(0.8, 2.0),
+                color: color, 
+                size: MathUtils.randomRange(2, 6)
+            });
+        }
+    }
+    
+    /** Emits text that floats upwards and fades out */
+    emitText(x, y, text, color) {
+        this.texts.push({ 
+            x: x, 
+            y: y, 
+            text: text, 
+            color: color, 
+            life: 1.5, 
+            vy: -80,
+            startY: y // Used for easing calculations
+        });
+    }
+
+    update(dt) {
+        // Physics Particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            let p = this.particles[i];
+            p.vy += GAME_CONFIG.physics.gravity * dt; // Apply gravity
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= p.decay * dt;
+            
+            if (p.life <= 0) this.particles.splice(i, 1);
+        }
+
+        // Floating Texts
+        for (let i = this.texts.length - 1; i >= 0; i--) {
+            let t = this.texts[i];
+            t.y += t.vy * dt;
+            t.life -= dt;
+            
+            if (t.life <= 0) this.texts.splice(i, 1);
+        }
+    }
+
+    draw(ctx) {
+        // Draw physical sparks
+        this.particles.forEach(p => {
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.fillStyle = p.color;
+            ctx.beginPath(); 
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); 
+            ctx.fill();
+        });
+        
+        // Draw Text
+        this.texts.forEach(t => {
+            // Fade out in the last 0.5 seconds
+            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2));
+            ctx.fillStyle = t.color;
+            ctx.font = "900 24px Montserrat";
+            ctx.textAlign = "center";
+            ctx.shadowColor = '#000'; 
+            ctx.shadowBlur = 6;
+            
+            // Pop in effect using easing
+            let scale = 1;
+            let progress = 1.5 - t.life;
+            if (progress < 0.2) scale = MathUtils.easeOutCubic(progress * 5); // Rapid scale up
+            
+            ctx.save();
+            ctx.translate(t.x, t.y);
+            ctx.scale(scale, scale);
+            ctx.fillText(t.text, 0, 0);
+            ctx.restore();
+            
+            ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+    }
+}
+
+
+/**
+ * ========================================================================
+ * GAME ENTITIES
+ * ========================================================================
+ */
+
+/** The Player's Basket */
 class Basket {
     constructor(game) {
-        this.game = game; this.width = 110; this.height = 30;
-        this.x = game.width / 2 - this.width / 2; this.y = game.height - this.height - 80; 
-        this.vx = 0; this.speed = 1500; this.friction = 0.82; this.maxSpeed = 800;
+        this.game = game;
+        this.baseWidth = 110; 
+        this.baseHeight = 30;
+        this.width = this.baseWidth;
+        this.height = this.baseHeight;
+        
+        this.x = game.width / 2 - this.width / 2;
+        this.y = game.height - this.height - 80; // Elevated to avoid safe-area/home-bar issues
+        
+        this.vx = 0;
+        
+        // Animation states for squash/stretch
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.targetScaleX = 1;
+        this.targetScaleY = 1;
     }
-    update(dt) {
-        if (this.game.input.touchTarget !== null) {
-            const targetX = this.game.input.touchTarget - this.width / 2;
-            this.x += (targetX - this.x) * 15 * dt; this.vx = 0; 
+
+    /** Triggers a visual deformation when an item hits */
+    pulse(isGood) {
+        if (isGood) {
+            // Squash down, stretch wide
+            this.scaleX = 1.2;
+            this.scaleY = 0.6;
         } else {
-            this.vx += this.game.input.axisX * this.speed * dt; this.vx *= this.friction; 
-            if (this.vx > this.maxSpeed) this.vx = this.maxSpeed;
-            if (this.vx < -this.maxSpeed) this.vx = -this.maxSpeed;
+            // Stretch tall, squash narrow (shock recoil)
+            this.scaleX = 0.8;
+            this.scaleY = 1.3;
+        }
+    }
+
+    update(dt) {
+        const p = GAME_CONFIG.physics;
+        
+        // 1. Resolve Movement
+        if (this.game.input.touchTarget !== null) {
+            // Touch Drive: Smoothly interpolate toward finger X coordinate
+            const targetX = this.game.input.touchTarget - this.width / 2;
+            this.x += (targetX - this.x) * p.touchFollowSpeed * dt;
+            this.vx = 0; 
+        } else {
+            // Keyboard Drive: Acceleration & Friction model
+            this.vx += this.game.input.axisX * p.basketSpeed * dt;
+            this.vx *= p.basketFriction; 
+            
+            this.vx = MathUtils.clamp(this.vx, -p.basketMaxSpeed, p.basketMaxSpeed);
             this.x += this.vx * dt;
         }
+
+        // Keep inside screen bounds
         if (this.x < 0) { this.x = 0; this.vx = 0; }
         if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
+
+        // 2. Resolve Squash/Stretch Animation (Spring physics toward 1.0)
+        this.scaleX += (this.targetScaleX - this.scaleX) * 15 * dt;
+        this.scaleY += (this.targetScaleY - this.scaleY) * 15 * dt;
+        
+        // Apply scales to actual drawing dimensions
+        this.width = this.baseWidth * this.scaleX;
+        this.height = this.baseHeight * this.scaleY;
+        
+        // Adjust Y so the basket stays anchored to the bottom instead of growing downward
+        this.y = (this.game.height - 80) - this.height;
     }
+
     draw(ctx) {
-        ctx.shadowColor = GAME_CONFIG.colors.basket; ctx.shadowBlur = 25; ctx.fillStyle = GAME_CONFIG.colors.basket;
-        ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, 10); ctx.fill();
-        ctx.shadowBlur = 0; ctx.fillStyle = GAME_CONFIG.colors.basketInner;
-        ctx.beginPath(); ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, 5); ctx.fill();
+        const c = GAME_CONFIG.colors;
+        const radius = 10;
+        
+        ctx.save();
+        
+        // Outer glowing shell
+        ctx.shadowColor = c.basket;
+        ctx.shadowBlur = 25;
+        ctx.fillStyle = c.basket;
+        ctx.beginPath();
+        ctx.roundRect(this.x, this.y, this.width, this.height, radius);
+        ctx.fill();
+
+        // Inner dark core (creates the illusion of a container)
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = c.basketInner;
+        ctx.beginPath();
+        // Inner box is slightly smaller
+        ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, radius / 2);
+        ctx.fill();
+        
+        ctx.restore();
     }
 }
 
+/** The Falling Blessing/Curse Cards */
 class FallingItem {
     constructor(game) {
-        this.game = game; this.width = 130; this.height = 42;
-        this.x = Math.random() * (game.width - this.width - 20) + 10; this.y = -this.height;
+        this.game = game;
+        this.width = 130; 
+        this.height = 42;
+        
+        // Spawn randomly along X axis, completely above the screen
+        this.x = MathUtils.randomRange(10, game.width - this.width - 10);
+        this.y = -this.height - 10;
+        
+        // Determine type (65% chance for Good)
         this.isGood = Math.random() > 0.35;
-        const list = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems;
-        const data = list[Math.floor(Math.random() * list.length)];
-        this.text = data.t; this.emoji = data.e;
-        const progress = Math.min(1, this.game.survivalTime / 60);
-        this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.5);
+        const dataList = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems;
+        const data = dataList[Math.floor(Math.random() * dataList.length)];
+        
+        this.text = data.t; 
+        this.emoji = data.e;
+        
+        // Calculate dynamic difficulty speed
+        const p = GAME_CONFIG.physics;
+        const timeRatio = MathUtils.clamp(this.game.survivalTime / p.maxDifficultyTime, 0, 1);
+        const baseSpeed = MathUtils.randomRange(p.itemBaseSpeedMin, p.itemBaseSpeedMax);
+        
+        // Speed multiplier maxes out at 2.5x original speed
+        this.vy = baseSpeed * (1 + (timeRatio * 1.5));
+        
+        // Add subtle rotation for polish
+        this.rotation = MathUtils.randomRange(-0.1, 0.1);
+        
         this.markedForDeletion = false;
     }
-    update(dt) { this.y += this.vy * dt; if (this.y > this.game.height) this.markedForDeletion = true; }
-    draw(ctx) {
-        const c = GAME_CONFIG.colors; ctx.save();
-        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow; ctx.shadowBlur = 15;
-        ctx.fillStyle = this.isGood ? c.good : c.bad; ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder;
-        ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, 21); ctx.fill();
-        ctx.shadowBlur = 0; ctx.stroke();
-        ctx.fillStyle = this.isGood ? '#0f1115' : '#fdfbf7'; ctx.font = "bold 14px Montserrat";
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(`${this.emoji} ${this.text}`, this.x + this.width/2, this.y + this.height/2 + 1); ctx.restore();
-    }
-}
 
-class ParticleManager {
-    constructor() { this.particles = []; this.texts = []; }
-    addBurst(x, y, color) {
-        for(let i=0; i<15; i++) {
-            this.particles.push({ x, y, vx: (Math.random() - 0.5) * 400, vy: (Math.random() - 0.5) * 400 - 100, life: 1, color, size: Math.random() * 4 + 2 });
+    update(dt) {
+        this.y += this.vy * dt;
+        
+        // Despawn if it falls completely off screen
+        if (this.y > this.game.height + 20) {
+            this.markedForDeletion = true;
         }
     }
-    addText(x, y, text, color) { this.texts.push({ x, y, text, color, life: 1.5, vy: -50 }); }
-    update(dt) {
-        this.particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 600 * dt; p.life -= dt * 1.5; });
-        this.particles = this.particles.filter(p => p.life > 0);
-        this.texts.forEach(t => { t.y += t.vy * dt; t.life -= dt; });
-        this.texts = this.texts.filter(t => t.life > 0);
-    }
+
     draw(ctx) {
-        this.particles.forEach(p => {
-            ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-        });
-        this.texts.forEach(t => {
-            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color;
-            ctx.font = "900 22px Montserrat"; ctx.textAlign = "center";
-            ctx.shadowColor = '#000'; ctx.shadowBlur = 4; ctx.fillText(t.text, t.x, t.y); ctx.shadowBlur = 0;
-        });
-        ctx.globalAlpha = 1;
+        const c = GAME_CONFIG.colors;
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        
+        ctx.save();
+        
+        // Translate to center to apply rotation
+        ctx.translate(cx, cy);
+        ctx.rotate(this.rotation);
+        
+        // Setup styling based on alignment
+        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = this.isGood ? c.goodBg : c.badBg;
+        ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder;
+        ctx.lineWidth = 2;
+        
+        // Draw Card Background (centered around 0,0)
+        ctx.beginPath();
+        ctx.roundRect(-this.width/2, -this.height/2, this.width, this.height, 21);
+        ctx.fill();
+        ctx.shadowBlur = 0; // Turn off shadow for crisp border and text
+        ctx.stroke();
+
+        // Draw Text & Emoji
+        ctx.fillStyle = this.isGood ? c.goodText : c.badText;
+        ctx.font = "bold 14px Montserrat";
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        
+        // Slight Y offset adjustment for optical alignment of emojis/text
+        ctx.fillText(`${this.emoji} ${this.text}`, 0, 1); 
+        
+        ctx.restore();
     }
 }
 
-class Environment {
-    constructor(w, h) { this.w = w; this.h = h; this.sparks = Array.from({length: 40}, () => this.createSpark(true)); }
-    createSpark(randomY = false) {
-        return { x: Math.random() * this.w, y: randomY ? Math.random() * this.h : this.h + 10, s: Math.random() * 2 + 1, vy: -(Math.random() * 30 + 10), vx: (Math.random() - 0.5) * 10, alpha: Math.random() * 0.5 + 0.1 };
-    }
-    update(dt) { this.sparks.forEach(s => { s.y += s.vy * dt; s.x += s.vx * dt; if(s.y < -10) Object.assign(s, this.createSpark()); }); }
-    draw(ctx) {
-        ctx.fillStyle = '#f5b700';
-        this.sparks.forEach(s => { ctx.globalAlpha = s.alpha; ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill(); });
-        ctx.globalAlpha = 1;
-    }
-}
 
+/**
+ * ========================================================================
+ * MAIN GAME CONTROLLER (STATE MACHINE)
+ * ========================================================================
+ * Orchestrates the game loop, physics integration, collisions, and state.
+ */
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.wrapper = document.getElementById('game-wrapper');
         
-        this.audio = new AudioManager();
+        // Initialize Core Systems
+        this.audio = new AudioEngine();
         this.input = new InputManager(this.canvas);
+        this.ui = new UIManager();
+        this.bg = new ParallaxBackground(0, 0); // Dimensions set in resize()
         
-        this.state = 'MENU';
+        // Game State Variables
+        this.state = 'MENU'; // MENU, PLAYING, END, LEADERBOARD
         this.lastTime = 0;
-        this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.maxLives; this.survivalTime = 0;
+        this.score = 0;
+        this.streak = 0;
+        this.lives = GAME_CONFIG.rules.maxLives;
+        this.survivalTime = 0;
+        this.personalBest = StorageManager.getHighScore();
         
-        // Load local personal best
-        this.personalBest = parseInt(localStorage.getItem('blessingBasketHighScore')) || 0;
+        // Effect Timers
+        this.shakeTimer = 0;
         
-        this.shakeTimer = 0; this.itemTimer = 0; this.itemInterval = 1.0; 
+        // Spawner Control
+        this.itemTimer = 0;
+        this.itemInterval = 1.0; 
         
-        this.ui = {
-            startScreen: document.getElementById('startScreen'),
-            endScreen: document.getElementById('endScreen'),
-            leaderboardScreen: document.getElementById('leaderboardScreen'),
-            hud: document.getElementById('hud'),
-            scoreVal: document.getElementById('scoreVal'),
-            streakVal: document.getElementById('streakVal'),
-            livesVal: document.getElementById('livesVal'),
-            finalScore: document.getElementById('finalScore'),
-            highScoreDisplay: document.getElementById('highScoreDisplay'),
-            highScoreVal: document.getElementById('highScoreVal'),
-            challengeText: document.getElementById('challengeText'),
-            submitScoreBlock: document.getElementById('submitScoreBlock'),
-            playerNameInput: document.getElementById('playerNameInput'),
-            scoreSavedMsg: document.getElementById('scoreSavedMsg'),
-            leaderboardList: document.getElementById('leaderboardList')
-        };
-        this.prevScreen = null; // Track where we opened the leaderboard from
+        // Arrays
+        this.items = [];
+        this.particles = new ParticleSystem();
 
+        // Screen setup
         window.addEventListener('resize', () => this.resize());
         this.resize();
-        this.env = new Environment(this.width, this.height);
-        
-        // Bind Buttons
-        document.getElementById('startBtn').addEventListener('click', () => this.start());
-        document.getElementById('playAgainBtn').addEventListener('click', () => this.start());
-        document.getElementById('shareBtn').addEventListener('click', (e) => this.share(e.target));
-        
-        // Leaderboard Buttons
-        document.getElementById('lbStartBtn').addEventListener('click', () => this.openLeaderboard(this.ui.startScreen));
-        document.getElementById('lbEndBtn').addEventListener('click', () => this.openLeaderboard(this.ui.endScreen));
-        document.getElementById('lbCloseBtn').addEventListener('click', () => this.closeLeaderboard());
-        document.getElementById('submitScoreBtn').addEventListener('click', () => this.submitScore());
 
+        // Wire up UI Events
+        this.bindEvents();
+
+        // Kick off the Master Loop
         requestAnimationFrame(t => this.loop(t));
     }
 
+    /** Binds HTML buttons to class methods */
+    bindEvents() {
+        document.getElementById('startBtn').addEventListener('click', () => this.startMatch());
+        document.getElementById('playAgainBtn').addEventListener('click', () => this.startMatch());
+        
+        document.getElementById('shareBtn').addEventListener('click', (e) => this.shareChallenge(e.target));
+        document.getElementById('submitScoreBtn').addEventListener('click', () => this.submitToDatabase());
+        
+        // Leaderboard Navigation
+        document.getElementById('lbStartBtn').addEventListener('click', () => {
+            this.state = 'LEADERBOARD';
+            this.fetchLeaderboard();
+            this.ui.switchScreen('leaderboard');
+        });
+        document.getElementById('lbEndBtn').addEventListener('click', () => {
+            this.state = 'LEADERBOARD';
+            this.fetchLeaderboard();
+            this.ui.switchScreen('leaderboard');
+        });
+        document.getElementById('lbCloseBtn').addEventListener('click', () => {
+            // Return to previous state based on score
+            if (this.survivalTime === 0) {
+                this.state = 'MENU';
+                this.ui.switchScreen('start');
+            } else {
+                this.state = 'END';
+                this.ui.switchScreen('end');
+            }
+        });
+    }
+
+    /** * Handles canvas resizing for high-DPI (Retina) displays.
+     * Prevents the game from looking blurry on modern phones.
+     */
     resize() {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.wrapper.getBoundingClientRect();
-        this.width = rect.width; this.height = rect.height;
-        this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
+        
+        // Logical dimension
+        this.width = rect.width;
+        this.height = rect.height;
+        
+        // Physical dimension
+        this.canvas.width = this.width * dpr;
+        this.canvas.height = this.height * dpr;
+        
+        // Scale rendering context
         this.ctx.scale(dpr, dpr);
+        
+        // Update background bounds
+        this.bg.width = this.width;
+        this.bg.height = this.height;
+        
+        // Keep basket grounded if screen rotates mid-game
         if (this.basket) {
-            this.basket.y = this.height - this.basket.height - 80;
-            if(this.basket.x > this.width) this.basket.x = this.width - this.basket.width;
+            this.basket.y = (this.height - 80) - this.basket.height;
+            if (this.basket.x > this.width) this.basket.x = this.width - this.basket.width;
         }
     }
 
-    start() {
-        this.audio.init(); this.state = 'PLAYING';
-        this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.maxLives; this.survivalTime = 0; this.itemTimer = 0;
-        this.basket = new Basket(this); this.items = []; this.particles = new ParticleManager();
+    /** Initializes a fresh run */
+    startMatch() {
+        // Must be called on user interaction gesture to unlock browser audio
+        this.audio.init(); 
         
-        this.ui.startScreen.classList.remove('active');
-        this.ui.endScreen.classList.remove('active');
-        this.ui.leaderboardScreen.classList.remove('active');
-        this.ui.hud.classList.add('active');
+        this.state = 'PLAYING';
+        this.score = 0; 
+        this.streak = 0; 
+        this.lives = GAME_CONFIG.rules.maxLives; 
+        this.survivalTime = 0; 
+        this.itemTimer = 0;
         
-        this.updateHUD();
+        this.basket = new Basket(this);
+        this.items = [];
+        this.particles = new ParticleSystem();
+        
+        this.ui.switchScreen(null); // Clear all modals
+        this.ui.setHUDVisible(true);
+        this.ui.updateHUD(this.score, this.streak, this.lives);
     }
 
-    end() {
+    /** Handles Game Over logic */
+    endMatch() {
         this.state = 'END';
-        this.ui.finalScore.innerText = this.score;
         
-        // Personal Best Logic
-        if (this.score > this.personalBest) {
+        const isNewBest = this.score > this.personalBest;
+        if (isNewBest) {
             this.personalBest = this.score;
-            localStorage.setItem('blessingBasketHighScore', this.personalBest);
-            this.ui.highScoreDisplay.classList.add('new-high-score');
-            this.ui.highScoreVal.innerText = this.personalBest + " (NEW!)";
-        } else {
-            this.ui.highScoreDisplay.classList.remove('new-high-score');
-            this.ui.highScoreVal.innerText = this.personalBest;
+            StorageManager.setHighScore(this.personalBest);
         }
 
-        // Show submit block only if they actually scored points
-        if (this.score > 0) {
-            this.ui.submitScoreBlock.style.display = 'block';
-            this.ui.scoreSavedMsg.style.display = 'none';
-            this.ui.playerNameInput.value = ''; // clear previous entry
-        } else {
-            this.ui.submitScoreBlock.style.display = 'none';
-            this.ui.scoreSavedMsg.style.display = 'none';
-        }
-
+        // Pick a random challenge from the config
         this.currentChallenge = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
-        this.ui.challengeText.innerText = this.currentChallenge;
         
-        this.ui.hud.classList.remove('active');
-        this.ui.endScreen.classList.add('active');
+        this.ui.setHUDVisible(false);
+        this.ui.setupEndScreen(this.score, this.personalBest, isNewBest, this.currentChallenge);
+        this.ui.switchScreen('end');
     }
 
-    // --- LEADERBOARD DATABASE LOGIC ---
-    async submitScore() {
-        const name = this.ui.playerNameInput.value.trim();
-        if (name === '') return alert("Please enter your name!");
+    /** Triggers a camera shake effect */
+    triggerCameraShake() { 
+        this.shakeTimer = 0.35; // Duration in seconds
+    }
+
+    /** Uses the Native Web Share API if available, falls back to Clipboard */
+    async shareChallenge(btnElement) {
+        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`;
+        const url = window.location.href;
+
+        if (navigator.share) {
+            try { 
+                await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: url }); 
+            } catch (e) { console.warn("Share canceled"); } 
+        } else {
+            // Fallback for desktop/unsupported browsers
+            navigator.clipboard.writeText(`${txt} ${url}`);
+            const origText = btnElement.innerText; 
+            btnElement.innerText = "COPIED TO CLIPBOARD!";
+            setTimeout(() => btnElement.innerText = origText, 2500);
+        }
+    }
+
+    /** Submits score to Firebase Firestore */
+    async submitToDatabase() {
+        const nameInput = this.ui.els.nameInput;
+        const name = nameInput.value.trim();
         
-        const btn = document.getElementById('submitScoreBtn');
-        btn.innerText = "SAVING..."; btn.disabled = true;
+        if (name === '') {
+            alert("Please enter your name!");
+            nameInput.focus();
+            return;
+        }
+        
+        const btn = this.ui.els.submitBtn;
+        btn.innerText = "SAVING TO CLOUD..."; 
+        btn.disabled = true;
 
         try {
             await addDoc(collection(db, "scores"), {
@@ -506,143 +1455,178 @@ class Game {
                 score: this.score,
                 timestamp: serverTimestamp()
             });
-            this.ui.submitScoreBlock.style.display = 'none';
-            this.ui.scoreSavedMsg.style.display = 'block';
+            
+            // Hide input, show success text
+            this.ui.els.submitBlock.style.display = 'none';
+            this.ui.els.saveMsg.style.display = 'block';
         } catch (e) {
-            console.error("Error adding score: ", e);
-            alert("Failed to save score. Please try again.");
+            console.error("Firebase write error: ", e);
+            alert("Failed to save score. Please check your connection and try again.");
         }
         
-        btn.innerText = "SUBMIT SCORE"; btn.disabled = false;
+        btn.innerText = "SUBMIT TO LEADERBOARD"; 
+        btn.disabled = false;
     }
 
-    async openLeaderboard(sourceScreen) {
-        this.prevScreen = sourceScreen;
-        sourceScreen.classList.remove('active');
-        this.ui.leaderboardScreen.classList.add('active');
-        this.ui.leaderboardList.innerHTML = '<div style="color: var(--cream); text-align: center; padding: 20px;">Fetching scores...</div>';
-
+    /** Queries Firebase for top 10 scores */
+    async fetchLeaderboard() {
         try {
+            // Get top 10 scores, sorted descending
             const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10));
             const querySnapshot = await getDocs(q);
             
-            this.ui.leaderboardList.innerHTML = '';
-            let rank = 1;
+            let dataArray = [];
+            querySnapshot.forEach((doc) => dataArray.push(doc.data()));
             
-            if (querySnapshot.empty) {
-                this.ui.leaderboardList.innerHTML = '<div style="color: var(--cream); text-align: center; padding: 20px;">Be the first to get a high score!</div>';
-            } else {
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    this.ui.leaderboardList.innerHTML += `
-                        <div class="lb-row">
-                            <div class="lb-rank">#${rank}</div>
-                            <div class="lb-name">${data.name.substring(0,15)}</div>
-                            <div class="lb-score">${data.score}</div>
-                        </div>
-                    `;
-                    rank++;
-                });
-            }
+            this.ui.renderLeaderboard(dataArray, null);
         } catch (e) {
-            console.error("Error fetching leaderboard: ", e);
-            this.ui.leaderboardList.innerHTML = '<div style="color: var(--bad-red); text-align: center; padding: 20px;">Could not connect to database.</div>';
+            console.error("Firebase read error: ", e);
+            this.ui.renderLeaderboard([], "Could not connect to database. Please check your connection.");
         }
     }
 
-    closeLeaderboard() {
-        this.ui.leaderboardScreen.classList.remove('active');
-        if (this.prevScreen) this.prevScreen.classList.add('active');
-    }
-
-    async share(btn) {
-        const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`;
-        if (navigator.share) {
-            try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: window.location.href }); } catch (e) {} 
-        } else {
-            navigator.clipboard.writeText(txt);
-            const orig = btn.innerText; btn.innerText = "COPIED!";
-            setTimeout(() => btn.innerText = orig, 2000);
-        }
-    }
-
-    triggerShake() { this.shakeTimer = 0.3; }
-
-    updateHUD() {
-        this.ui.scoreVal.innerText = this.score;
-        this.ui.streakVal.innerText = `Streak: ${this.streak}`;
-        if (this.streak >= 3) this.ui.streakVal.classList.add('high'); else this.ui.streakVal.classList.remove('high');
-        this.ui.livesVal.innerText = '❤️'.repeat(Math.max(0, this.lives)) || '💀';
-    }
-
+    /** Logic Update Phase (Math & Physics) */
     update(dt) {
-        this.env.update(dt);
+        // Always update background
+        this.bg.update(dt);
+        
         if (this.state !== 'PLAYING') return;
+
+        // Advance timers
         this.survivalTime += dt;
         if (this.shakeTimer > 0) this.shakeTimer -= dt;
-        this.basket.update(dt); this.particles.update(dt);
 
+        // Update Entities
+        this.basket.update(dt);
+        this.particles.update(dt);
+
+        // --- SPAWNER LOGIC ---
         this.itemTimer += dt;
-        const progress = Math.min(1, this.survivalTime / 60);
-        const currentInterval = Math.max(0.35, this.itemInterval - (progress * 0.65)); 
         
-        if (this.itemTimer > currentInterval) { this.items.push(new FallingItem(this)); this.itemTimer = 0; }
+        // Difficulty Curve: Spawn interval drops from 1.0s down to 0.3s as time passes
+        const progress = MathUtils.clamp(this.survivalTime / GAME_CONFIG.physics.maxDifficultyTime, 0, 1);
+        const currentInterval = Math.max(0.30, this.itemInterval - (progress * 0.70)); 
+        
+        if (this.itemTimer > currentInterval) {
+            this.items.push(new FallingItem(this));
+            this.itemTimer = 0;
+        }
 
+        // --- COLLISION DETECTION ---
+        const r = GAME_CONFIG.rules;
+        const c = GAME_CONFIG.colors;
+        const padding = 12; // Forgiveness padding so edge misses don't feel unfair
+        
+        // Loop backwards because we might delete items
         for (let i = this.items.length - 1; i >= 0; i--) {
-            let item = this.items[i]; item.update(dt);
-            let padding = 10;
+            let item = this.items[i];
+            item.update(dt);
+
+            // AABB (Axis-Aligned Bounding Box) Collision Check
             if (item.x < this.basket.x + this.basket.width - padding &&
                 item.x + item.width > this.basket.x + padding &&
                 item.y + item.height > this.basket.y + padding &&
                 item.y < this.basket.y + this.basket.height) {
                 
                 if (item.isGood) {
-                    this.streak++; let bonus = this.streak > 2 ? 5 : 0;
-                    if(this.streak === 3) this.audio.playLevelUp(); else this.audio.playGood();
-                    this.score += 10 + bonus;
-                    this.particles.addBurst(item.x + item.width/2, item.y + item.height, GAME_CONFIG.colors.goodGlow);
-                    this.particles.addText(item.x + item.width/2, item.y, `+${10+bonus}`, GAME_CONFIG.colors.goodGlow);
-                } else {
-                    this.streak = 0; this.lives--;
-                    this.audio.playBad(); this.triggerShake();
-                    this.particles.addBurst(item.x + item.width/2, item.y + item.height, GAME_CONFIG.colors.badGlow);
-                    this.particles.addText(item.x + item.width/2, item.y, "-1 LIFE", GAME_CONFIG.colors.badGlow);
+                    // Positive Hit
+                    this.streak++;
+                    let bonus = this.streak > 2 ? r.pointsStreakBonus : 0;
                     
+                    if (this.streak === r.streakRequiredForBonus) this.audio.playLevelUp(); 
+                    else this.audio.playGood();
+                    
+                    this.score += r.pointsPerGood + bonus;
+                    this.basket.pulse(true);
+                    
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.goodGlow, true);
+                    this.particles.emitText(item.x + item.width/2, item.y, `+${r.pointsPerGood + bonus}`, c.goodGlow);
+                } else {
+                    // Negative Hit
+                    this.streak = 0;
+                    this.lives--;
+                    
+                    this.audio.playBad();
+                    this.triggerCameraShake();
+                    this.basket.pulse(false);
+                    
+                    this.particles.emitBurst(item.x + item.width/2, item.y + item.height, c.badGlow, false);
+                    this.particles.emitText(item.x + item.width/2, item.y, "-1 LIFE", c.badGlow);
+                    
+                    // Death Check
                     if (this.lives <= 0) {
-                        this.updateHUD(); setTimeout(() => this.end(), 150); 
+                        this.ui.updateHUD(this.score, this.streak, this.lives);
+                        // Delay end match slightly to let particle explosion finish
+                        setTimeout(() => this.endMatch(), 250); 
                     }
                 }
                 
-                this.updateHUD(); item.markedForDeletion = true;
+                this.ui.updateHUD(this.score, this.streak, this.lives);
+                item.markedForDeletion = true;
             }
-            if (item.markedForDeletion) this.items.splice(i, 1);
+
+            // Cleanup
+            if (item.markedForDeletion) {
+                this.items.splice(i, 1);
+            }
         }
     }
 
+    /** Render Phase (Drawing to Canvas) */
     draw() {
+        // Clear previous frame
         this.ctx.clearRect(0, 0, this.width, this.height);
+        
         this.ctx.save();
+        
+        // Apply Camera Shake Effect globally
         if (this.shakeTimer > 0) {
-            const intensity = this.shakeTimer * 20;
-            this.ctx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
+            // Intensity fades as timer goes down
+            const intensity = this.shakeTimer * 25; 
+            const dx = MathUtils.randomRange(-intensity, intensity);
+            const dy = MathUtils.randomRange(-intensity, intensity);
+            this.ctx.translate(dx, dy);
         }
-        this.env.draw(this.ctx);
+
+        // 1. Draw Background Layer (behind everything)
+        this.bg.draw(this.ctx);
+
+        // 2. Draw Game Elements
         if (this.state === 'PLAYING') {
-            this.basket.draw(this.ctx); this.items.forEach(i => i.draw(this.ctx)); this.particles.draw(this.ctx);
+            this.basket.draw(this.ctx);
+            // Draw items
+            for (let i = 0; i < this.items.length; i++) {
+                this.items[i].draw(this.ctx);
+            }
+            // Draw particles (on top of everything)
+            this.particles.draw(this.ctx);
         }
+
         this.ctx.restore();
     }
 
+    /** Master Game Loop synchronized to monitor refresh rate */
     loop(timestamp) {
+        // Calculate Delta Time in seconds (time since last frame)
         let dt = (timestamp - this.lastTime) / 1000;
+        
+        // Cap Delta Time to prevent physics explosions if user tabs out
         if (dt > 0.1) dt = 0.1; 
+        
         this.lastTime = timestamp;
-        this.update(dt); this.draw();
+
+        this.update(dt);
+        this.draw();
+        
+        // Loop forever
         requestAnimationFrame(t => this.loop(t));
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => new Game());
+// Boot the game once the HTML has fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+    new Game();
+});
 </script>
 </body>
 </html>
