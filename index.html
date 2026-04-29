@@ -22,41 +22,21 @@
 
         body {
             background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            touch-action: none;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; height: 100dvh; overflow: hidden; touch-action: none;
         }
 
         #game-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            max-width: 600px;
+            position: relative; width: 100vw; height: 100vh; height: 100dvh; max-width: 600px;
             background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
-            overflow: hidden;
-            box-shadow: 0 0 80px rgba(217, 108, 6, 0.05);
+            overflow: hidden; box-shadow: 0 0 80px rgba(217, 108, 6, 0.05);
         }
 
         @media (min-width: 768px) {
-            #game-wrapper {
-                height: 90vh;
-                border-radius: 24px;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
+            #game-wrapper { height: 90vh; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.05); }
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0; left: 0; z-index: 1;
-        }
+        canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
 
         /* UI Layer */
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
@@ -85,8 +65,7 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 30px; text-align: center;
             opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(1.05);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            transform: scale(1.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
         .screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
 
@@ -97,31 +76,30 @@
         }
 
         h2 { color: var(--gold); font-size: 1.1rem; font-weight: 600; margin-bottom: 25px; letter-spacing: 1px; }
-        p { color: rgba(253, 251, 247, 0.8); font-size: 1rem; line-height: 1.6; margin-bottom: 35px; max-width: 400px; }
+        p { color: rgba(253, 251, 247, 0.8); font-size: 1rem; line-height: 1.6; margin-bottom: 30px; max-width: 400px; }
 
-        /* Buttons */
+        /* Buttons & Inputs */
         .btn {
             background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
             border: none; padding: 18px 40px; border-radius: 50px;
             color: var(--bg-dark); font-size: 1.2rem; font-weight: 800; cursor: pointer;
-            box-shadow: 0 10px 30px var(--orange-glow);
-            transition: transform 0.1s, box-shadow 0.2s, filter 0.2s;
+            box-shadow: 0 10px 30px var(--orange-glow); transition: transform 0.1s, box-shadow 0.2s, filter 0.2s;
             text-transform: uppercase; letter-spacing: 2px; width: 100%; max-width: 320px;
-            margin-bottom: 15px; position: relative; overflow: hidden;
-            display: inline-block; text-decoration: none; text-align: center;
+            margin-bottom: 15px; position: relative; overflow: hidden; display: inline-block; text-decoration: none; text-align: center;
         }
         .btn:active { transform: scale(0.96); box-shadow: 0 5px 15px var(--orange-glow); }
-        .btn::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(45deg) translateY(-100%); transition: transform 0.6s;
-        }
-        .btn:hover::after { transform: rotate(45deg) translateY(100%); }
-
         .btn-outline {
             background: transparent; border: 2px solid rgba(253, 251, 247, 0.2);
             color: var(--cream); box-shadow: none; font-size: 0.85rem; padding: 15px 30px;
         }
+
+        input[type="text"] {
+            background: rgba(253, 251, 247, 0.1); border: 2px solid rgba(253, 251, 247, 0.3);
+            color: var(--cream); font-family: 'Montserrat', sans-serif; font-weight: 800; outline: none;
+            padding: 15px; border-radius: 50px; width: 100%; text-align: center; font-size: 1.1rem; text-transform: uppercase;
+        }
+        input[type="text"]::placeholder { color: rgba(253, 251, 247, 0.5); font-weight: 600; }
+        input[type="text"]:focus { border-color: var(--gold); background: rgba(253, 251, 247, 0.15); }
 
         .footer-text { position: absolute; bottom: 25px; font-size: 0.75rem; color: rgba(253, 251, 247, 0.4); text-transform: uppercase; letter-spacing: 1px; }
 
@@ -129,19 +107,33 @@
         .final-score { font-size: 5rem; color: var(--gold); font-weight: 900; line-height: 1; margin: 10px 0 5px 0; text-shadow: 0 0 40px rgba(245, 183, 0, 0.4); }
         .high-score { font-size: 0.9rem; color: rgba(253, 251, 247, 0.6); font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; }
         .new-high-score { color: var(--gold); text-shadow: 0 0 10px var(--gold); animation: pulse 1.5s infinite; }
-        
         @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
 
         .challenge-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(217, 108, 6, 0.3);
-            border-radius: 20px; padding: 25px; margin: 10px 0 25px 0; max-width: 450px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            border-radius: 20px; padding: 25px; margin: 5px 0 20px 0; max-width: 450px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
         .challenge-label { font-size: 0.75rem; color: var(--orange); font-weight: 800; margin-bottom: 12px; letter-spacing: 2px; }
         .challenge-text { color: var(--cream); font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
 
         .action-row { display: flex; gap: 10px; width: 100%; max-width: 320px; }
         .action-row .btn-outline { flex: 1; padding: 12px 0; margin-bottom: 0; letter-spacing: 0; pointer-events: auto; }
+
+        /* Leaderboard Specifics */
+        #leaderboardList {
+            width: 100%; max-width: 350px; max-height: 50vh; overflow-y: auto; overflow-x: hidden;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(245, 183, 0, 0.2);
+            border-radius: 15px; padding: 10px; margin: 20px 0;
+        }
+        .lb-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--cream); font-weight: 600; font-size: 1.1rem;
+        }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-rank { color: var(--orange); font-weight: 800; width: 30px; text-align: left; }
+        .lb-name { flex: 1; text-transform: uppercase; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lb-score { color: var(--gold); font-weight: 900; text-align: right; }
     </style>
 </head>
 <body>
@@ -166,22 +158,38 @@
             <h2>CATCH THE BLESSING. SHARE THE BLESSING.</h2>
             <p>Catch as many blessings as you can &mdash; but avoid the things that steal joy. <strong>3 strikes and you're out!</strong></p>
             <button class="btn" id="startBtn">START GAME</button>
+            <button class="btn btn-outline" id="lbStartBtn">VIEW LEADERBOARD</button>
             <div class="footer-text">An outreach game by The Foundery Church</div>
         </div>
 
+        <div class="screen" id="leaderboardScreen">
+            <h1>TOP 10 BLESSERS</h1>
+            <div id="leaderboardList">
+                <div style="color: var(--cream); text-align: center; padding: 20px;">Loading scores...</div>
+            </div>
+            <button class="btn btn-outline" id="lbCloseBtn">BACK</button>
+        </div>
+
         <div class="screen" id="endScreen">
-            <h2 style="color: var(--cream); margin-bottom: 0;">GREAT JOB CATCHING BLESSINGS.</h2>
-            <h2 style="color: var(--gold); margin-bottom: 5px;">NOW GO GIVE ONE AWAY.</h2>
-            
+            <h2 style="color: var(--gold); margin-bottom: 0;">GREAT JOB CATCHING BLESSINGS.</h2>
             <div class="final-score" id="finalScore">0</div>
             <div class="high-score" id="highScoreDisplay">PERSONAL BEST: <span id="highScoreVal">0</span></div>
             
+            <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none; margin-bottom: 10px;">
+                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" style="margin-bottom: 10px;">
+                <button class="btn" id="submitScoreBtn" style="padding: 14px 20px; font-size: 1rem;">SUBMIT SCORE</button>
+            </div>
+            <div id="scoreSavedMsg" style="display: none; color: var(--gold); font-weight: 800; margin-bottom: 20px;">SCORE SAVED!</div>
+
             <div class="challenge-card">
                 <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
                 <div class="challenge-text" id="challengeText">...</div>
             </div>
 
-            <button class="btn" id="playAgainBtn" style="margin-bottom: 10px;">PLAY AGAIN</button>
+            <div class="action-row" style="margin-bottom: 10px;">
+                <button class="btn" id="playAgainBtn" style="margin: 0; flex: 1; padding: 14px 0; font-size: 1rem;">PLAY AGAIN</button>
+                <button class="btn btn-outline" id="lbEndBtn" style="margin: 0; flex: 1; padding: 14px 0; font-size: 1rem; background: rgba(0,0,0,0.5);">LEADERBOARD</button>
+            </div>
             <button class="btn btn-outline" id="shareBtn" style="margin-bottom: 15px; width: 100%; max-width: 320px;">SHARE CHALLENGE</button>
             
             <div class="action-row">
@@ -192,7 +200,26 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+// Web-friendly Firebase SDK imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+// The config you copied!
+const firebaseConfig = {
+    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
+    authDomain: "blessing-basket.firebaseapp.com",
+    projectId: "blessing-basket",
+    storageBucket: "blessing-basket.firebasestorage.app",
+    messagingSenderId: "558241052507",
+    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
+    measurementId: "G-8495PL9SH8"
+};
+
+// Initialize Firebase Database
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // --- CONFIGURATION DATA ---
 const GAME_CONFIG = {
     maxLives: 3,
@@ -224,241 +251,135 @@ const GAME_CONFIG = {
     ]
 };
 
-// --- AUDIO SYNTHESIZER ---
 class AudioManager {
-    constructor() {
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.enabled = true;
-    }
-    
+    constructor() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.enabled = true; }
     init() { if (this.ctx.state === 'suspended') this.ctx.resume(); }
-
     playTone(freq, type, duration, vol) {
         if (!this.enabled || this.ctx.state === 'suspended') return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         gain.gain.setValueAtTime(vol, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime + duration);
     }
-
-    playGood() {
-        this.playTone(600, 'sine', 0.15, 0.1);
-        setTimeout(() => this.playTone(800, 'sine', 0.2, 0.1), 50);
-    }
+    playGood() { this.playTone(600, 'sine', 0.15, 0.1); setTimeout(() => this.playTone(800, 'sine', 0.2, 0.1), 50); }
     playBad() { this.playTone(150, 'sawtooth', 0.4, 0.2); }
-    playLevelUp() {
-        [400, 500, 600, 800].forEach((f, i) => setTimeout(() => this.playTone(f, 'square', 0.1, 0.05), i * 80));
-    }
+    playLevelUp() { [400, 500, 600, 800].forEach((f, i) => setTimeout(() => this.playTone(f, 'square', 0.1, 0.05), i * 80)); }
 }
 
-// --- INPUT MANAGER ---
 class InputManager {
     constructor(canvas) {
-        this.axisX = 0; 
-        this.touchTarget = null;
-
+        this.axisX = 0; this.touchTarget = null;
         window.addEventListener('keydown', e => this.handleKey(e, true));
         window.addEventListener('keyup', e => this.handleKey(e, false));
-
         canvas.addEventListener('touchstart', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchmove', e => this.handleTouch(e), {passive: false});
         canvas.addEventListener('touchend', () => { this.touchTarget = null; this.axisX = 0; });
     }
-
     handleKey(e, isDown) {
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') this.axisX = isDown ? -1 : (this.axisX === -1 ? 0 : this.axisX);
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') this.axisX = isDown ? 1 : (this.axisX === 1 ? 0 : this.axisX);
     }
-
     handleTouch(e) {
-        e.preventDefault();
-        const rect = e.target.getBoundingClientRect();
+        e.preventDefault(); const rect = e.target.getBoundingClientRect();
         this.touchTarget = e.touches[0].clientX - rect.left;
     }
 }
 
-// --- ENTITIES ---
 class Basket {
     constructor(game) {
-        this.game = game;
-        this.width = 110; this.height = 30;
-        this.x = game.width / 2 - this.width / 2;
-        this.y = game.height - this.height - 80; 
-        
-        this.vx = 0;
-        this.speed = 1500;    
-        this.friction = 0.82; 
-        this.maxSpeed = 800;
+        this.game = game; this.width = 110; this.height = 30;
+        this.x = game.width / 2 - this.width / 2; this.y = game.height - this.height - 80; 
+        this.vx = 0; this.speed = 1500; this.friction = 0.82; this.maxSpeed = 800;
     }
-
     update(dt) {
         if (this.game.input.touchTarget !== null) {
             const targetX = this.game.input.touchTarget - this.width / 2;
-            this.x += (targetX - this.x) * 15 * dt;
-            this.vx = 0; 
+            this.x += (targetX - this.x) * 15 * dt; this.vx = 0; 
         } else {
-            this.vx += this.game.input.axisX * this.speed * dt;
-            this.vx *= this.friction; 
+            this.vx += this.game.input.axisX * this.speed * dt; this.vx *= this.friction; 
             if (this.vx > this.maxSpeed) this.vx = this.maxSpeed;
             if (this.vx < -this.maxSpeed) this.vx = -this.maxSpeed;
             this.x += this.vx * dt;
         }
-
         if (this.x < 0) { this.x = 0; this.vx = 0; }
         if (this.x + this.width > this.game.width) { this.x = this.game.width - this.width; this.vx = 0; }
     }
-
     draw(ctx) {
-        ctx.shadowColor = GAME_CONFIG.colors.basket;
-        ctx.shadowBlur = 25;
-        ctx.fillStyle = GAME_CONFIG.colors.basket;
-        ctx.beginPath();
-        ctx.roundRect(this.x, this.y, this.width, this.height, 10);
-        ctx.fill();
-
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = GAME_CONFIG.colors.basketInner;
-        ctx.beginPath();
-        ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, 5);
-        ctx.fill();
+        ctx.shadowColor = GAME_CONFIG.colors.basket; ctx.shadowBlur = 25; ctx.fillStyle = GAME_CONFIG.colors.basket;
+        ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, 10); ctx.fill();
+        ctx.shadowBlur = 0; ctx.fillStyle = GAME_CONFIG.colors.basketInner;
+        ctx.beginPath(); ctx.roundRect(this.x + 5, this.y + 4, this.width - 10, this.height - 12, 5); ctx.fill();
     }
 }
 
 class FallingItem {
     constructor(game) {
-        this.game = game;
-        this.width = 130; this.height = 42;
-        this.x = Math.random() * (game.width - this.width - 20) + 10;
-        this.y = -this.height;
-        
+        this.game = game; this.width = 130; this.height = 42;
+        this.x = Math.random() * (game.width - this.width - 20) + 10; this.y = -this.height;
         this.isGood = Math.random() > 0.35;
         const list = this.isGood ? GAME_CONFIG.goodItems : GAME_CONFIG.badItems;
         const data = list[Math.floor(Math.random() * list.length)];
-        
-        this.text = data.t;
-        this.emoji = data.e;
-        
+        this.text = data.t; this.emoji = data.e;
         const progress = Math.min(1, this.game.survivalTime / 60);
         this.vy = (Math.random() * 150 + 200) * (1 + progress * 1.5);
         this.markedForDeletion = false;
     }
-
-    update(dt) {
-        this.y += this.vy * dt;
-        if (this.y > this.game.height) this.markedForDeletion = true;
-    }
-
+    update(dt) { this.y += this.vy * dt; if (this.y > this.game.height) this.markedForDeletion = true; }
     draw(ctx) {
-        const c = GAME_CONFIG.colors;
-        ctx.save();
-        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow;
-        ctx.shadowBlur = 15;
-        ctx.fillStyle = this.isGood ? c.good : c.bad;
-        ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder;
-        ctx.lineWidth = 2;
-        
-        ctx.beginPath();
-        ctx.roundRect(this.x, this.y, this.width, this.height, 21);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.stroke();
-
-        ctx.fillStyle = this.isGood ? '#0f1115' : '#fdfbf7';
-        ctx.font = "bold 14px Montserrat";
+        const c = GAME_CONFIG.colors; ctx.save();
+        ctx.shadowColor = this.isGood ? c.goodGlow : c.badGlow; ctx.shadowBlur = 15;
+        ctx.fillStyle = this.isGood ? c.good : c.bad; ctx.strokeStyle = this.isGood ? c.goodBorder : c.badBorder;
+        ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(this.x, this.y, this.width, this.height, 21); ctx.fill();
+        ctx.shadowBlur = 0; ctx.stroke();
+        ctx.fillStyle = this.isGood ? '#0f1115' : '#fdfbf7'; ctx.font = "bold 14px Montserrat";
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(`${this.emoji} ${this.text}`, this.x + this.width/2, this.y + this.height/2 + 1);
-        ctx.restore();
+        ctx.fillText(`${this.emoji} ${this.text}`, this.x + this.width/2, this.y + this.height/2 + 1); ctx.restore();
     }
 }
 
-// --- PARTICLE SYSTEMS ---
 class ParticleManager {
     constructor() { this.particles = []; this.texts = []; }
-    
     addBurst(x, y, color) {
         for(let i=0; i<15; i++) {
-            this.particles.push({
-                x, y,
-                vx: (Math.random() - 0.5) * 400,
-                vy: (Math.random() - 0.5) * 400 - 100,
-                life: 1, color, size: Math.random() * 4 + 2
-            });
+            this.particles.push({ x, y, vx: (Math.random() - 0.5) * 400, vy: (Math.random() - 0.5) * 400 - 100, life: 1, color, size: Math.random() * 4 + 2 });
         }
     }
-    
-    addText(x, y, text, color) {
-        this.texts.push({ x, y, text, color, life: 1.5, vy: -50 });
-    }
-
+    addText(x, y, text, color) { this.texts.push({ x, y, text, color, life: 1.5, vy: -50 }); }
     update(dt) {
-        this.particles.forEach(p => {
-            p.x += p.vx * dt; p.y += p.vy * dt;
-            p.vy += 600 * dt; p.life -= dt * 1.5;
-        });
+        this.particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 600 * dt; p.life -= dt * 1.5; });
         this.particles = this.particles.filter(p => p.life > 0);
-
-        this.texts.forEach(t => {
-            t.y += t.vy * dt; t.life -= dt;
-        });
+        this.texts.forEach(t => { t.y += t.vy * dt; t.life -= dt; });
         this.texts = this.texts.filter(t => t.life > 0);
     }
-
     draw(ctx) {
         this.particles.forEach(p => {
-            ctx.globalAlpha = Math.max(0, p.life);
-            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
             ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
         });
-        
         this.texts.forEach(t => {
-            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2));
-            ctx.fillStyle = t.color;
-            ctx.font = "900 22px Montserrat";
-            ctx.textAlign = "center";
-            ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
-            ctx.fillText(t.text, t.x, t.y);
-            ctx.shadowBlur = 0;
+            ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2)); ctx.fillStyle = t.color;
+            ctx.font = "900 22px Montserrat"; ctx.textAlign = "center";
+            ctx.shadowColor = '#000'; ctx.shadowBlur = 4; ctx.fillText(t.text, t.x, t.y); ctx.shadowBlur = 0;
         });
         ctx.globalAlpha = 1;
     }
 }
 
 class Environment {
-    constructor(w, h) {
-        this.w = w; this.h = h;
-        this.sparks = Array.from({length: 40}, () => this.createSpark(true));
-    }
+    constructor(w, h) { this.w = w; this.h = h; this.sparks = Array.from({length: 40}, () => this.createSpark(true)); }
     createSpark(randomY = false) {
-        return {
-            x: Math.random() * this.w,
-            y: randomY ? Math.random() * this.h : this.h + 10,
-            s: Math.random() * 2 + 1,
-            vy: -(Math.random() * 30 + 10),
-            vx: (Math.random() - 0.5) * 10,
-            alpha: Math.random() * 0.5 + 0.1
-        };
+        return { x: Math.random() * this.w, y: randomY ? Math.random() * this.h : this.h + 10, s: Math.random() * 2 + 1, vy: -(Math.random() * 30 + 10), vx: (Math.random() - 0.5) * 10, alpha: Math.random() * 0.5 + 0.1 };
     }
-    update(dt) {
-        this.sparks.forEach(s => {
-            s.y += s.vy * dt; s.x += s.vx * dt;
-            if(s.y < -10) Object.assign(s, this.createSpark());
-        });
-    }
+    update(dt) { this.sparks.forEach(s => { s.y += s.vy * dt; s.x += s.vx * dt; if(s.y < -10) Object.assign(s, this.createSpark()); }); }
     draw(ctx) {
         ctx.fillStyle = '#f5b700';
-        this.sparks.forEach(s => {
-            ctx.globalAlpha = s.alpha;
-            ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill();
-        });
+        this.sparks.forEach(s => { ctx.globalAlpha = s.alpha; ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill(); });
         ctx.globalAlpha = 1;
     }
 }
 
-// --- MAIN GAME CONTROLLER ---
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -470,23 +391,17 @@ class Game {
         
         this.state = 'MENU';
         this.lastTime = 0;
+        this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.maxLives; this.survivalTime = 0;
         
-        // Game Stats
-        this.score = 0;
-        this.streak = 0;
-        this.lives = GAME_CONFIG.maxLives;
-        this.survivalTime = 0;
-        
-        // Load High Score from Browser Storage
+        // Load local personal best
         this.personalBest = parseInt(localStorage.getItem('blessingBasketHighScore')) || 0;
         
-        this.shakeTimer = 0;
-        this.itemTimer = 0;
-        this.itemInterval = 1.0; 
+        this.shakeTimer = 0; this.itemTimer = 0; this.itemInterval = 1.0; 
         
         this.ui = {
             startScreen: document.getElementById('startScreen'),
             endScreen: document.getElementById('endScreen'),
+            leaderboardScreen: document.getElementById('leaderboardScreen'),
             hud: document.getElementById('hud'),
             scoreVal: document.getElementById('scoreVal'),
             streakVal: document.getElementById('streakVal'),
@@ -494,17 +409,28 @@ class Game {
             finalScore: document.getElementById('finalScore'),
             highScoreDisplay: document.getElementById('highScoreDisplay'),
             highScoreVal: document.getElementById('highScoreVal'),
-            challengeText: document.getElementById('challengeText')
+            challengeText: document.getElementById('challengeText'),
+            submitScoreBlock: document.getElementById('submitScoreBlock'),
+            playerNameInput: document.getElementById('playerNameInput'),
+            scoreSavedMsg: document.getElementById('scoreSavedMsg'),
+            leaderboardList: document.getElementById('leaderboardList')
         };
+        this.prevScreen = null; // Track where we opened the leaderboard from
 
         window.addEventListener('resize', () => this.resize());
         this.resize();
-
         this.env = new Environment(this.width, this.height);
         
+        // Bind Buttons
         document.getElementById('startBtn').addEventListener('click', () => this.start());
         document.getElementById('playAgainBtn').addEventListener('click', () => this.start());
         document.getElementById('shareBtn').addEventListener('click', (e) => this.share(e.target));
+        
+        // Leaderboard Buttons
+        document.getElementById('lbStartBtn').addEventListener('click', () => this.openLeaderboard(this.ui.startScreen));
+        document.getElementById('lbEndBtn').addEventListener('click', () => this.openLeaderboard(this.ui.endScreen));
+        document.getElementById('lbCloseBtn').addEventListener('click', () => this.closeLeaderboard());
+        document.getElementById('submitScoreBtn').addEventListener('click', () => this.submitScore());
 
         requestAnimationFrame(t => this.loop(t));
     }
@@ -512,12 +438,9 @@ class Game {
     resize() {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.wrapper.getBoundingClientRect();
-        this.width = rect.width;
-        this.height = rect.height;
-        this.canvas.width = this.width * dpr;
-        this.canvas.height = this.height * dpr;
+        this.width = rect.width; this.height = rect.height;
+        this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr;
         this.ctx.scale(dpr, dpr);
-        
         if (this.basket) {
             this.basket.y = this.height - this.basket.height - 80;
             if(this.basket.x > this.width) this.basket.x = this.width - this.basket.width;
@@ -525,21 +448,13 @@ class Game {
     }
 
     start() {
-        this.audio.init();
-        this.state = 'PLAYING';
-        
-        this.score = 0; 
-        this.streak = 0; 
-        this.lives = GAME_CONFIG.maxLives;
-        this.survivalTime = 0;
-        this.itemTimer = 0;
-        
-        this.basket = new Basket(this);
-        this.items = [];
-        this.particles = new ParticleManager();
+        this.audio.init(); this.state = 'PLAYING';
+        this.score = 0; this.streak = 0; this.lives = GAME_CONFIG.maxLives; this.survivalTime = 0; this.itemTimer = 0;
+        this.basket = new Basket(this); this.items = []; this.particles = new ParticleManager();
         
         this.ui.startScreen.classList.remove('active');
         this.ui.endScreen.classList.remove('active');
+        this.ui.leaderboardScreen.classList.remove('active');
         this.ui.hud.classList.add('active');
         
         this.updateHUD();
@@ -549,7 +464,7 @@ class Game {
         this.state = 'END';
         this.ui.finalScore.innerText = this.score;
         
-        // Check High Score logic
+        // Personal Best Logic
         if (this.score > this.personalBest) {
             this.personalBest = this.score;
             localStorage.setItem('blessingBasketHighScore', this.personalBest);
@@ -560,6 +475,16 @@ class Game {
             this.ui.highScoreVal.innerText = this.personalBest;
         }
 
+        // Show submit block only if they actually scored points
+        if (this.score > 0) {
+            this.ui.submitScoreBlock.style.display = 'block';
+            this.ui.scoreSavedMsg.style.display = 'none';
+            this.ui.playerNameInput.value = ''; // clear previous entry
+        } else {
+            this.ui.submitScoreBlock.style.display = 'none';
+            this.ui.scoreSavedMsg.style.display = 'none';
+        }
+
         this.currentChallenge = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
         this.ui.challengeText.innerText = this.currentChallenge;
         
@@ -567,15 +492,76 @@ class Game {
         this.ui.endScreen.classList.add('active');
     }
 
+    // --- LEADERBOARD DATABASE LOGIC ---
+    async submitScore() {
+        const name = this.ui.playerNameInput.value.trim();
+        if (name === '') return alert("Please enter your name!");
+        
+        const btn = document.getElementById('submitScoreBtn');
+        btn.innerText = "SAVING..."; btn.disabled = true;
+
+        try {
+            await addDoc(collection(db, "scores"), {
+                name: name,
+                score: this.score,
+                timestamp: serverTimestamp()
+            });
+            this.ui.submitScoreBlock.style.display = 'none';
+            this.ui.scoreSavedMsg.style.display = 'block';
+        } catch (e) {
+            console.error("Error adding score: ", e);
+            alert("Failed to save score. Please try again.");
+        }
+        
+        btn.innerText = "SUBMIT SCORE"; btn.disabled = false;
+    }
+
+    async openLeaderboard(sourceScreen) {
+        this.prevScreen = sourceScreen;
+        sourceScreen.classList.remove('active');
+        this.ui.leaderboardScreen.classList.add('active');
+        this.ui.leaderboardList.innerHTML = '<div style="color: var(--cream); text-align: center; padding: 20px;">Fetching scores...</div>';
+
+        try {
+            const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10));
+            const querySnapshot = await getDocs(q);
+            
+            this.ui.leaderboardList.innerHTML = '';
+            let rank = 1;
+            
+            if (querySnapshot.empty) {
+                this.ui.leaderboardList.innerHTML = '<div style="color: var(--cream); text-align: center; padding: 20px;">Be the first to get a high score!</div>';
+            } else {
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    this.ui.leaderboardList.innerHTML += `
+                        <div class="lb-row">
+                            <div class="lb-rank">#${rank}</div>
+                            <div class="lb-name">${data.name.substring(0,15)}</div>
+                            <div class="lb-score">${data.score}</div>
+                        </div>
+                    `;
+                    rank++;
+                });
+            }
+        } catch (e) {
+            console.error("Error fetching leaderboard: ", e);
+            this.ui.leaderboardList.innerHTML = '<div style="color: var(--bad-red); text-align: center; padding: 20px;">Could not connect to database.</div>';
+        }
+    }
+
+    closeLeaderboard() {
+        this.ui.leaderboardScreen.classList.remove('active');
+        if (this.prevScreen) this.prevScreen.classList.add('active');
+    }
+
     async share(btn) {
         const txt = `I scored ${this.score} points on Blessing Basket! My challenge this week: "${this.currentChallenge}" - Try to beat my score!`;
         if (navigator.share) {
-            try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: window.location.href }); } 
-            catch (e) {} 
+            try { await navigator.share({ title: 'Blessing Basket Challenge', text: txt, url: window.location.href }); } catch (e) {} 
         } else {
             navigator.clipboard.writeText(txt);
-            const orig = btn.innerText;
-            btn.innerText = "COPIED!";
+            const orig = btn.innerText; btn.innerText = "COPIED!";
             setTimeout(() => btn.innerText = orig, 2000);
         }
     }
@@ -585,36 +571,25 @@ class Game {
     updateHUD() {
         this.ui.scoreVal.innerText = this.score;
         this.ui.streakVal.innerText = `Streak: ${this.streak}`;
-        if (this.streak >= 3) this.ui.streakVal.classList.add('high');
-        else this.ui.streakVal.classList.remove('high');
-        
+        if (this.streak >= 3) this.ui.streakVal.classList.add('high'); else this.ui.streakVal.classList.remove('high');
         this.ui.livesVal.innerText = '❤️'.repeat(Math.max(0, this.lives)) || '💀';
     }
 
     update(dt) {
         this.env.update(dt);
-        
         if (this.state !== 'PLAYING') return;
-
         this.survivalTime += dt;
         if (this.shakeTimer > 0) this.shakeTimer -= dt;
-
-        this.basket.update(dt);
-        this.particles.update(dt);
+        this.basket.update(dt); this.particles.update(dt);
 
         this.itemTimer += dt;
         const progress = Math.min(1, this.survivalTime / 60);
         const currentInterval = Math.max(0.35, this.itemInterval - (progress * 0.65)); 
         
-        if (this.itemTimer > currentInterval) {
-            this.items.push(new FallingItem(this));
-            this.itemTimer = 0;
-        }
+        if (this.itemTimer > currentInterval) { this.items.push(new FallingItem(this)); this.itemTimer = 0; }
 
         for (let i = this.items.length - 1; i >= 0; i--) {
-            let item = this.items[i];
-            item.update(dt);
-
+            let item = this.items[i]; item.update(dt);
             let padding = 10;
             if (item.x < this.basket.x + this.basket.width - padding &&
                 item.x + item.width > this.basket.x + padding &&
@@ -622,52 +597,39 @@ class Game {
                 item.y < this.basket.y + this.basket.height) {
                 
                 if (item.isGood) {
-                    this.streak++;
-                    let bonus = this.streak > 2 ? 5 : 0;
+                    this.streak++; let bonus = this.streak > 2 ? 5 : 0;
                     if(this.streak === 3) this.audio.playLevelUp(); else this.audio.playGood();
                     this.score += 10 + bonus;
                     this.particles.addBurst(item.x + item.width/2, item.y + item.height, GAME_CONFIG.colors.goodGlow);
                     this.particles.addText(item.x + item.width/2, item.y, `+${10+bonus}`, GAME_CONFIG.colors.goodGlow);
                 } else {
-                    this.streak = 0;
-                    this.lives--;
-                    this.audio.playBad();
-                    this.triggerShake();
+                    this.streak = 0; this.lives--;
+                    this.audio.playBad(); this.triggerShake();
                     this.particles.addBurst(item.x + item.width/2, item.y + item.height, GAME_CONFIG.colors.badGlow);
                     this.particles.addText(item.x + item.width/2, item.y, "-1 LIFE", GAME_CONFIG.colors.badGlow);
                     
                     if (this.lives <= 0) {
-                        this.updateHUD();
-                        setTimeout(() => this.end(), 150); 
+                        this.updateHUD(); setTimeout(() => this.end(), 150); 
                     }
                 }
                 
-                this.updateHUD();
-                item.markedForDeletion = true;
+                this.updateHUD(); item.markedForDeletion = true;
             }
-
             if (item.markedForDeletion) this.items.splice(i, 1);
         }
     }
 
     draw() {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        
         this.ctx.save();
-        
         if (this.shakeTimer > 0) {
             const intensity = this.shakeTimer * 20;
             this.ctx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
         }
-
         this.env.draw(this.ctx);
-
         if (this.state === 'PLAYING') {
-            this.basket.draw(this.ctx);
-            this.items.forEach(i => i.draw(this.ctx));
-            this.particles.draw(this.ctx);
+            this.basket.draw(this.ctx); this.items.forEach(i => i.draw(this.ctx)); this.particles.draw(this.ctx);
         }
-
         this.ctx.restore();
     }
 
@@ -675,10 +637,7 @@ class Game {
         let dt = (timestamp - this.lastTime) / 1000;
         if (dt > 0.1) dt = 0.1; 
         this.lastTime = timestamp;
-
-        this.update(dt);
-        this.draw();
-        
+        this.update(dt); this.draw();
         requestAnimationFrame(t => this.loop(t));
     }
 }
