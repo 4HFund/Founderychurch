@@ -717,6 +717,7 @@ input[type="text"] {
     border-radius: 16px;
     background: rgba(0,0,0,0.35);
     font-size: 1.45rem;
+    text-align: center;
 }
 
 .item-title {
@@ -984,6 +985,15 @@ input[type="text"] {
     line-height: 1.45;
 }
 
+.footer-text {
+    margin-top: 12px;
+    font-size: 0.7rem;
+    color: rgba(253,251,247,0.36);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 900;
+}
+
 @media (max-width: 430px) {
     .hud {
         padding: 12px;
@@ -1153,6 +1163,8 @@ input[type="text"] {
                     <button class="btn btn-outline" id="statsBtn">Stats</button>
                 </div>
 
+                <button class="btn btn-outline" id="leaderboardBtn">Global Leaderboard</button>
+
                 <div class="footer-text">A ChurchBuilt Production</div>
             </div>
         </div>
@@ -1252,6 +1264,11 @@ input[type="text"] {
                     </div>
                 </div>
 
+                <div id="submitScoreBox" style="width:100%;max-width:350px;margin:0 auto 14px;">
+                    <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom:10px;">
+                    <button class="btn" id="submitScoreBtn">Submit Score</button>
+                </div>
+
                 <div class="challenge-card">
                     <div class="challenge-label">Your Challenge This Week</div>
                     <div class="challenge-text" id="challengeText">...</div>
@@ -1261,13 +1278,55 @@ input[type="text"] {
                     <button class="btn" id="playAgainBtn">Again</button>
                     <button class="btn btn-outline" id="homeBtn">Home</button>
                 </div>
+
+                <button class="btn btn-outline" id="leaderboardEndBtn" style="margin-top:10px;">Global Leaderboard</button>
+            </div>
+        </div>
+
+        <div class="screen top" id="leaderboardScreen">
+            <div class="inner">
+                <h1>Leaderboard</h1>
+                <h2>Top 20 Blessers</h2>
+
+                <div class="list" id="leaderboardList">
+                    <div class="item-card">
+                        <div class="item-desc">Loading leaderboard...</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline" id="leaderboardBackBtn">Back</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-const STORAGE_KEY = "blessingCatcherKingdomArcade_v2";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    query,
+    orderBy,
+    limit,
+    getDocs,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
+    authDomain: "blessing-basket.firebaseapp.com",
+    projectId: "blessing-basket",
+    storageBucket: "blessing-basket.firebasestorage.app",
+    messagingSenderId: "558241052507",
+    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
+    measurementId: "G-8495PL9SH8"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+const STORAGE_KEY = "blessingCatcherKingdomArcade_v3";
 
 const LEVELS = [
     {
@@ -1726,6 +1785,12 @@ function rarityLabel(r) {
     return String(r || "common").toUpperCase();
 }
 
+function cleanText(value) {
+    return String(value || "")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
 class AudioEngine {
     constructor() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2170,6 +2235,8 @@ class KingdomGame {
         this.player = null;
         this.mission = null;
         this.storeTab = "outfit";
+        this.previousLeaderboardScreen = "startScreen";
+
         this.powers = { shield: false, slow: 0, double: 0, magnet: 0 };
         this.gearBonus = {};
         this.upgrades = {};
@@ -2251,6 +2318,26 @@ class KingdomGame {
         document.getElementById("playAgainBtn").onclick = () => this.startCountdown();
         document.getElementById("homeBtn").onclick = () => this.showHome();
 
+        document.getElementById("leaderboardBtn").onclick = () => {
+            this.audio.click();
+            this.showLeaderboard("startScreen");
+        };
+
+        document.getElementById("leaderboardEndBtn").onclick = () => {
+            this.audio.click();
+            this.showLeaderboard("endScreen");
+        };
+
+        document.getElementById("leaderboardBackBtn").onclick = () => {
+            this.audio.click();
+            this.showScreen(this.previousLeaderboardScreen || "startScreen");
+        };
+
+        document.getElementById("submitScoreBtn").onclick = () => {
+            this.audio.click();
+            this.submitScore();
+        };
+
         document.getElementById("resetBtn").onclick = () => {
             if (confirm("Reset all progress on this device?")) {
                 localStorage.removeItem(STORAGE_KEY);
@@ -2331,10 +2418,13 @@ class KingdomGame {
         document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
         document.getElementById("hud").style.display = "none";
 
+        if (!id) return;
+
         if (id === "hud") {
             document.getElementById("hud").style.display = "flex";
         } else {
-            document.getElementById(id).style.display = "flex";
+            const screen = document.getElementById(id);
+            if (screen) screen.style.display = "flex";
         }
     }
 
@@ -2752,6 +2842,7 @@ class KingdomGame {
     startCountdown() {
         this.audio.init();
         this.showScreen(null);
+
         let count = 3;
         const el = document.getElementById("countdown");
         el.style.opacity = 1;
@@ -3278,8 +3369,129 @@ class KingdomGame {
         document.getElementById("runBestStreak").innerText = this.bestRunStreak.toLocaleString();
         document.getElementById("challengeText").innerText = pick(GAME.challenges);
 
+        document.getElementById("submitScoreBox").style.display = "block";
+        document.getElementById("submitScoreBtn").innerText = "Submit Score";
+        document.getElementById("submitScoreBtn").disabled = false;
+        document.getElementById("playerNameInput").value = "";
+
         this.renderMenus();
         this.showScreen("endScreen");
+    }
+
+    async submitScore() {
+        const input = document.getElementById("playerNameInput");
+        const name = input.value.trim();
+
+        if (!name) {
+            alert("Please enter your name.");
+            return;
+        }
+
+        const btn = document.getElementById("submitScoreBtn");
+        btn.innerText = "Saving...";
+        btn.disabled = true;
+
+        try {
+            await addDoc(collection(db, "scores"), {
+                name: name,
+                nameKey: name.toLowerCase(),
+                score: this.score,
+                level: this.currentLevel().name,
+                createdAt: serverTimestamp()
+            });
+
+            btn.innerText = "Score Saved!";
+            document.getElementById("submitScoreBox").style.display = "none";
+            this.toast("Score submitted to the global leaderboard!");
+        } catch (error) {
+            console.error(error);
+            alert("Could not save score. Check Firebase setup and Firestore rules.");
+            btn.innerText = "Submit Score";
+            btn.disabled = false;
+        }
+    }
+
+    async showLeaderboard(previousScreen = "startScreen") {
+        this.previousLeaderboardScreen = previousScreen;
+        this.showScreen("leaderboardScreen");
+
+        const list = document.getElementById("leaderboardList");
+
+        list.innerHTML = `
+            <div class="item-card">
+                <div class="item-desc">Loading global leaderboard...</div>
+            </div>
+        `;
+
+        try {
+            const q = query(
+                collection(db, "scores"),
+                orderBy("score", "desc"),
+                limit(150)
+            );
+
+            const snapshot = await getDocs(q);
+
+            const seenNames = new Set();
+            const uniqueScores = [];
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const rawName = String(data.name || "Player").trim();
+                const cleanName = cleanText(rawName).substring(0, 15);
+                const nameKey = cleanName.toLowerCase();
+                const score = Number(data.score || 0);
+
+                if (!seenNames.has(nameKey)) {
+                    seenNames.add(nameKey);
+                    uniqueScores.push({
+                        name: cleanName,
+                        score: score,
+                        level: data.level || "Unknown"
+                    });
+                }
+            });
+
+            const top20 = uniqueScores.slice(0, 20);
+
+            if (top20.length === 0) {
+                list.innerHTML = `
+                    <div class="item-card">
+                        <div class="item-desc">No scores yet. Be the first one on the board.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = top20.map((entry, index) => {
+                const rank = index + 1;
+                const icon = rank === 1 ? "🏆" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "#" + rank;
+
+                return `
+                    <div class="item-card ${rank === 1 ? "equipped" : ""}">
+                        <div class="item-top">
+                            <div class="item-info">
+                                <div class="item-icon">${icon}</div>
+                                <div>
+                                    <div class="item-title">${entry.name}</div>
+                                    <div class="item-meta">${entry.level}</div>
+                                </div>
+                            </div>
+                            <span class="pill gold-pill">${entry.score.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        } catch (error) {
+            console.error(error);
+
+            list.innerHTML = `
+                <div class="item-card">
+                    <div class="item-title" style="color:var(--bad-red);">Leaderboard Error</div>
+                    <div class="item-desc">Could not load the leaderboard. Check Firebase Firestore rules and make sure the scores collection exists.</div>
+                </div>
+            `;
+        }
     }
 
     loop(ts) {
