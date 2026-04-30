@@ -1,715 +1,798 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Blessing Catcher | The Foundery Church</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-dark: #0f1115;
-            --bg-light: #2a313c;
-            --brand-orange: #d96c06;
-            --brand-orange-glow: rgba(217, 108, 6, 0.6);
-            --brand-orange-glass: rgba(217, 108, 6, 0.12);
-            --brand-gold: #f5b700;
-            --brand-gold-glow: rgba(245, 183, 0, 0.5);
-            --brand-cream: #fdfbf7;
-            --brand-cream-dim: rgba(253, 251, 247, 0.7);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --bad-red: #ff4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            font-family: 'Montserrat', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            touch-action: none;
-            color: var(--brand-cream);
-        }
-
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            max-width: 600px;
-            background: radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
-            overflow: hidden;
-            box-shadow: 0 0 100px rgba(0, 0, 0, 0.5);
-            transition: background 0.5s ease;
-        }
-
-        #game-wrapper.storm-phase {
-            background: radial-gradient(circle at top, #1a0f0f 0%, #050505 100%);
-        }
-
-        #game-wrapper.forge-fire {
-            background: radial-gradient(circle at top, #3d1403 0%, #0a0100 100%);
-        }
-
-        #game-wrapper.grace-rush {
-            background: radial-gradient(circle at top, #1b2e1e 0%, #08120b 100%);
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .hud {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            display: none;
-            justify-content: space-between;
-            align-items: flex-start;
-            font-weight: 800;
-            z-index: 10;
-            pointer-events: auto;
-        }
-
-        .hud-left {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .mission-panel {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 10px 15px;
-            border-radius: 12px;
-            backdrop-filter: blur(5px);
-            min-width: 150px;
-            margin-bottom: 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-
-        .mission-panel.complete {
-            transform: scale(1.05);
-            border-color: #00ff88;
-            box-shadow: 0 0 15px rgba(0,255,136,0.3);
-        }
-
-        .mission-title {
-            font-size: 0.65rem;
-            color: var(--brand-orange);
-            letter-spacing: 1.5px;
-            margin-bottom: 3px;
-            text-transform: uppercase;
-        }
-
-        .mission-desc {
-            font-size: 0.85rem;
-            line-height: 1.2;
-            text-shadow: 0 2px 4px #000;
-        }
-
-        .mission-progress {
-            font-size: 0.75rem;
-            margin-top: 5px;
-            color: var(--brand-gold);
-            font-weight: 900;
-        }
-
-        .score-box {
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-            color: var(--brand-cream-dim);
-            text-shadow: 0 2px 5px #000;
-        }
-
-        .score-val {
-            color: var(--brand-gold);
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-        }
-
-        .streak-box {
-            font-size: 0.9rem;
-            color: var(--brand-orange);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            text-shadow: 0 2px 5px #000;
-        }
-
-        .streak-box.high {
-            color: var(--brand-gold);
-            text-shadow: 0 0 15px var(--brand-gold);
-            transform: scale(1.05);
-            transform-origin: left;
-        }
-
-        .combo-recipe {
-            display: flex;
-            gap: 6px;
-            margin-top: 5px;
-        }
-
-        .combo-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid var(--brand-cream-dim);
-            opacity: 0.5;
-            transition: 0.3s;
-        }
-
-        .combo-dot.filled {
-            background: var(--brand-gold);
-            border-color: var(--brand-gold);
-            opacity: 1;
-            box-shadow: 0 0 10px var(--brand-gold);
-        }
-
-        .hud-right {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .lives-val {
-            font-size: 1.8rem;
-            letter-spacing: 3px;
-            margin-bottom: 2px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-        }
-
-        .meter-container {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            pointer-events: auto;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: transform 0.2s;
-            background: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-
-        .meter-container:active {
-            transform: scale(0.9);
-        }
-
-        .meter-svg {
-            transform: rotate(-90deg);
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .meter-bg {
-            fill: none;
-            stroke: rgba(255,255,255,0.1);
-            stroke-width: 6;
-        }
-
-        .meter-fill {
-            fill: none;
-            stroke: var(--brand-gold);
-            stroke-width: 6;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.4s ease-out;
-        }
-
-        .meter-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            text-shadow: 0 0 10px var(--brand-gold);
-            transition: 0.3s;
-        }
-
-        .meter-full {
-            animation: pulse-gold 1s infinite;
-            filter: brightness(1.5);
-        }
-
-        @keyframes pulse-gold {
-            0% {
-                box-shadow: 0 0 10px var(--brand-gold-glow);
-                transform: scale(1);
-            }
-            50% {
-                box-shadow: 0 0 30px var(--brand-gold);
-                transform: scale(1.1);
-            }
-            100% {
-                box-shadow: 0 0 10px var(--brand-gold-glow);
-                transform: scale(1);
-            }
-        }
-
-        .active-powers {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-items: flex-end;
-            margin-top: 15px;
-        }
-
-        .power-badge {
-            font-size: 0.75rem;
-            font-weight: 900;
-            padding: 5px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            min-height: 100%;
-            background: rgba(15, 17, 21, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            text-align: center;
-            backdrop-filter: blur(15px);
-            overflow-y: auto;
-            z-index: 20;
-            pointer-events: auto;
-        }
-
-        h1 {
-            color: var(--brand-cream);
-            font-size: 2.8rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            text-shadow: 0 0 30px var(--brand-orange-glow);
-            line-height: 1.1;
-        }
-
-        h2 {
-            color: var(--brand-gold);
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            color: #000;
-            font-size: 1.1rem;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            width: 100%;
-            max-width: 320px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 25px var(--brand-orange-glow);
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-            box-shadow: 0 5px 10px var(--brand-orange-glow);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-outline {
-            background: var(--glass-bg);
-            border: 2px solid var(--glass-border);
-            color: #fff;
-            box-shadow: none;
-        }
-
-        .customization-panel {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            width: 100%;
-            max-width: 340px;
-        }
-
-        .custom-row {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .custom-row label {
-            font-size: 0.8rem;
-            color: var(--brand-gold);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        select.modifier-select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--glass-border);
-            color: var(--brand-cream);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            outline: none;
-            appearance: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        select.modifier-select option {
-            background: var(--bg-dark);
-            color: var(--brand-cream);
-        }
-
-        .upgrade-grid {
-            display: grid;
-            gap: 15px;
-            width: 100%;
-            max-width: 400px;
-            margin-top: 20px;
-        }
-
-        .upgrade-card {
-            background: var(--glass-bg);
-            border: 2px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: left;
-        }
-
-        .upgrade-card:hover {
-            border-color: var(--brand-gold);
-            background: rgba(245, 183, 0, 0.1);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .upgrade-card h4 {
-            color: var(--brand-gold);
-            margin-bottom: 8px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .upgrade-card p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0;
-            line-height: 1.4;
-        }
-
-        #event-announcer {
-            position: absolute;
-            top: 35%;
-            width: 100%;
-            text-align: center;
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            text-shadow: 0 0 30px var(--brand-orange), 0 5px 15px rgba(0,0,0,0.8);
-            pointer-events: none;
-            opacity: 0;
-            transform: scale(0.5);
-            z-index: 15;
-            line-height: 1;
-        }
-
-        .announce-active {
-            animation: announce-anim 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes announce-anim {
-            0% {
-                opacity: 0;
-                transform: scale(0.5) translateY(20px);
-            }
-            15% {
-                opacity: 1;
-                transform: scale(1.1) translateY(0);
-            }
-            80% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.5) translateY(-20px);
-                filter: blur(10px);
-            }
-        }
-
-        #countdown {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 10rem;
-            font-weight: 900;
-            color: var(--brand-gold);
-            text-shadow: 0 0 50px var(--brand-gold-glow), 0 10px 20px rgba(0,0,0,0.8);
-            pointer-events: none;
-            z-index: 30;
-            opacity: 0;
-        }
-
-        .count-pop {
-            animation: pop 0.8s ease-out;
-        }
-
-        @keyframes pop {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.2);
-            }
-            20% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-            80% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(1.5);
-            }
-        }
-
-        #flash-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        input[type="text"] {
-            background: var(--brand-orange-glass);
-            border: 2px solid rgba(217, 108, 6, 0.4);
-            color: var(--brand-cream);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            outline: none;
-            padding: 18px;
-            border-radius: 50px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.15rem;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--brand-gold);
-            background: rgba(245, 183, 0, 0.15);
-            box-shadow: 0 0 20px var(--brand-gold-glow);
-        }
-
-        .challenge-card {
-            background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.4) 100%);
-            border: 1px solid rgba(217, 108, 6, 0.3);
-            border-top: 2px solid var(--brand-gold);
-            border-radius: 20px;
-            padding: 25px;
-            margin: 15px 0 25px 0;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .challenge-label {
-            font-size: 0.75rem;
-            color: var(--brand-orange);
-            font-weight: 900;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        .challenge-text {
-            color: var(--brand-cream);
-            font-size: 1.1rem;
-            font-weight: 600;
-            line-height: 1.5;
-        }
-
-        .action-row {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            max-width: 320px;
-            margin-bottom: 12px;
-        }
-
-        .action-row .btn,
-        .action-row .btn-outline {
-            flex: 1;
-            padding: 16px 0;
-            margin-bottom: 0;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        #leaderboardList {
-            width: 100%;
-            max-width: 400px;
-            height: 50vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 15px;
-            margin: 25px 0;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        .lb-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: var(--brand-cream);
-            font-weight: 600;
-            font-size: 1.15rem;
-            border-radius: 12px;
-        }
-
-        .lb-rank {
-            font-weight: 900;
-            width: 40px;
-            text-align: left;
-            color: var(--brand-cream-dim);
-        }
-
-        .lb-row[data-rank="1"] .lb-rank {
-            color: var(--brand-gold);
-            text-shadow: 0 0 10px var(--brand-gold);
-            font-size: 1.4rem;
-        }
-
-        .lb-name {
-            flex: 1;
-            text-transform: uppercase;
-            text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding-right: 15px;
-            font-weight: 800;
-        }
-
-        .lb-score {
-            color: var(--brand-gold);
-            font-weight: 900;
-            text-align: right;
-            letter-spacing: 1px;
-        }
-
-        .footer-text {
-            margin-top: 15px;
-            font-size: 0.75rem;
-            color: rgba(253, 251, 247, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 800;
-        }
-
-        @media (max-height: 740px) {
-            h1 {
-                font-size: 2.2rem;
-            }
-
-            h2 {
-                margin-bottom: 15px;
-            }
-
-            .customization-panel {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-
-            .btn {
-                padding: 14px 30px;
-            }
-
-            .screen {
-                justify-content: flex-start;
-                padding-top: 30px;
-            }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Blessing Catcher | The Foundery Church</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-dark: #0f1115;
+    --bg-light: #2a313c;
+    --brand-orange: #d96c06;
+    --brand-orange-glow: rgba(217, 108, 6, 0.6);
+    --brand-orange-glass: rgba(217, 108, 6, 0.12);
+    --brand-gold: #f5b700;
+    --brand-gold-glow: rgba(245, 183, 0, 0.5);
+    --brand-cream: #fdfbf7;
+    --brand-cream-dim: rgba(253, 251, 247, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.13);
+    --bad-red: #ff4444;
+    --good-green: #00ff88;
+    --rare-blue: #00e5ff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    font-family: 'Montserrat', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: #000;
+    color: var(--brand-cream);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    touch-action: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 600px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(245,183,0,0.12), transparent 32%),
+        radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
+    box-shadow: 0 0 120px rgba(0,0,0,0.75);
+    transition: background 0.5s ease;
+}
+
+#game-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 8;
+    background:
+        radial-gradient(circle at center, transparent 45%, rgba(0,0,0,0.45) 100%),
+        linear-gradient(to bottom, rgba(255,255,255,0.05), transparent 18%, rgba(0,0,0,0.2));
+    mix-blend-mode: multiply;
+}
+
+#game-wrapper.storm-phase {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255,68,68,0.16), transparent 35%),
+        radial-gradient(circle at top, #1a0f0f 0%, #050505 100%);
+}
+
+#game-wrapper.forge-fire {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(245,183,0,0.20), transparent 35%),
+        radial-gradient(circle at top, #3d1403 0%, #0a0100 100%);
+}
+
+#game-wrapper.grace-rush {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(0,255,136,0.15), transparent 35%),
+        radial-gradient(circle at top, #1b2e1e 0%, #08120b 100%);
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+#ui-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* HUD */
+.hud {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    padding: 18px;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.hud-left, .hud-right {
+    display: flex;
+    flex-direction: column;
+}
+
+.hud-left {
+    gap: 6px;
+}
+
+.hud-right {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.hud-chip {
+    background: rgba(0,0,0,0.32);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.mission-panel {
+    padding: 10px 14px;
+    min-width: 168px;
+    max-width: 230px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.mission-panel.complete {
+    transform: scale(1.04);
+    border-color: var(--good-green);
+    box-shadow: 0 0 22px rgba(0,255,136,0.35);
+}
+
+.mission-title {
+    font-size: 0.62rem;
+    color: var(--brand-orange);
+    letter-spacing: 1.6px;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.mission-desc {
+    font-size: 0.83rem;
+    line-height: 1.18;
+    font-weight: 800;
+    text-shadow: 0 2px 4px #000;
+}
+
+.mission-progress {
+    font-size: 0.72rem;
+    margin-top: 5px;
+    color: var(--brand-gold);
+    font-weight: 900;
+}
+
+.score-box {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: var(--brand-cream-dim);
+    text-shadow: 0 2px 5px #000;
+    font-weight: 900;
+}
+
+.score-val {
+    color: var(--brand-gold);
+    font-size: 2.1rem;
+    font-weight: 900;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.85);
+}
+
+.level-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    padding: 6px 10px;
+    color: var(--brand-cream);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 900;
+}
+
+.xp-bar {
+    position: relative;
+    width: 155px;
+    height: 8px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.09);
+    border-radius: 99px;
+}
+
+.xp-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
+    box-shadow: 0 0 12px var(--brand-gold-glow);
+    transition: width 0.35s ease;
+}
+
+.streak-box {
+    width: fit-content;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    color: var(--brand-orange);
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    transition: 0.25s;
+    text-shadow: 0 2px 5px #000;
+    font-weight: 900;
+}
+
+.streak-box.high {
+    color: var(--brand-gold);
+    text-shadow: 0 0 15px var(--brand-gold);
+    transform: scale(1.04);
+    transform-origin: left;
+}
+
+.combo-recipe {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+    padding-left: 3px;
+}
+
+.combo-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--brand-cream-dim);
+    opacity: 0.5;
+    transition: 0.25s;
+}
+
+.combo-dot.filled {
+    background: var(--brand-gold);
+    border-color: var(--brand-gold);
+    opacity: 1;
+    box-shadow: 0 0 10px var(--brand-gold);
+}
+
+.lives-val {
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.pause-btn {
+    pointer-events: auto;
+    cursor: pointer;
+    margin-bottom: 8px;
+    padding: 8px 11px;
+    color: var(--brand-cream);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+}
+
+.meter-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    pointer-events: auto;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: transform 0.2s;
+    background: rgba(0,0,0,0.35);
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.42);
+}
+
+.meter-container:active {
+    transform: scale(0.92);
+}
+
+.meter-svg {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.meter-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.1);
+    stroke-width: 6;
+}
+
+.meter-fill {
+    fill: none;
+    stroke: var(--brand-gold);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.35s ease-out;
+}
+
+.meter-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    text-shadow: 0 0 10px var(--brand-gold);
+    transition: 0.3s;
+}
+
+.meter-full {
+    animation: pulse-gold 1s infinite;
+    filter: brightness(1.5);
+}
+
+@keyframes pulse-gold {
+    0% {
+        box-shadow: 0 0 10px var(--brand-gold-glow);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px var(--brand-gold);
+        transform: scale(1.1);
+    }
+    100% {
+        box-shadow: 0 0 10px var(--brand-gold-glow);
+        transform: scale(1);
+    }
+}
+
+.active-powers {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+    margin-top: 12px;
+}
+
+.power-badge {
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 5px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    inset: 0;
+    min-height: 100%;
+    background:
+        radial-gradient(circle at top, rgba(217,108,6,0.12), transparent 34%),
+        rgba(15, 17, 21, 0.96);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 28px;
+    text-align: center;
+    backdrop-filter: blur(16px);
+    overflow-y: auto;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+h1 {
+    color: var(--brand-cream);
+    font-size: 2.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    text-shadow: 0 0 30px var(--brand-orange-glow);
+    line-height: 1.02;
+}
+
+h2 {
+    color: var(--brand-gold);
+    font-size: 1.05rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.small-copy {
+    max-width: 410px;
+    color: var(--brand-cream-dim);
+    line-height: 1.45;
+    font-size: 0.95rem;
+    margin: 0 auto 20px;
+}
+
+.btn {
+    background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
+    border: none;
+    padding: 17px 34px;
+    border-radius: 50px;
+    color: #000;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1.7px;
+    width: 100%;
+    max-width: 330px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 28px var(--brand-orange-glow);
+}
+
+.btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 5px 10px var(--brand-orange-glow);
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-outline {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid var(--glass-border);
+    color: #fff;
+    box-shadow: none;
+}
+
+.customization-panel {
+    background: rgba(0,0,0,0.38);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    padding: 18px;
+    margin-bottom: 22px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+}
+
+.custom-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.custom-row label {
+    font-size: 0.78rem;
+    color: var(--brand-gold);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+select.modifier-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--brand-cream);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    font-size: 0.93rem;
+}
+
+select.modifier-select option {
+    background: var(--bg-dark);
+    color: var(--brand-cream);
+}
+
+.action-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 330px;
+    margin-bottom: 12px;
+}
+
+.action-row .btn,
+.action-row .btn-outline {
+    flex: 1;
+    padding: 15px 0;
+    margin-bottom: 0;
+    letter-spacing: 1px;
+    font-size: 0.86rem;
+}
+
+.upgrade-grid {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 18px;
+}
+
+.upgrade-card {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid var(--glass-border);
+    padding: 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: left;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+.upgrade-card:hover {
+    border-color: var(--brand-gold);
+    background: rgba(245, 183, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+.upgrade-card h4 {
+    color: var(--brand-gold);
+    margin-bottom: 7px;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.upgrade-card p {
+    font-size: 0.88rem;
+    opacity: 0.9;
+    line-height: 1.35;
+}
+
+#event-announcer {
+    position: absolute;
+    top: 34%;
+    width: 100%;
+    text-align: center;
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px var(--brand-orange), 0 5px 15px rgba(0,0,0,0.8);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.5);
+    z-index: 15;
+    line-height: 0.95;
+    padding: 0 18px;
+}
+
+.announce-active {
+    animation: announce-anim 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes announce-anim {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.1) translateY(0);
+    }
+    80% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5) translateY(-20px);
+        filter: blur(10px);
+    }
+}
+
+#countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10rem;
+    font-weight: 900;
+    color: var(--brand-gold);
+    text-shadow: 0 0 50px var(--brand-gold-glow), 0 10px 20px rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 30;
+    opacity: 0;
+}
+
+.count-pop {
+    animation: pop 0.8s ease-out;
+}
+
+@keyframes pop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}
+
+#flash-overlay {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+input[type="text"] {
+    background: var(--brand-orange-glass);
+    border: 2px solid rgba(217,108,6,0.4);
+    color: var(--brand-cream);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    outline: none;
+    padding: 17px;
+    border-radius: 50px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--brand-gold);
+    background: rgba(245,183,0,0.15);
+    box-shadow: 0 0 20px var(--brand-gold-glow);
+}
+
+.challenge-card {
+    background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.4) 100%);
+    border: 1px solid rgba(217,108,6,0.3);
+    border-top: 2px solid var(--brand-gold);
+    border-radius: 22px;
+    padding: 23px;
+    margin: 15px 0 24px;
+    width: 100%;
+    max-width: 410px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.75), 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.challenge-label {
+    font-size: 0.72rem;
+    color: var(--brand-orange);
+    font-weight: 900;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.challenge-text {
+    color: var(--brand-cream);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+#leaderboardList {
+    width: 100%;
+    max-width: 410px;
+    height: 50vh;
+    overflow-y: auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    padding: 14px;
+    margin: 22px 0;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.lb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--brand-cream);
+    font-weight: 700;
+    font-size: 1.05rem;
+    border-radius: 12px;
+}
+
+.lb-rank {
+    font-weight: 900;
+    width: 42px;
+    text-align: left;
+    color: var(--brand-cream-dim);
+}
+
+.lb-row[data-rank="1"] .lb-rank {
+    color: var(--brand-gold);
+    text-shadow: 0 0 10px var(--brand-gold);
+    font-size: 1.3rem;
+}
+
+.lb-name {
+    flex: 1;
+    text-transform: uppercase;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 15px;
+    font-weight: 900;
+}
+
+.lb-score {
+    color: var(--brand-gold);
+    font-weight: 900;
+    text-align: right;
+    letter-spacing: 1px;
+}
+
+.footer-text {
+    margin-top: 12px;
+    font-size: 0.72rem;
+    color: rgba(253,251,247,0.35);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 900;
+}
+
+@media (max-height: 740px) {
+    h1 {
+        font-size: 2.15rem;
+    }
+
+    h2 {
+        margin-bottom: 14px;
+    }
+
+    .customization-panel {
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .btn {
+        padding: 13px 28px;
+    }
+
+    .screen {
+        justify-content: flex-start;
+        padding-top: 28px;
+    }
+
+    .score-val {
+        font-size: 1.75rem;
+    }
+
+    .mission-panel {
+        max-width: 195px;
+    }
+}
+</style>
 </head>
-<body>
 
+<body>
 <div id="game-wrapper">
     <div id="flash-overlay"></div>
     <div id="event-announcer"></div>
@@ -719,23 +802,35 @@
     <div id="ui-layer">
         <div class="hud" id="hud">
             <div class="hud-left">
-                <div class="mission-panel" id="missionPanel">
+                <div class="mission-panel hud-chip" id="missionPanel">
                     <div class="mission-title">ACTIVE MISSION</div>
                     <div class="mission-desc" id="missionDesc">Loading...</div>
                     <div class="mission-progress" id="missionProgress">0 / 0</div>
                 </div>
+
                 <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
-                <div class="streak-box" id="streakVal">Streak: 0</div>
-                <div class="combo-recipe" id="comboRecipe">
+
+                <div class="level-box hud-chip">
+                    <span id="levelVal">LVL 1</span>
+                    <div class="xp-bar">
+                        <div class="xp-fill" id="xpFill"></div>
+                    </div>
+                </div>
+
+                <div class="streak-box hud-chip" id="streakVal">Streak: 0</div>
+
+                <div class="combo-recipe">
                     <div class="combo-dot" id="dot0"></div>
                     <div class="combo-dot" id="dot1"></div>
                     <div class="combo-dot" id="dot2"></div>
                 </div>
             </div>
-            
+
             <div class="hud-right">
+                <button class="pause-btn hud-chip" id="pauseBtn">Pause</button>
                 <div class="lives-val" id="livesVal">❤️❤️❤️</div>
                 <div class="active-powers" id="activePowersBox"></div>
+
                 <div class="meter-container" id="burstBtn" title="Press SPACE or Tap when full!">
                     <svg class="meter-svg" width="70" height="70">
                         <circle class="meter-bg" cx="35" cy="35" r="30"></circle>
@@ -746,10 +841,11 @@
             </div>
         </div>
 
-        <div class="screen" id="startScreen" style="display: flex;">
+        <div class="screen" id="startScreen" style="display:flex;">
             <h1>Blessing Catcher</h1>
-            <h2>ARCADE EDITION</h2>
-            
+            <h2>FORGE EDITION</h2>
+            <p class="small-copy">Catch blessings. Dodge joy-stealers. Build streaks, unlock upgrades, and turn the game into a real-world challenge.</p>
+
             <div class="customization-panel">
                 <div class="custom-row">
                     <label>Skin Tone</label>
@@ -759,6 +855,7 @@
                         <option value="#764531">Dark</option>
                     </select>
                 </div>
+
                 <div class="custom-row">
                     <label>Outfit Color</label>
                     <select id="selOutfit" class="modifier-select">
@@ -768,6 +865,7 @@
                         <option value="#2ecc71">Forest Green</option>
                     </select>
                 </div>
+
                 <div class="action-row" style="margin-bottom:0; max-width:100%;">
                     <div class="custom-row" style="flex:1;">
                         <label>Accessory</label>
@@ -778,6 +876,7 @@
                             <option value="cape">Hero Cape</option>
                         </select>
                     </div>
+
                     <div class="custom-row" style="flex:1;">
                         <label>Catch Tool</label>
                         <select id="selTool" class="modifier-select">
@@ -797,20 +896,31 @@
 
         <div class="screen" id="upgradeScreen">
             <h1 style="color: var(--brand-gold);">LEVEL UP!</h1>
-            <p style="font-size: 1.2rem; color: #fff;">Choose your blessing upgrade:</p>
+            <h2 id="upgradeLevelText">CHOOSE YOUR UPGRADE</h2>
+            <p class="small-copy">Level-ups now get farther apart so each upgrade feels earned.</p>
             <div class="upgrade-grid" id="upgradeGrid"></div>
         </div>
 
+        <div class="screen" id="pauseScreen">
+            <h1>Paused</h1>
+            <h2>Take a breath</h2>
+            <button class="btn" id="resumeBtn">Resume</button>
+            <button class="btn btn-outline" id="quitBtn">Quit Match</button>
+        </div>
+
         <div class="screen" id="endScreen">
-            <h2 style="color: var(--brand-cream); margin-bottom: 0;">MATCH COMPLETE.</h2>
-            <div class="score-val" id="finalScore" style="font-size: 5.5rem; margin: 10px 0;">0</div>
-            <div style="font-size: 0.9rem; font-weight: 800; color: var(--brand-cream-dim); margin-bottom: 15px;">PERSONAL BEST: <span id="highScoreVal" style="color:var(--brand-gold);">0</span></div>
-            
-            <div id="submitScoreBlock" style="width: 100%; max-width: 320px; display: none; margin-bottom: 10px;">
-                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom: 12px;">
-                <button class="btn" id="submitScoreBtn" style="padding: 16px 20px; font-size: 1.1rem; margin-bottom:0;">SUBMIT TO LEADERBOARD</button>
+            <h2 style="color: var(--brand-cream); margin-bottom:0;">MATCH COMPLETE</h2>
+            <div class="score-val" id="finalScore" style="font-size:5.2rem; margin:8px 0;">0</div>
+            <div style="font-size:0.9rem; font-weight:900; color:var(--brand-cream-dim); margin-bottom:14px;">
+                PERSONAL BEST: <span id="highScoreVal" style="color:var(--brand-gold);">0</span>
             </div>
-            <div id="scoreSavedMsg" style="display: none; color: var(--brand-gold); font-weight: 900; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(245,183,0,0.5);">SCORE SAVED!</div>
+
+            <div id="submitScoreBlock" style="width:100%; max-width:330px; display:none; margin-bottom:10px;">
+                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom:12px;">
+                <button class="btn" id="submitScoreBtn" style="padding:15px 20px; font-size:1rem; margin-bottom:0;">SUBMIT TO LEADERBOARD</button>
+            </div>
+
+            <div id="scoreSavedMsg" style="display:none; color:var(--brand-gold); font-weight:900; font-size:1.1rem; letter-spacing:2px; margin-bottom:22px; text-shadow:0 0 15px rgba(245,183,0,0.5);">SCORE SAVED!</div>
 
             <div class="challenge-card">
                 <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
@@ -819,17 +929,17 @@
 
             <div class="action-row">
                 <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-                <button class="btn btn-outline" id="lbEndBtn" style="background: rgba(0,0,0,0.4);">LEADERBOARD</button>
+                <button class="btn btn-outline" id="lbEndBtn" style="background:rgba(0,0,0,0.4);">LEADERBOARD</button>
             </div>
         </div>
 
         <div class="screen" id="leaderboardScreen">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0;">TOP BLESSERS</h1>
+            <h1 style="font-size:2.45rem; margin-bottom:0;">TOP BLESSERS</h1>
             <h2>GLOBAL HIGHSCORES</h2>
             <div id="leaderboardList">
-                <div style="color: var(--brand-cream-dim); text-align: center; padding: 40px 20px;">Connecting to database...</div>
+                <div style="color:var(--brand-cream-dim); text-align:center; padding:40px 20px;">Connecting to database...</div>
             </div>
-            <button class="btn btn-outline" id="lbCloseBtn" style="max-width: 400px;">GO BACK</button>
+            <button class="btn btn-outline" id="lbCloseBtn" style="max-width:410px;">GO BACK</button>
         </div>
     </div>
 </div>
@@ -858,12 +968,13 @@ const GAME_CONFIG = {
         playerFriction: 0.82,
         playerMaxSpeed: 950,
         touchFollowSpeed: 20,
-        baseFallSpeed: 250
+        baseFallSpeed: 245
     },
 
     gameplay: {
-        powerupChance: 0.08,
-        foilChance: 0.04
+        powerupChance: 0.075,
+        foilChance: 0.045,
+        eventChance: 0.0014
     },
 
     rules: {
@@ -872,18 +983,20 @@ const GAME_CONFIG = {
         pointsStreakBonus: 5,
         comboSequence: ['Prayer', 'Hope', 'Grace'],
         meterMax: 100,
-        upgradeInterval: 150
+
+        // Level-up pacing fix:
+        // First level-up is at 400, then each level takes more points.
+        upgradeInterval: 400,
+        levelCurve: 0.35
     },
 
     colors: {
-        good: '#fdfbf7',
-        bad: '#1e1414',
-        gold: '#f5b700',
         shield: '#00e5ff',
         slow: '#00ff88',
         double: '#ff00ff',
         magnet: '#ffaa00',
-        kloset: '#3498db'
+        gold: '#f5b700',
+        bad: '#ff4444'
     },
 
     items: {
@@ -920,12 +1033,13 @@ const GAME_CONFIG = {
     },
 
     upgrades: [
-        { id: 'width', t: 'Wider Catch Zone', d: 'Increases catch area by 15%.' },
-        { id: 'life', t: 'Extra Life', d: 'Grants one extra heart (+1 Life).' },
-        { id: 'slowBad', t: 'Slower Storms', d: 'Joy-Stealers fall 20% slower.' },
+        { id: 'width', t: 'Wider Catch Zone', d: 'Catch area grows by 15%.' },
+        { id: 'life', t: 'Extra Heart', d: 'Gain one extra life.' },
+        { id: 'slowBad', t: 'Calmer Storms', d: 'Joy-stealers fall 20% slower.' },
         { id: 'points', t: 'Greater Blessing', d: 'Earn +5 base points per catch.' },
-        { id: 'powerDur', t: 'Enduring Power', d: 'Power-ups last 30% longer.' },
-        { id: 'foil', t: 'Foil Luck', d: 'Higher chance for rare holographic cards.' }
+        { id: 'powerDur', t: 'Longer Power', d: 'Power-ups last 30% longer.' },
+        { id: 'foil', t: 'Rare Luck', d: 'Higher chance for rare glowing blessings.' },
+        { id: 'burstGain', t: 'Faster Burst', d: 'Blessing Burst meter fills faster.' }
     ],
 
     challenges: [
@@ -1019,8 +1133,8 @@ class ParticleSystem {
             this.particles.push({
                 x,
                 y,
-                vx: (Math.random() - 0.5) * 400 * force,
-                vy: (Math.random() - 0.5) * 400 * force - 100 * force,
+                vx: (Math.random() - 0.5) * 420 * force,
+                vy: (Math.random() - 0.5) * 420 * force - 100 * force,
                 life: 1,
                 color,
                 size: Math.random() * 5 + 3
@@ -1064,7 +1178,7 @@ class ParticleSystem {
 
     draw(ctx) {
         this.particles.forEach(p => {
-            ctx.globalAlpha = p.life;
+            ctx.globalAlpha = Math.max(0, p.life);
             ctx.fillStyle = p.color;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -1074,7 +1188,7 @@ class ParticleSystem {
         this.texts.forEach(t => {
             ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2));
             ctx.fillStyle = t.color;
-            ctx.font = t.isLarge ? "900 32px Montserrat" : "900 22px Montserrat";
+            ctx.font = t.isLarge ? "900 30px Montserrat" : "900 20px Montserrat";
             ctx.textAlign = "center";
             ctx.shadowColor = '#000';
             ctx.shadowBlur = 8;
@@ -1110,6 +1224,7 @@ class Character {
         this.w = 110;
         this.x = game.width / 2 - this.w / 2;
         this.y = game.height - this.h - 90;
+
         this.vx = 0;
         this.sx = 1;
         this.sy = 1;
@@ -1121,8 +1236,8 @@ class Character {
     pulse(isGood) {
         this.state = isGood ? 'happy' : 'hurt';
         this.stateTimer = 0.5;
-        this.sx = isGood ? 1.3 : 0.7;
-        this.sy = isGood ? 0.6 : 1.4;
+        this.sx = isGood ? 1.25 : 0.75;
+        this.sy = isGood ? 0.72 : 1.28;
     }
 
     update(dt) {
@@ -1158,16 +1273,16 @@ class Character {
         ctx.scale(this.sx, this.sy);
         ctx.translate(-(this.x + this.w / 2), -(this.y + this.h));
 
-        let cx = this.x + this.w / 2;
-        let ty = this.y;
-        let bodyY = ty + 15;
+        const cx = this.x + this.w / 2;
+        const ty = this.y;
+        const bodyY = ty + 15;
 
         if (this.accessory === 'cape') {
             ctx.fillStyle = '#e74c3c';
             ctx.beginPath();
             ctx.moveTo(cx - 15, bodyY);
-            ctx.lineTo(cx - 35, bodyY + 65);
-            ctx.lineTo(cx + 35, bodyY + 65);
+            ctx.lineTo(cx - 38, bodyY + 70);
+            ctx.lineTo(cx + 38, bodyY + 70);
             ctx.lineTo(cx + 15, bodyY);
             ctx.fill();
         }
@@ -1285,7 +1400,7 @@ class Character {
 
             ctx.fillStyle = '#bdc3c7';
             ctx.beginPath();
-            ctx.roundRect(this.x, ty, this.w, this.h, 5);
+            ctx.roundRect(this.x, ty, this.w, this.h, 6);
             ctx.fill();
 
             ctx.fillStyle = '#95a5a6';
@@ -1354,7 +1469,7 @@ class Character {
         if (this.shield) {
             ctx.strokeStyle = '#00e5ff';
             ctx.lineWidth = 4;
-            ctx.fillStyle = 'rgba(0, 229, 255, 0.15)';
+            ctx.fillStyle = 'rgba(0,229,255,0.15)';
             ctx.beginPath();
             ctx.arc(cx, bodyY, 65 + this.w / 2, 0, Math.PI * 2);
             ctx.fill();
@@ -1383,8 +1498,10 @@ class Game {
         this.lastTime = 0;
         this.shakeTimer = 0;
         this.spawnTimer = 0;
+        this.level = 1;
 
         this.items = [];
+        this.backgroundStars = [];
         this.player = null;
 
         this.input = {
@@ -1397,10 +1514,13 @@ class Game {
             fallSpeed: 1,
             points: 0,
             powerDur: 1,
-            foil: 0
+            foil: 0,
+            burstGain: 1
         };
 
         this.nextLevelGate = GAME_CONFIG.rules.upgradeInterval;
+        this.lastLevelGate = 0;
+
         this.burstMeter = 0;
         this.activeEvent = null;
         this.eventTimer = 0;
@@ -1418,8 +1538,12 @@ class Game {
 
         this.bindUI();
         this.resize();
+        this.makeBackgroundStars();
 
-        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('resize', () => {
+            this.resize();
+            this.makeBackgroundStars();
+        });
 
         requestAnimationFrame(t => this.loop(t));
     }
@@ -1457,13 +1581,35 @@ class Game {
             this.submitScore();
         };
 
+        document.getElementById('pauseBtn').onclick = () => {
+            this.audio.uiClick();
+            this.pauseGame();
+        };
+
+        document.getElementById('resumeBtn').onclick = () => {
+            this.audio.uiClick();
+            this.resumeGame();
+        };
+
+        document.getElementById('quitBtn').onclick = () => {
+            this.audio.uiClick();
+            this.endGame();
+        };
+
         window.onkeydown = e => {
-            if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') this.input.axis = -1;
-            if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') this.input.axis = 1;
+            const k = e.key.toLowerCase();
+
+            if (k === 'a' || e.key === 'ArrowLeft') this.input.axis = -1;
+            if (k === 'd' || e.key === 'ArrowRight') this.input.axis = 1;
 
             if (e.key === ' ') {
                 e.preventDefault();
                 this.activateBurst();
+            }
+
+            if (k === 'p' || e.key === 'Escape') {
+                if (this.state === 'PLAYING') this.pauseGame();
+                else if (this.state === 'PAUSED') this.resumeGame();
             }
         };
 
@@ -1501,6 +1647,21 @@ class Game {
         this.canvas.height = this.height * ratio;
 
         this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    makeBackgroundStars() {
+        this.backgroundStars = [];
+        const count = Math.floor((this.width * this.height) / 13000);
+
+        for (let i = 0; i < count; i++) {
+            this.backgroundStars.push({
+                x: Math.random() * this.width,
+                y: Math.random() * this.height,
+                r: Math.random() * 1.8 + 0.5,
+                a: Math.random() * 0.28 + 0.08,
+                s: Math.random() * 12 + 8
+            });
+        }
     }
 
     showScreen(id) {
@@ -1556,20 +1717,26 @@ class Game {
         this.comboIndex = 0;
         this.survivalTime = 0;
         this.spawnTimer = 0;
-        this.burstMeter = 0;
+        this.shakeTimer = 0;
+        this.level = 1;
+
         this.items = [];
         this.particles = new ParticleSystem();
+
+        this.lastLevelGate = 0;
         this.nextLevelGate = GAME_CONFIG.rules.upgradeInterval;
+
+        this.burstMeter = 0;
         this.activeEvent = null;
         this.eventTimer = 0;
-        this.shakeTimer = 0;
 
         this.upgrades = {
             width: 1,
             fallSpeed: 1,
             points: 0,
             powerDur: 1,
-            foil: 0
+            foil: 0,
+            burstGain: 1
         };
 
         this.activePowers = {
@@ -1590,6 +1757,20 @@ class Game {
         this.setNewMission();
         this.showScreen('hud');
         this.updateHUD();
+    }
+
+    pauseGame() {
+        if (this.state !== 'PLAYING') return;
+
+        this.state = 'PAUSED';
+        this.showScreen('pauseScreen');
+    }
+
+    resumeGame() {
+        if (this.state !== 'PAUSED') return;
+
+        this.state = 'PLAYING';
+        this.showScreen('hud');
     }
 
     setNewMission() {
@@ -1676,7 +1857,9 @@ class Game {
     triggerLevelUp() {
         this.state = 'LEVEL_UP';
         this.audio.levelUp();
-        this.flash('#f5b700', 0.3);
+        this.flash('#f5b700', 0.35);
+
+        document.getElementById('upgradeLevelText').innerText = `LEVEL ${this.level + 1} UNLOCKED`;
 
         const grid = document.getElementById('upgradeGrid');
         grid.innerHTML = '';
@@ -1694,7 +1877,7 @@ class Game {
             grid.appendChild(card);
         });
 
-        setTimeout(() => this.showScreen('upgradeScreen'), 500);
+        setTimeout(() => this.showScreen('upgradeScreen'), 400);
     }
 
     applyUpgrade(id) {
@@ -1705,15 +1888,19 @@ class Game {
 
         if (id === 'life') {
             this.lives++;
-            this.particles.floatText(this.width / 2, this.height / 2, "+1 LIFE", '#ff0000', true);
+            this.particles.floatText(this.width / 2, this.height / 2, "+1 LIFE", '#ff4444', true);
         }
 
         if (id === 'slowBad') this.upgrades.fallSpeed *= 0.8;
         if (id === 'points') this.upgrades.points += 5;
         if (id === 'powerDur') this.upgrades.powerDur += 0.3;
         if (id === 'foil') this.upgrades.foil += 0.05;
+        if (id === 'burstGain') this.upgrades.burstGain += 0.25;
 
-        this.nextLevelGate += GAME_CONFIG.rules.upgradeInterval;
+        this.level++;
+        this.lastLevelGate = this.nextLevelGate;
+        this.nextLevelGate += Math.floor(GAME_CONFIG.rules.upgradeInterval * (1 + this.level * GAME_CONFIG.rules.levelCurve));
+
         this.showScreen('hud');
         this.state = 'PLAYING';
         this.updateHUD();
@@ -1748,16 +1935,17 @@ class Game {
     }
 
     spawnItem() {
-        let typeRand = Math.random();
+        const cardW = Math.min(130, this.width * 0.32);
+        const typeRand = Math.random();
         let item = {};
 
         if (typeRand < GAME_CONFIG.gameplay.powerupChance && this.activeEvent !== 'Gossip Storm') {
             const p = GAME_CONFIG.items.powers[Math.floor(Math.random() * GAME_CONFIG.items.powers.length)];
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: p.e + ' ' + p.t,
                 isGood: true,
@@ -1769,9 +1957,9 @@ class Game {
             const d = GAME_CONFIG.items.good[Math.floor(Math.random() * GAME_CONFIG.items.good.length)];
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: d.e + ' ' + d.t,
                 isGood: true,
@@ -1782,9 +1970,9 @@ class Game {
             const d = GAME_CONFIG.items.bad[Math.floor(Math.random() * GAME_CONFIG.items.bad.length)];
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: d.e + ' ' + d.t,
                 isGood: false,
@@ -1794,9 +1982,9 @@ class Game {
             const d = GAME_CONFIG.items.special;
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: d.e + ' ' + d.t,
                 isGood: true,
@@ -1808,9 +1996,9 @@ class Game {
             const d = GAME_CONFIG.items.bad[Math.floor(Math.random() * GAME_CONFIG.items.bad.length)];
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: d.e + ' ' + d.t,
                 isGood: false,
@@ -1820,9 +2008,9 @@ class Game {
             const d = GAME_CONFIG.items.good[Math.floor(Math.random() * GAME_CONFIG.items.good.length)];
 
             item = {
-                x: Math.random() * (this.width - 130),
-                y: -50,
-                w: 130,
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
                 h: 42,
                 txt: d.e + ' ' + d.t,
                 isGood: true,
@@ -1836,8 +2024,8 @@ class Game {
             item.c = '#00e5ff';
         }
 
-        let timeRatio = Math.min(1, this.survivalTime / 80);
-        let speed = GAME_CONFIG.physics.baseFallSpeed + (timeRatio * 150);
+        let timeRatio = Math.min(1, this.survivalTime / 85);
+        let speed = GAME_CONFIG.physics.baseFallSpeed + (timeRatio * 155);
 
         if (!item.isGood) speed *= this.upgrades.fallSpeed;
         if (this.activeEvent === 'Forge Fire') speed *= 1.4;
@@ -1846,17 +2034,23 @@ class Game {
         item.vy = speed;
         item.rot = MathUtils.randomRange(-0.1, 0.1);
         item.dead = false;
+        item.pulse = Math.random() * Math.PI * 2;
 
         this.items.push(item);
     }
 
     updateHUD() {
         document.getElementById('scoreVal').innerText = this.score;
+        document.getElementById('levelVal').innerText = `LVL ${this.level}`;
+
+        const progress = MathUtils.clamp((this.score - this.lastLevelGate) / (this.nextLevelGate - this.lastLevelGate), 0, 1);
+        document.getElementById('xpFill').style.width = `${progress * 100}%`;
+
         document.getElementById('livesVal').innerText = '❤️'.repeat(Math.max(0, this.lives)) || '💀';
 
         const stEl = document.getElementById('streakVal');
         stEl.innerText = `Streak: ${this.streak}`;
-        stEl.className = this.streak >= 3 ? 'streak-box high' : 'streak-box';
+        stEl.className = this.streak >= 3 ? 'streak-box hud-chip high' : 'streak-box hud-chip';
 
         document.getElementById('dot0').classList.toggle('filled', this.comboIndex >= 1);
         document.getElementById('dot1').classList.toggle('filled', this.comboIndex >= 2);
@@ -1868,9 +2062,9 @@ class Game {
         document.getElementById('meterIcon').classList.toggle('meter-full', this.burstMeter >= GAME_CONFIG.rules.meterMax);
 
         if (this.mission) {
-            let pText = this.mission.type === 'avoid_time'
+            const pText = this.mission.type === 'avoid_time'
                 ? `${Math.floor(this.mission.cur)}s / ${this.mission.goal}s`
-                : `${this.mission.cur} / ${this.mission.goal}`;
+                : `${Math.floor(this.mission.cur)} / ${this.mission.goal}`;
 
             document.getElementById('missionProgress').innerText = pText;
         }
@@ -1905,20 +2099,12 @@ class Game {
 
             this.updateMission('avoid_time', null, dt);
 
-            if (this.activePowers.slow > 0) {
-                this.activePowers.slow -= dt;
-                if (this.activePowers.slow <= 0) this.updateHUD();
-            }
-
-            if (this.activePowers.double > 0) {
-                this.activePowers.double -= dt;
-                if (this.activePowers.double <= 0) this.updateHUD();
-            }
-
-            if (this.activePowers.magnet > 0) {
-                this.activePowers.magnet -= dt;
-                if (this.activePowers.magnet <= 0) this.updateHUD();
-            }
+            ['slow', 'double', 'magnet'].forEach(power => {
+                if (this.activePowers[power] > 0) {
+                    this.activePowers[power] -= dt;
+                    if (this.activePowers[power] <= 0) this.updateHUD();
+                }
+            });
 
             if (this.eventTimer > 0) {
                 this.eventTimer -= dt;
@@ -1927,7 +2113,7 @@ class Game {
                     this.activeEvent = null;
                     this.wrapper.className = '';
                 }
-            } else if (this.survivalTime > 15 && Math.random() < 0.0015) {
+            } else if (this.survivalTime > 15 && Math.random() < GAME_CONFIG.gameplay.eventChance) {
                 const events = [
                     { n: 'Grace Rush', c: 'grace-rush' },
                     { n: 'Gossip Storm', c: 'storm-phase' },
@@ -1946,7 +2132,7 @@ class Game {
             this.player.update(dt);
             this.player.shield = this.activePowers.shield;
 
-            let rate = Math.max(0.35, 1.0 - (this.survivalTime / 80));
+            let rate = Math.max(0.34, 1.0 - (this.survivalTime / 85));
 
             if (this.activeEvent === 'Grace Rush' || this.activeEvent === 'Gossip Storm') rate = 0.25;
             if (this.activeEvent === 'Forge Fire') rate = 0.2;
@@ -1964,10 +2150,9 @@ class Game {
                 }
 
                 it.y += it.vy * dt;
+                it.pulse += dt * 3;
 
-                if (it.y > this.height) {
-                    it.dead = true;
-                }
+                if (it.y > this.height) it.dead = true;
 
                 if (
                     it.x < this.player.x + this.player.w - 10 &&
@@ -2022,12 +2207,18 @@ class Game {
             if (this.activePowers.double > 0) pts *= 2;
 
             this.score += pts;
-            this.burstMeter = Math.min(GAME_CONFIG.rules.meterMax, this.burstMeter + (it.isFoil ? 15 : 5));
 
-            let floatColor = it.isFoil ? '#00e5ff' : '#f5b700';
+            const meterGain = (it.isFoil ? 15 : 5) * this.upgrades.burstGain;
+            this.burstMeter = Math.min(GAME_CONFIG.rules.meterMax, this.burstMeter + meterGain);
+
+            const floatColor = it.isFoil ? '#00e5ff' : '#f5b700';
 
             this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, floatColor, it.isFoil ? 20 : 10);
             this.particles.floatText(it.x + it.w / 2, it.y, `+${pts}`, floatColor);
+
+            if (this.streak === 5 || this.streak === 10 || this.streak === 20) {
+                this.particles.floatText(this.width / 2, 190, `${this.streak} STREAK!`, '#f5b700', true);
+            }
 
             this.updateMission('catch', it.t);
             this.updateMission('catch_any');
@@ -2063,8 +2254,8 @@ class Game {
                 this.comboIndex = 0;
                 this.burstMeter = Math.max(0, this.burstMeter - 20);
 
-                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#ff0000', 30, 1.5);
-                this.particles.floatText(it.x + it.w / 2, it.y, "-1 LIFE", '#ff0000', true);
+                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#ff4444', 30, 1.5);
+                this.particles.floatText(it.x + it.w / 2, it.y, "-1 LIFE", '#ff4444', true);
 
                 this.updateMission('hit_bad');
 
@@ -2114,8 +2305,31 @@ class Game {
         document.getElementById('challengeText').innerText = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
         document.getElementById('submitScoreBlock').style.display = this.score > 0 ? 'block' : 'none';
         document.getElementById('scoreSavedMsg').style.display = 'none';
-
         document.getElementById('playerNameInput').value = '';
+    }
+
+    drawBackground(ctx) {
+        const time = this.survivalTime;
+
+        ctx.save();
+
+        this.backgroundStars.forEach(star => {
+            ctx.globalAlpha = star.a + Math.sin(time * 1.3 + star.s) * 0.04;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(star.x, star.y + (time * star.s) % (this.height + 30) - 30, star.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.globalAlpha = 1;
+
+        const grd = ctx.createRadialGradient(this.width / 2, this.height + 80, 10, this.width / 2, this.height + 80, this.width * 0.85);
+        grd.addColorStop(0, 'rgba(217,108,6,0.22)');
+        grd.addColorStop(1, 'rgba(217,108,6,0)');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, this.width, this.height);
+
+        ctx.restore();
     }
 
     draw() {
@@ -2127,21 +2341,25 @@ class Game {
             this.ctx.translate((Math.random() - 0.5) * ins, (Math.random() - 0.5) * ins);
         }
 
+        this.drawBackground(this.ctx);
+
         if (this.state === 'PLAYING' || this.state === 'PAUSED' || this.state === 'LEVEL_UP') {
             if (this.player) this.player.draw(this.ctx);
 
             this.items.forEach(it => {
                 this.ctx.save();
 
-                this.ctx.translate(it.x + it.w / 2, it.y + it.h / 2);
+                const bob = Math.sin(it.pulse) * 1.5;
+
+                this.ctx.translate(it.x + it.w / 2, it.y + it.h / 2 + bob);
                 this.ctx.rotate(it.rot);
 
-                this.ctx.shadowBlur = 15;
+                this.ctx.shadowBlur = it.isFoil ? 25 : 15;
                 this.ctx.shadowColor = it.c;
 
-                this.ctx.fillStyle = it.isGood ? (it.isPower ? '#111' : (it.isFoil ? '#fff' : '#fdfbf7')) : '#1e1414';
+                this.ctx.fillStyle = it.isGood ? (it.isPower ? '#111' : (it.isFoil ? '#071014' : '#fdfbf7')) : '#1e1414';
                 this.ctx.strokeStyle = it.c;
-                this.ctx.lineWidth = 2;
+                this.ctx.lineWidth = it.isFoil ? 3 : 2;
 
                 this.ctx.beginPath();
                 this.ctx.roundRect(-it.w / 2, -it.h / 2, it.w, it.h, 21);
@@ -2150,21 +2368,28 @@ class Game {
                 this.ctx.shadowBlur = 0;
                 this.ctx.stroke();
 
+                if (it.isFoil) {
+                    this.ctx.fillStyle = '#00e5ff';
+                    this.ctx.font = '900 8px Montserrat';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('RARE', 0, -it.h / 2 + 10);
+                }
+
                 this.ctx.fillStyle = (it.isGood && !it.isPower && !it.isFoil) ? '#000' : '#fff';
-                this.ctx.font = 'bold 15px Montserrat';
+                this.ctx.font = '900 14px Montserrat';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
 
                 let displayTxt = it.txt;
 
                 if (it.isFoil) displayTxt = `✨ ${it.t}`;
+
                 if (it.isPower) {
                     const parts = it.txt.split(' ');
                     displayTxt = `${parts[0]} ${parts.slice(1).join(' ').toUpperCase()}`;
                 }
 
-                this.ctx.fillText(displayTxt, 0, 1);
-
+                this.ctx.fillText(displayTxt, 0, it.isFoil ? 4 : 1);
                 this.ctx.restore();
             });
 
@@ -2211,7 +2436,7 @@ class Game {
 
         const list = document.getElementById('leaderboardList');
 
-        list.innerHTML = '<div style="color: var(--brand-cream-dim); text-align: center; padding: 40px 20px;">Fetching global data...</div>';
+        list.innerHTML = '<div style="color:var(--brand-cream-dim); text-align:center; padding:40px 20px;">Fetching global data...</div>';
 
         try {
             const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10));
