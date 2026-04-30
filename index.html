@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Blessing Catcher | The Foundery Church</title>
+<title>Blessing Catcher: Kingdom Arcade</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,17 +14,17 @@
     --bg-dark: #0f1115;
     --bg-light: #2a313c;
     --brand-orange: #d96c06;
-    --brand-orange-glow: rgba(217, 108, 6, 0.6);
-    --brand-orange-glass: rgba(217, 108, 6, 0.12);
+    --brand-orange-glow: rgba(217,108,6,0.6);
     --brand-gold: #f5b700;
-    --brand-gold-glow: rgba(245, 183, 0, 0.5);
+    --brand-gold-glow: rgba(245,183,0,0.5);
     --brand-cream: #fdfbf7;
-    --brand-cream-dim: rgba(253, 251, 247, 0.7);
-    --glass-bg: rgba(255, 255, 255, 0.06);
-    --glass-border: rgba(255, 255, 255, 0.13);
+    --brand-cream-dim: rgba(253,251,247,0.72);
+    --glass-bg: rgba(255,255,255,0.07);
+    --glass-border: rgba(255,255,255,0.15);
     --bad-red: #ff4444;
     --good-green: #00ff88;
     --rare-blue: #00e5ff;
+    --epic-purple: #cc66ff;
 }
 
 * {
@@ -32,20 +32,29 @@
     margin: 0;
     padding: 0;
     user-select: none;
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
 
+html,
 body {
+    height: 100%;
+    overflow: hidden;
     background: #000;
     color: var(--brand-cream);
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
     touch-action: none;
+}
+
+body {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+}
+
+button,
+select,
+input {
+    font-family: inherit;
 }
 
 #game-wrapper {
@@ -53,52 +62,82 @@ body {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    max-width: 600px;
+    max-width: 620px;
     overflow: hidden;
     background:
         radial-gradient(circle at 50% 0%, rgba(245,183,0,0.12), transparent 32%),
         radial-gradient(circle at top, var(--bg-light) 0%, var(--bg-dark) 100%);
-    box-shadow: 0 0 120px rgba(0,0,0,0.75);
-    transition: background 0.5s ease;
+    box-shadow: 0 0 120px rgba(0,0,0,0.8);
+    transition: background 0.4s ease;
 }
 
 #game-wrapper::after {
     content: "";
     position: absolute;
     inset: 0;
-    pointer-events: none;
     z-index: 8;
+    pointer-events: none;
     background:
         radial-gradient(circle at center, transparent 45%, rgba(0,0,0,0.45) 100%),
-        linear-gradient(to bottom, rgba(255,255,255,0.05), transparent 18%, rgba(0,0,0,0.2));
-    mix-blend-mode: multiply;
+        linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 22%, rgba(0,0,0,0.25));
 }
 
-#game-wrapper.storm-phase {
+#game-wrapper.theme-forge {
     background:
-        radial-gradient(circle at 50% 0%, rgba(255,68,68,0.16), transparent 35%),
-        radial-gradient(circle at top, #1a0f0f 0%, #050505 100%);
+        radial-gradient(circle at 50% 0%, rgba(245,183,0,0.16), transparent 35%),
+        radial-gradient(circle at top, #2a313c 0%, #0f1115 100%);
 }
 
-#game-wrapper.forge-fire {
+#game-wrapper.theme-kloset {
     background:
-        radial-gradient(circle at 50% 0%, rgba(245,183,0,0.20), transparent 35%),
-        radial-gradient(circle at top, #3d1403 0%, #0a0100 100%);
+        radial-gradient(circle at 50% 0%, rgba(52,152,219,0.22), transparent 35%),
+        radial-gradient(circle at top, #12283d 0%, #071018 100%);
 }
 
-#game-wrapper.grace-rush {
+#game-wrapper.theme-coffee {
     background:
-        radial-gradient(circle at 50% 0%, rgba(0,255,136,0.15), transparent 35%),
+        radial-gradient(circle at 50% 0%, rgba(214,141,69,0.25), transparent 35%),
+        radial-gradient(circle at top, #382213 0%, #120b08 100%);
+}
+
+#game-wrapper.theme-kids {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255,216,85,0.25), transparent 35%),
+        radial-gradient(circle at top, #263852 0%, #0b1220 100%);
+}
+
+#game-wrapper.theme-protect {
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255,50,50,0.2), transparent 25%),
+        radial-gradient(circle at 82% 12%, rgba(0,140,255,0.22), transparent 25%),
+        radial-gradient(circle at top, #151b2d 0%, #05070e 100%);
+}
+
+#game-wrapper.event-good {
+    background:
+        radial-gradient(circle at top, rgba(0,255,136,0.22), transparent 38%),
         radial-gradient(circle at top, #1b2e1e 0%, #08120b 100%);
 }
 
+#game-wrapper.event-bad {
+    background:
+        radial-gradient(circle at top, rgba(255,68,68,0.22), transparent 38%),
+        radial-gradient(circle at top, #1a0f0f 0%, #050505 100%);
+}
+
+#game-wrapper.event-fire {
+    background:
+        radial-gradient(circle at top, rgba(245,183,0,0.25), transparent 38%),
+        radial-gradient(circle at top, #3d1403 0%, #0a0100 100%);
+}
+
 canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
     position: absolute;
     inset: 0;
     z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 #ui-layer {
@@ -108,26 +147,277 @@ canvas {
     pointer-events: none;
 }
 
-/* HUD */
-.hud {
+.screen {
     position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
-    padding: 18px;
+    inset: 0;
+    z-index: 20;
     display: none;
-    justify-content: space-between;
-    align-items: flex-start;
-    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 24px;
+    text-align: center;
+    background:
+        radial-gradient(circle at top, rgba(217,108,6,0.12), transparent 35%),
+        rgba(15,17,21,0.965);
+    backdrop-filter: blur(16px);
     pointer-events: auto;
 }
 
-.hud-left, .hud-right {
+.screen.top {
+    justify-content: flex-start;
+}
+
+.inner {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: var(--brand-cream);
+    font-size: 2.4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 6px;
+    text-shadow: 0 0 30px var(--brand-orange-glow);
+}
+
+h2 {
+    color: var(--brand-gold);
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+p {
+    color: var(--brand-cream-dim);
+    line-height: 1.45;
+    font-size: 0.92rem;
+}
+
+.small-copy {
+    margin: 0 auto 16px;
+    max-width: 420px;
+}
+
+.btn {
+    width: 100%;
+    max-width: 350px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-orange));
+    color: #000;
+    padding: 15px 26px;
+    margin-bottom: 11px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    box-shadow: 0 10px 26px var(--brand-orange-glow);
+    transition: 0.16s ease;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-outline {
+    background: rgba(255,255,255,0.055);
+    color: #fff;
+    border: 2px solid var(--glass-border);
+    box-shadow: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6868, #a81313);
+    color: #fff;
+}
+
+.btn-small {
+    width: fit-content;
+    max-width: none;
+    padding: 9px 13px;
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+    margin: 10px auto;
+}
+
+.nav-grid .btn {
+    margin-bottom: 0;
+    max-width: none;
+    padding: 13px 10px;
+    font-size: 0.78rem;
+}
+
+.card {
+    width: 100%;
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    background: rgba(0,0,0,0.35);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+    padding: 14px;
+}
+
+.daily-card {
+    margin: 14px auto;
+    max-width: 390px;
+    text-align: left;
+}
+
+.daily-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.daily-title {
+    color: var(--brand-gold);
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 6px 10px;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.075);
+    color: var(--brand-cream);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.gold-pill {
+    color: var(--brand-gold);
+    border-color: rgba(245,183,0,0.42);
+    background: rgba(245,183,0,0.12);
+}
+
+.green-pill {
+    color: var(--good-green);
+    border-color: rgba(0,255,136,0.38);
+    background: rgba(0,255,136,0.1);
+}
+
+.blue-pill {
+    color: var(--rare-blue);
+    border-color: rgba(0,229,255,0.38);
+    background: rgba(0,229,255,0.1);
+}
+
+.red-pill {
+    color: var(--bad-red);
+    border-color: rgba(255,68,68,0.38);
+    background: rgba(255,68,68,0.1);
+}
+
+.select-panel {
+    width: 100%;
+    max-width: 370px;
+    margin: 0 auto 14px;
+    padding: 15px;
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    background: rgba(0,0,0,0.36);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.42);
+}
+
+.form-row {
     display: flex;
     flex-direction: column;
+    gap: 7px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.form-row label {
+    color: var(--brand-gold);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+select,
+input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: var(--brand-cream);
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+select option {
+    background: #111;
+    color: #fff;
+}
+
+input[type="text"] {
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 11;
+    width: 100%;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px;
+    pointer-events: auto;
+}
+
+.hud-left,
+.hud-right {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
 }
 
 .hud-left {
-    gap: 6px;
+    align-items: flex-start;
 }
 
 .hud-right {
@@ -136,127 +426,115 @@ canvas {
 }
 
 .hud-chip {
-    background: rgba(0,0,0,0.32);
+    background: rgba(0,0,0,0.36);
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(8px);
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.32);
 }
 
 .mission-panel {
-    padding: 10px 14px;
     min-width: 168px;
     max-width: 230px;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-}
-
-.mission-panel.complete {
-    transform: scale(1.04);
-    border-color: var(--good-green);
-    box-shadow: 0 0 22px rgba(0,255,136,0.35);
+    padding: 10px 13px;
 }
 
 .mission-title {
-    font-size: 0.62rem;
     color: var(--brand-orange);
-    letter-spacing: 1.6px;
-    margin-bottom: 3px;
-    text-transform: uppercase;
+    font-size: 0.6rem;
     font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 .mission-desc {
-    font-size: 0.83rem;
-    line-height: 1.18;
+    margin-top: 3px;
+    color: #fff;
+    font-size: 0.8rem;
     font-weight: 800;
-    text-shadow: 0 2px 4px #000;
+    line-height: 1.2;
 }
 
 .mission-progress {
-    font-size: 0.72rem;
     margin-top: 5px;
     color: var(--brand-gold);
+    font-size: 0.72rem;
     font-weight: 900;
 }
 
+.mission-panel.complete {
+    border-color: var(--good-green);
+    box-shadow: 0 0 20px rgba(0,255,136,0.35);
+}
+
 .score-box {
-    font-size: 0.9rem;
-    letter-spacing: 1px;
     color: var(--brand-cream-dim);
-    text-shadow: 0 2px 5px #000;
+    font-size: 0.82rem;
     font-weight: 900;
+    letter-spacing: 1px;
 }
 
 .score-val {
     color: var(--brand-gold);
-    font-size: 2.1rem;
+    font-size: 1.95rem;
     font-weight: 900;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.85);
 }
 
 .level-box {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    width: fit-content;
-    padding: 6px 10px;
-    color: var(--brand-cream);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    gap: 7px;
+    padding: 7px 10px;
+    color: #fff;
+    font-size: 0.7rem;
     font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .xp-bar {
-    position: relative;
-    width: 155px;
+    width: 145px;
     height: 8px;
     overflow: hidden;
-    background: rgba(255,255,255,0.09);
-    border-radius: 99px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.1);
 }
 
 .xp-fill {
     width: 0%;
     height: 100%;
+    border-radius: 999px;
     background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
-    box-shadow: 0 0 12px var(--brand-gold-glow);
-    transition: width 0.35s ease;
+    box-shadow: 0 0 14px var(--brand-gold-glow);
+    transition: width 0.3s ease;
 }
 
 .streak-box {
-    width: fit-content;
     padding: 7px 10px;
-    font-size: 0.78rem;
     color: var(--brand-orange);
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
-    transition: 0.25s;
-    text-shadow: 0 2px 5px #000;
+    font-size: 0.76rem;
     font-weight: 900;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
 }
 
 .streak-box.high {
     color: var(--brand-gold);
     text-shadow: 0 0 15px var(--brand-gold);
-    transform: scale(1.04);
-    transform-origin: left;
 }
 
-.combo-recipe {
+.combo-row {
     display: flex;
     gap: 6px;
-    margin-top: 2px;
-    padding-left: 3px;
+    padding-left: 2px;
 }
 
 .combo-dot {
     width: 12px;
     height: 12px;
-    border-radius: 50%;
     border: 2px solid var(--brand-cream-dim);
-    opacity: 0.5;
-    transition: 0.25s;
+    border-radius: 50%;
+    opacity: 0.55;
 }
 
 .combo-dot.filled {
@@ -266,46 +544,42 @@ canvas {
     box-shadow: 0 0 10px var(--brand-gold);
 }
 
-.lives-val {
-    font-size: 1.6rem;
-    letter-spacing: 2px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+.coin-chip {
+    padding: 8px 10px;
+    color: var(--brand-gold);
+    font-size: 0.78rem;
+    font-weight: 900;
 }
 
 .pause-btn {
-    pointer-events: auto;
-    cursor: pointer;
-    margin-bottom: 8px;
+    width: fit-content;
     padding: 8px 11px;
-    color: var(--brand-cream);
-    font-size: 0.72rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
+    margin: 0;
+    color: #fff;
+    font-size: 0.68rem;
+    box-shadow: none;
 }
 
-.meter-container {
+.lives {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.meter {
     position: relative;
     width: 70px;
     height: 70px;
-    pointer-events: auto;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: transform 0.2s;
-    background: rgba(0,0,0,0.35);
+    margin-top: 5px;
     border-radius: 50%;
+    background: rgba(0,0,0,0.35);
     box-shadow: 0 8px 24px rgba(0,0,0,0.42);
+    cursor: pointer;
 }
 
-.meter-container:active {
-    transform: scale(0.92);
-}
-
-.meter-svg {
-    transform: rotate(-90deg);
+.meter svg {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
+    transform: rotate(-90deg);
 }
 
 .meter-bg {
@@ -319,282 +593,262 @@ canvas {
     stroke: var(--brand-gold);
     stroke-width: 6;
     stroke-linecap: round;
-    transition: stroke-dashoffset 0.35s ease-out;
+    transition: stroke-dashoffset 0.3s ease;
 }
 
 .meter-icon {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%,-50%);
     font-size: 24px;
     text-shadow: 0 0 10px var(--brand-gold);
-    transition: 0.3s;
 }
 
-.meter-full {
-    animation: pulse-gold 1s infinite;
-    filter: brightness(1.5);
+.meter.full {
+    animation: pulse 1s infinite;
 }
 
-@keyframes pulse-gold {
-    0% {
-        box-shadow: 0 0 10px var(--brand-gold-glow);
+@keyframes pulse {
+    0%, 100% {
         transform: scale(1);
+        box-shadow: 0 0 10px var(--brand-gold-glow);
     }
     50% {
+        transform: scale(1.08);
         box-shadow: 0 0 30px var(--brand-gold);
-        transform: scale(1.1);
-    }
-    100% {
-        box-shadow: 0 0 10px var(--brand-gold-glow);
-        transform: scale(1);
     }
 }
 
-.active-powers {
+.power-list {
     display: flex;
     flex-direction: column;
     gap: 5px;
     align-items: flex-end;
-    margin-top: 12px;
 }
 
 .power-badge {
-    font-size: 0.7rem;
-    font-weight: 900;
     padding: 5px 9px;
-    border-radius: 20px;
-    text-transform: uppercase;
+    border-radius: 999px;
+    color: #000;
+    font-size: 0.66rem;
+    font-weight: 900;
     letter-spacing: 1px;
-    color: #000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* Screens */
-.screen {
-    position: absolute;
-    inset: 0;
-    min-height: 100%;
-    background:
-        radial-gradient(circle at top, rgba(217,108,6,0.12), transparent 34%),
-        rgba(15, 17, 21, 0.96);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 28px;
-    text-align: center;
-    backdrop-filter: blur(16px);
-    overflow-y: auto;
-    z-index: 20;
-    pointer-events: auto;
-}
-
-h1 {
-    color: var(--brand-cream);
-    font-size: 2.8rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    text-shadow: 0 0 30px var(--brand-orange-glow);
-    line-height: 1.02;
-}
-
-h2 {
-    color: var(--brand-gold);
-    font-size: 1.05rem;
-    font-weight: 900;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
-.small-copy {
-    max-width: 410px;
-    color: var(--brand-cream-dim);
-    line-height: 1.45;
-    font-size: 0.95rem;
-    margin: 0 auto 20px;
-}
-
-.btn {
-    background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-orange) 100%);
-    border: none;
-    padding: 17px 34px;
-    border-radius: 50px;
-    color: #000;
-    font-size: 1.05rem;
-    font-weight: 900;
-    cursor: pointer;
-    transition: 0.2s;
-    text-transform: uppercase;
-    letter-spacing: 1.7px;
-    width: 100%;
-    max-width: 330px;
-    margin-bottom: 14px;
-    box-shadow: 0 10px 28px var(--brand-orange-glow);
-}
-
-.btn:active {
-    transform: scale(0.96);
-    box-shadow: 0 5px 10px var(--brand-orange-glow);
-}
-
-.btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.btn-outline {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid var(--glass-border);
-    color: #fff;
-    box-shadow: none;
-}
-
-.customization-panel {
-    background: rgba(0,0,0,0.38);
-    border: 1px solid var(--glass-border);
-    border-radius: 22px;
-    padding: 18px;
-    margin-bottom: 22px;
-    width: 100%;
-    max-width: 350px;
-    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
-}
-
-.custom-row {
+.tabs {
     display: flex;
-    flex-direction: column;
     gap: 8px;
-    margin-bottom: 14px;
+    width: 100%;
+    overflow-x: auto;
+    margin: 12px 0;
+    padding-bottom: 4px;
+}
+
+.tab {
+    flex: 1;
+    min-width: fit-content;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    color: var(--brand-cream-dim);
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.tab.active {
+    color: #000;
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-orange));
+    border-color: var(--brand-gold);
+}
+
+.list {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+    padding-bottom: 16px;
+}
+
+.item-card {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    background: rgba(255,255,255,0.065);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.25);
     text-align: left;
 }
 
-.custom-row label {
-    font-size: 0.78rem;
-    color: var(--brand-gold);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.item-card.equipped {
+    border-color: rgba(245,183,0,0.55);
+    box-shadow: 0 0 25px rgba(245,183,0,0.12), 0 12px 26px rgba(0,0,0,0.25);
 }
 
-select.modifier-select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid var(--glass-border);
-    color: var(--brand-cream);
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    outline: none;
-    appearance: none;
-    cursor: pointer;
-    font-size: 0.93rem;
+.item-card.owned {
+    border-color: rgba(0,255,136,0.34);
 }
 
-select.modifier-select option {
-    background: var(--bg-dark);
-    color: var(--brand-cream);
-}
-
-.action-row {
+.item-top {
     display: flex;
+    justify-content: space-between;
     gap: 12px;
-    width: 100%;
-    max-width: 330px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
-.action-row .btn,
-.action-row .btn-outline {
-    flex: 1;
-    padding: 15px 0;
-    margin-bottom: 0;
+.item-info {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.item-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    background: rgba(0,0,0,0.35);
+    font-size: 1.45rem;
+}
+
+.item-title {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+.item-meta {
+    margin-top: 3px;
+    color: var(--brand-cream-dim);
+    font-size: 0.66rem;
+    font-weight: 900;
     letter-spacing: 1px;
-    font-size: 0.86rem;
+    text-transform: uppercase;
+}
+
+.item-desc {
+    margin-bottom: 9px;
+    color: var(--brand-cream-dim);
+    font-size: 0.83rem;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.item-bonus {
+    margin-bottom: 10px;
+    color: var(--brand-gold);
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rarity-common {
+    color: var(--brand-cream-dim);
+}
+
+.rarity-uncommon {
+    color: var(--good-green);
+}
+
+.rarity-rare {
+    color: var(--rare-blue);
+}
+
+.rarity-epic {
+    color: var(--epic-purple);
+}
+
+.rarity-legendary {
+    color: var(--brand-gold);
 }
 
 .upgrade-grid {
+    width: 100%;
+    max-width: 430px;
     display: grid;
     gap: 14px;
-    width: 100%;
-    max-width: 420px;
     margin-top: 18px;
 }
 
 .upgrade-card {
-    background: rgba(255,255,255,0.06);
-    border: 2px solid var(--glass-border);
     padding: 18px;
+    border: 2px solid var(--glass-border);
     border-radius: 20px;
-    cursor: pointer;
-    transition: 0.2s;
+    background: rgba(255,255,255,0.07);
     text-align: left;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-}
-
-.upgrade-card:hover {
-    border-color: var(--brand-gold);
-    background: rgba(245, 183, 0, 0.1);
-    transform: translateY(-4px);
+    cursor: pointer;
 }
 
 .upgrade-card h4 {
     color: var(--brand-gold);
-    margin-bottom: 7px;
-    font-size: 1.05rem;
-    text-transform: uppercase;
+    font-size: 1rem;
+    font-weight: 900;
     letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
 }
 
 .upgrade-card p {
-    font-size: 0.88rem;
-    opacity: 0.9;
-    line-height: 1.35;
+    font-size: 0.86rem;
 }
 
 #event-announcer {
     position: absolute;
     top: 34%;
+    left: 0;
     width: 100%;
-    text-align: center;
-    font-size: 3.2rem;
-    font-weight: 900;
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    padding: 0 18px;
     color: #fff;
+    font-size: 3rem;
+    font-weight: 900;
+    text-align: center;
+    line-height: 0.95;
     text-transform: uppercase;
     text-shadow: 0 0 30px var(--brand-orange), 0 5px 15px rgba(0,0,0,0.8);
-    pointer-events: none;
-    opacity: 0;
-    transform: scale(0.5);
-    z-index: 15;
-    line-height: 0.95;
-    padding: 0 18px;
 }
 
-.announce-active {
-    animation: announce-anim 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.announce {
+    animation: announce 2.4s forwards;
 }
 
-@keyframes announce-anim {
+@keyframes announce {
     0% {
         opacity: 0;
         transform: scale(0.5) translateY(20px);
     }
     15% {
         opacity: 1;
-        transform: scale(1.1) translateY(0);
+        transform: scale(1.08) translateY(0);
     }
     80% {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: scale(1);
     }
     100% {
         opacity: 0;
-        transform: scale(1.5) translateY(-20px);
-        filter: blur(10px);
+        transform: scale(1.35) translateY(-25px);
+        filter: blur(8px);
     }
 }
 
@@ -602,199 +856,204 @@ select.modifier-select option {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10rem;
-    font-weight: 900;
-    color: var(--brand-gold);
-    text-shadow: 0 0 50px var(--brand-gold-glow), 0 10px 20px rgba(0,0,0,0.8);
-    pointer-events: none;
     z-index: 30;
     opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    color: var(--brand-gold);
+    font-size: 9rem;
+    font-weight: 900;
+    text-shadow: 0 0 50px var(--brand-gold-glow), 0 10px 20px rgba(0,0,0,0.8);
 }
 
 .count-pop {
-    animation: pop 0.8s ease-out;
+    animation: countPop 0.8s ease-out;
 }
 
-@keyframes pop {
+@keyframes countPop {
     0% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.2);
+        transform: translate(-50%,-50%) scale(0.2);
     }
     20% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.2);
+        transform: translate(-50%,-50%) scale(1.15);
     }
     80% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%,-50%) scale(1);
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1.5);
+        transform: translate(-50%,-50%) scale(1.4);
     }
 }
 
-#flash-overlay {
+#flash {
     position: absolute;
     inset: 0;
+    z-index: 100;
+    opacity: 0;
     background: #fff;
+    pointer-events: none;
+}
+
+#toast {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    z-index: 80;
+    width: calc(100% - 34px);
+    max-width: 430px;
     opacity: 0;
     pointer-events: none;
-    z-index: 100;
-}
-
-input[type="text"] {
-    background: var(--brand-orange-glass);
-    border: 2px solid rgba(217,108,6,0.4);
-    color: var(--brand-cream);
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    outline: none;
-    padding: 17px;
-    border-radius: 50px;
-    width: 100%;
+    transform: translateX(-50%) translateY(30px);
+    transition: 0.25s ease;
+    padding: 13px 15px;
+    border: 1px solid rgba(245,183,0,0.35);
+    border-radius: 18px;
+    background: rgba(0,0,0,0.78);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 850;
     text-align: center;
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    transition: 0.3s;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
 }
 
-input[type="text"]:focus {
-    border-color: var(--brand-gold);
-    background: rgba(245,183,0,0.15);
-    box-shadow: 0 0 20px var(--brand-gold-glow);
+#toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.reward-summary {
+    width: 100%;
+    max-width: 410px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px auto;
+}
+
+.reward-box {
+    padding: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: rgba(0,0,0,0.34);
+}
+
+.reward-label {
+    color: var(--brand-cream-dim);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.reward-value {
+    color: var(--brand-gold);
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-top: 3px;
 }
 
 .challenge-card {
-    background: linear-gradient(180deg, var(--glass-bg) 0%, rgba(0,0,0,0.4) 100%);
+    width: 100%;
+    max-width: 420px;
+    margin: 14px auto 20px;
+    padding: 22px;
     border: 1px solid rgba(217,108,6,0.3);
     border-top: 2px solid var(--brand-gold);
     border-radius: 22px;
-    padding: 23px;
-    margin: 15px 0 24px;
-    width: 100%;
-    max-width: 410px;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.75), 0 10px 25px rgba(0,0,0,0.5);
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.4));
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.7), 0 10px 25px rgba(0,0,0,0.48);
 }
 
 .challenge-label {
-    font-size: 0.72rem;
     color: var(--brand-orange);
+    font-size: 0.7rem;
     font-weight: 900;
-    margin-bottom: 10px;
     letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
 }
 
 .challenge-text {
-    color: var(--brand-cream);
-    font-size: 1.05rem;
-    font-weight: 700;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 750;
     line-height: 1.45;
 }
 
-#leaderboardList {
-    width: 100%;
-    max-width: 410px;
-    height: 50vh;
-    overflow-y: auto;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 22px;
-    padding: 14px;
-    margin: 22px 0;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-}
-
-.lb-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    color: var(--brand-cream);
-    font-weight: 700;
-    font-size: 1.05rem;
-    border-radius: 12px;
-}
-
-.lb-rank {
-    font-weight: 900;
-    width: 42px;
-    text-align: left;
-    color: var(--brand-cream-dim);
-}
-
-.lb-row[data-rank="1"] .lb-rank {
-    color: var(--brand-gold);
-    text-shadow: 0 0 10px var(--brand-gold);
-    font-size: 1.3rem;
-}
-
-.lb-name {
-    flex: 1;
-    text-transform: uppercase;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-right: 15px;
-    font-weight: 900;
-}
-
-.lb-score {
-    color: var(--brand-gold);
-    font-weight: 900;
-    text-align: right;
-    letter-spacing: 1px;
-}
-
-.footer-text {
-    margin-top: 12px;
-    font-size: 0.72rem;
-    color: rgba(253,251,247,0.35);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
-
-@media (max-height: 740px) {
-    h1 {
-        font-size: 2.15rem;
-    }
-
-    h2 {
-        margin-bottom: 14px;
-    }
-
-    .customization-panel {
-        padding: 14px;
-        margin-bottom: 14px;
-    }
-
-    .btn {
-        padding: 13px 28px;
-    }
-
-    .screen {
-        justify-content: flex-start;
-        padding-top: 28px;
-    }
-
-    .score-val {
-        font-size: 1.75rem;
+@media (max-width: 430px) {
+    .hud {
+        padding: 12px;
     }
 
     .mission-panel {
-        max-width: 195px;
+        min-width: 150px;
+        max-width: 188px;
+        padding: 9px 10px;
+    }
+
+    .mission-desc {
+        font-size: 0.74rem;
+    }
+
+    .xp-bar {
+        width: 110px;
+    }
+
+    .screen {
+        padding: 20px 18px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    #event-announcer {
+        font-size: 2.45rem;
+    }
+
+    #countdown {
+        font-size: 7rem;
+    }
+}
+
+@media (max-height: 760px) {
+    .screen {
+        justify-content: flex-start;
+        padding-top: 22px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        margin-bottom: 12px;
+    }
+
+    .btn {
+        padding: 12px 22px;
+    }
+
+    .small-copy {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+
+    .select-panel {
+        padding: 13px;
     }
 }
 </style>
 </head>
 
 <body>
-<div id="game-wrapper">
-    <div id="flash-overlay"></div>
+<div id="game-wrapper" class="theme-forge">
+    <div id="flash"></div>
+    <div id="toast"></div>
     <div id="event-announcer"></div>
     <div id="countdown"></div>
     <canvas id="gameCanvas"></canvas>
@@ -803,23 +1062,23 @@ input[type="text"]:focus {
         <div class="hud" id="hud">
             <div class="hud-left">
                 <div class="mission-panel hud-chip" id="missionPanel">
-                    <div class="mission-title">ACTIVE MISSION</div>
+                    <div class="mission-title">Active Mission</div>
                     <div class="mission-desc" id="missionDesc">Loading...</div>
                     <div class="mission-progress" id="missionProgress">0 / 0</div>
                 </div>
 
-                <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
+                <div class="score-box">
+                    SCORE <span class="score-val" id="scoreVal">0</span>
+                </div>
 
                 <div class="level-box hud-chip">
                     <span id="levelVal">LVL 1</span>
-                    <div class="xp-bar">
-                        <div class="xp-fill" id="xpFill"></div>
-                    </div>
+                    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
                 </div>
 
                 <div class="streak-box hud-chip" id="streakVal">Streak: 0</div>
 
-                <div class="combo-recipe">
+                <div class="combo-row">
                     <div class="combo-dot" id="dot0"></div>
                     <div class="combo-dot" id="dot1"></div>
                     <div class="combo-dot" id="dot2"></div>
@@ -827,221 +1086,538 @@ input[type="text"]:focus {
             </div>
 
             <div class="hud-right">
-                <button class="pause-btn hud-chip" id="pauseBtn">Pause</button>
-                <div class="lives-val" id="livesVal">❤️❤️❤️</div>
-                <div class="active-powers" id="activePowersBox"></div>
+                <div class="coin-chip hud-chip" id="hudCoins">🪙 0</div>
+                <button class="btn btn-small btn-outline pause-btn" id="pauseBtn">Pause</button>
+                <div class="lives" id="livesVal">❤️❤️❤️</div>
+                <div class="power-list" id="powerList"></div>
 
-                <div class="meter-container" id="burstBtn" title="Press SPACE or Tap when full!">
-                    <svg class="meter-svg" width="70" height="70">
+                <div class="meter" id="burstBtn">
+                    <svg width="70" height="70">
                         <circle class="meter-bg" cx="35" cy="35" r="30"></circle>
                         <circle class="meter-fill" id="meterFill" cx="35" cy="35" r="30" stroke-dasharray="188.49" stroke-dashoffset="188.49"></circle>
                     </svg>
-                    <div class="meter-icon" id="meterIcon">✨</div>
+                    <div class="meter-icon">✨</div>
                 </div>
             </div>
         </div>
 
         <div class="screen" id="startScreen" style="display:flex;">
-            <h1>Blessing Catcher</h1>
-            <h2>FORGE EDITION</h2>
-            <p class="small-copy">Catch blessings. Dodge joy-stealers. Build streaks, unlock upgrades, and turn the game into a real-world challenge.</p>
+            <div class="inner">
+                <h1>Blessing Catcher</h1>
+                <h2>Kingdom Arcade</h2>
+                <p class="small-copy">Catch blessings, dodge joy-stealers, earn coins, unlock gear, choose levels, and keep coming back for new runs.</p>
 
-            <div class="customization-panel">
-                <div class="custom-row">
-                    <label>Skin Tone</label>
-                    <select id="selBody" class="modifier-select">
-                        <option value="#f1c27d">Light</option>
-                        <option value="#c58c63">Medium</option>
-                        <option value="#764531">Dark</option>
-                    </select>
-                </div>
-
-                <div class="custom-row">
-                    <label>Outfit Color</label>
-                    <select id="selOutfit" class="modifier-select">
-                        <option value="#f5b700">Foundery Gold</option>
-                        <option value="#3498db">Ocean Blue</option>
-                        <option value="#e74c3c">Crimson Red</option>
-                        <option value="#2ecc71">Forest Green</option>
-                    </select>
-                </div>
-
-                <div class="action-row" style="margin-bottom:0; max-width:100%;">
-                    <div class="custom-row" style="flex:1;">
-                        <label>Accessory</label>
-                        <select id="selAcc" class="modifier-select">
-                            <option value="none">None</option>
-                            <option value="hat">Cap</option>
-                            <option value="glasses">Glasses</option>
-                            <option value="cape">Hero Cape</option>
-                        </select>
+                <div class="daily-card card">
+                    <div class="daily-top">
+                        <div>
+                            <div class="daily-title">Daily Blessing</div>
+                            <p id="dailyText">Claim today’s bonus coins.</p>
+                        </div>
+                        <button class="btn btn-small" id="dailyBtn">Claim</button>
                     </div>
-
-                    <div class="custom-row" style="flex:1;">
-                        <label>Catch Tool</label>
-                        <select id="selTool" class="modifier-select">
-                            <option value="tray">Tray</option>
-                            <option value="bag">Tote Bag</option>
-                            <option value="crate">Crate</option>
-                            <option value="hands">Hands</option>
-                        </select>
+                    <div style="margin-top:10px;">
+                        <span class="pill gold-pill" id="coinDisplay">🪙 0 Coins</span>
                     </div>
                 </div>
+
+                <div class="select-panel">
+                    <div class="form-row">
+                        <label>Level</label>
+                        <select id="selLevel"></select>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Outfit</label>
+                        <select id="selOutfit"></select>
+                    </div>
+
+                    <div class="two-col">
+                        <div class="form-row">
+                            <label>Accessory</label>
+                            <select id="selAccessory"></select>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Tool</label>
+                            <select id="selTool"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" id="startBtn">Start Match</button>
+
+                <div class="nav-grid">
+                    <button class="btn btn-outline" id="storeBtn">Store</button>
+                    <button class="btn btn-outline" id="levelsBtn">Levels</button>
+                    <button class="btn btn-outline" id="achievementsBtn">Badges</button>
+                    <button class="btn btn-outline" id="statsBtn">Stats</button>
+                </div>
+
+                <div class="footer-text">A ChurchBuilt Production</div>
             </div>
+        </div>
 
-            <button class="btn" id="startBtn">START ARCADE</button>
-            <button class="btn btn-outline" id="lbStartBtn">GLOBAL LEADERBOARD</button>
-            <div class="footer-text">A ChurchBuilt Production</div>
+        <div class="screen top" id="storeScreen">
+            <div class="inner">
+                <h1>Store</h1>
+                <h2>Buy gear • Equip bonuses</h2>
+
+                <div class="daily-card card" style="margin-top:0;">
+                    <div class="daily-top">
+                        <div>
+                            <div class="daily-title">Wallet</div>
+                            <p>Earn coins after matches and spend them here.</p>
+                        </div>
+                        <span class="pill gold-pill" id="storeCoins">🪙 0</span>
+                    </div>
+                </div>
+
+                <div class="tabs" id="storeTabs"></div>
+                <div class="list" id="storeList"></div>
+                <button class="btn btn-outline" id="storeBackBtn">Back</button>
+            </div>
+        </div>
+
+        <div class="screen top" id="levelsScreen">
+            <div class="inner">
+                <h1>Levels</h1>
+                <h2>Different drops • different worlds</h2>
+                <div class="list" id="levelsList"></div>
+                <button class="btn btn-outline" id="levelsBackBtn">Back</button>
+            </div>
+        </div>
+
+        <div class="screen top" id="achievementsScreen">
+            <div class="inner">
+                <h1>Badges</h1>
+                <h2>Achievements unlock coin rewards</h2>
+                <div class="list" id="achievementsList"></div>
+                <button class="btn btn-outline" id="achievementsBackBtn">Back</button>
+            </div>
+        </div>
+
+        <div class="screen top" id="statsScreen">
+            <div class="inner">
+                <h1>Stats</h1>
+                <h2>Your progress</h2>
+                <div class="list" id="statsList"></div>
+                <button class="btn btn-danger" id="resetBtn">Reset Progress</button>
+                <button class="btn btn-outline" id="statsBackBtn">Back</button>
+            </div>
         </div>
 
         <div class="screen" id="upgradeScreen">
-            <h1 style="color: var(--brand-gold);">LEVEL UP!</h1>
-            <h2 id="upgradeLevelText">CHOOSE YOUR UPGRADE</h2>
-            <p class="small-copy">Level-ups now get farther apart so each upgrade feels earned.</p>
-            <div class="upgrade-grid" id="upgradeGrid"></div>
+            <div class="inner">
+                <h1 style="color:var(--brand-gold);">Level Up!</h1>
+                <h2 id="upgradeTitle">Choose Your Upgrade</h2>
+                <p class="small-copy">Every level takes more points, so upgrades feel earned.</p>
+                <div class="upgrade-grid" id="upgradeGrid"></div>
+            </div>
         </div>
 
         <div class="screen" id="pauseScreen">
-            <h1>Paused</h1>
-            <h2>Take a breath</h2>
-            <button class="btn" id="resumeBtn">Resume</button>
-            <button class="btn btn-outline" id="quitBtn">Quit Match</button>
-        </div>
-
-        <div class="screen" id="endScreen">
-            <h2 style="color: var(--brand-cream); margin-bottom:0;">MATCH COMPLETE</h2>
-            <div class="score-val" id="finalScore" style="font-size:5.2rem; margin:8px 0;">0</div>
-            <div style="font-size:0.9rem; font-weight:900; color:var(--brand-cream-dim); margin-bottom:14px;">
-                PERSONAL BEST: <span id="highScoreVal" style="color:var(--brand-gold);">0</span>
-            </div>
-
-            <div id="submitScoreBlock" style="width:100%; max-width:330px; display:none; margin-bottom:10px;">
-                <input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false" style="margin-bottom:12px;">
-                <button class="btn" id="submitScoreBtn" style="padding:15px 20px; font-size:1rem; margin-bottom:0;">SUBMIT TO LEADERBOARD</button>
-            </div>
-
-            <div id="scoreSavedMsg" style="display:none; color:var(--brand-gold); font-weight:900; font-size:1.1rem; letter-spacing:2px; margin-bottom:22px; text-shadow:0 0 15px rgba(245,183,0,0.5);">SCORE SAVED!</div>
-
-            <div class="challenge-card">
-                <div class="challenge-label">YOUR CHALLENGE THIS WEEK:</div>
-                <div class="challenge-text" id="challengeText">...</div>
-            </div>
-
-            <div class="action-row">
-                <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-                <button class="btn btn-outline" id="lbEndBtn" style="background:rgba(0,0,0,0.4);">LEADERBOARD</button>
+            <div class="inner">
+                <h1>Paused</h1>
+                <h2>Take a breath</h2>
+                <button class="btn" id="resumeBtn">Resume</button>
+                <button class="btn btn-outline" id="quitBtn">Quit Match</button>
             </div>
         </div>
 
-        <div class="screen" id="leaderboardScreen">
-            <h1 style="font-size:2.45rem; margin-bottom:0;">TOP BLESSERS</h1>
-            <h2>GLOBAL HIGHSCORES</h2>
-            <div id="leaderboardList">
-                <div style="color:var(--brand-cream-dim); text-align:center; padding:40px 20px;">Connecting to database...</div>
+        <div class="screen top" id="endScreen">
+            <div class="inner">
+                <h2 style="color:var(--brand-cream);margin-bottom:0;">Match Complete</h2>
+                <div class="score-val" id="finalScore" style="font-size:4.6rem;margin:8px 0;">0</div>
+
+                <div style="font-size:0.85rem;font-weight:900;color:var(--brand-cream-dim);margin-bottom:10px;">
+                    PERSONAL BEST: <span id="bestScoreText" style="color:var(--brand-gold);">0</span>
+                </div>
+
+                <div class="reward-summary">
+                    <div class="reward-box">
+                        <div class="reward-label">Coins Earned</div>
+                        <div class="reward-value" id="coinsEarned">0</div>
+                    </div>
+                    <div class="reward-box">
+                        <div class="reward-label">Total Coins</div>
+                        <div class="reward-value" id="totalCoins">0</div>
+                    </div>
+                    <div class="reward-box">
+                        <div class="reward-label">Missions</div>
+                        <div class="reward-value" id="missionsDone">0</div>
+                    </div>
+                    <div class="reward-box">
+                        <div class="reward-label">Best Streak</div>
+                        <div class="reward-value" id="runBestStreak">0</div>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-label">Your Challenge This Week</div>
+                    <div class="challenge-text" id="challengeText">...</div>
+                </div>
+
+                <div class="two-col" style="max-width:350px;margin:0 auto;">
+                    <button class="btn" id="playAgainBtn">Again</button>
+                    <button class="btn btn-outline" id="homeBtn">Home</button>
+                </div>
             </div>
-            <button class="btn btn-outline" id="lbCloseBtn" style="max-width:410px;">GO BACK</button>
         </div>
     </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+<script>
+const STORAGE_KEY = "blessingCatcherKingdomArcade_v2";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB1aO-MszyfLTz11uru-IyRw2zIRCEuexU",
-    authDomain: "blessing-basket.firebaseapp.com",
-    projectId: "blessing-basket",
-    storageBucket: "blessing-basket.firebasestorage.app",
-    messagingSenderId: "558241052507",
-    appId: "1:558241052507:web:4ba95c9dc1e6695e364c7e",
-    measurementId: "G-8495PL9SH8"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const GAME_CONFIG = {
-    physics: {
-        gravity: 650,
-        playerSpeed: 1900,
-        playerFriction: 0.82,
-        playerMaxSpeed: 950,
-        touchFollowSpeed: 20,
-        baseFallSpeed: 245
-    },
-
-    gameplay: {
-        powerupChance: 0.075,
-        foilChance: 0.045,
-        eventChance: 0.0014
-    },
-
-    rules: {
-        maxLives: 3,
-        basePoints: 10,
-        pointsStreakBonus: 5,
-        comboSequence: ['Prayer', 'Hope', 'Grace'],
-        meterMax: 100,
-
-        // Level-up pacing fix:
-        // First level-up is at 400, then each level takes more points.
-        upgradeInterval: 400,
-        levelCurve: 0.35
-    },
-
-    colors: {
-        shield: '#00e5ff',
-        slow: '#00ff88',
-        double: '#ff00ff',
-        magnet: '#ffaa00',
-        gold: '#f5b700',
-        bad: '#ff4444'
-    },
-
-    items: {
+const LEVELS = [
+    {
+        id: "forge",
+        name: "Foundery Forge",
+        icon: "🔥",
+        price: 0,
+        theme: "theme-forge",
+        color: "#f5b700",
+        glow: "rgba(217,108,6,0.24)",
+        coinMultiplier: 1,
+        badChance: 0.38,
+        speedMod: 1,
+        description: "Balanced classic mode with prayer, hope, grace, and forge energy.",
+        special: "Forge Fire can double good-drop points.",
         good: [
-            { t: 'Prayer', e: '🙏' },
-            { t: 'Hope', e: '🌟' },
-            { t: 'Grace', e: '✨' },
-            { t: 'Kindness', e: '🤝' },
-            { t: 'Love', e: '❤️' },
-            { t: 'Coffee', e: '☕' },
-            { t: 'Forgiveness', e: '🕊️' },
-            { t: 'Encouragement', e: '💬' }
+            ["Prayer","🙏"],["Hope","🌟"],["Grace","✨"],["Kindness","🤝"],["Love","❤️"],["Coffee","☕"],["Forgiveness","🕊️"],["Encouragement","💬"]
         ],
         bad: [
-            { t: 'Gossip', e: '🗣️' },
-            { t: 'Fear', e: '😨' },
-            { t: 'Stress', e: '😖' },
-            { t: 'Anger', e: '😡' },
-            { t: 'Pride', e: '🦚' },
-            { t: 'Negativity', e: '🌧️' }
+            ["Gossip","🗣️"],["Fear","😨"],["Stress","😖"],["Anger","😡"],["Pride","🦚"],["Negativity","🌧️"]
         ],
-        powers: [
-            { id: 'shield', t: 'Shield', e: '🛡️', c: '#00e5ff' },
-            { id: 'slow', t: 'Slow Time', e: '⏳', c: '#00ff88' },
-            { id: 'double', t: 'Double Pts', e: '✝️', c: '#ff00ff' },
-            { id: 'magnet', t: 'Magnet', e: '🧲', c: '#ffaa00' }
-        ],
-        special: {
-            t: 'Kloset Donation',
-            e: '👕',
-            c: '#3498db',
-            pts: 50
-        }
+        events: [
+            ["Grace Rush","event-good"],["Gossip Storm","event-bad"],["Forge Fire","event-fire"]
+        ]
     },
+    {
+        id: "kloset",
+        name: "Kenny's Kloset",
+        icon: "👕",
+        price: 300,
+        theme: "theme-kloset",
+        color: "#3498db",
+        glow: "rgba(52,152,219,0.25)",
+        coinMultiplier: 1.15,
+        badChance: 0.35,
+        speedMod: 1.02,
+        description: "Donation-focused level with clothes, shoes, blankets, and toys.",
+        special: "Donation Rush gives more special drops and more coins.",
+        good: [
+            ["Shirt","👕"],["Shoes","👟"],["Coat","🧥"],["Blanket","🧺"],["Toy","🧸"],["Donation","📦"],["Kindness","🤝"],["Hope","🌟"]
+        ],
+        bad: [
+            ["Clutter","📦"],["Waste","🗑️"],["Broken","💔"],["Neglect","🌧️"],["Stress","😖"]
+        ],
+        events: [
+            ["Donation Rush","event-good"],["Sorting Storm","event-bad"],["Kenny's Drop",""]
+        ]
+    },
+    {
+        id: "coffee",
+        name: "Coffee & Conversations",
+        icon: "☕",
+        price: 500,
+        theme: "theme-coffee",
+        color: "#d68d45",
+        glow: "rgba(214,141,69,0.26)",
+        coinMultiplier: 1.08,
+        badChance: 0.36,
+        speedMod: 0.98,
+        description: "Warm coffee-shop level about friendship and connection.",
+        special: "Refill Rush fills your burst meter faster.",
+        good: [
+            ["Coffee","☕"],["Friendship","🤝"],["Conversation","💬"],["Prayer","🙏"],["Encouragement","💬"],["Grace","✨"],["Invite","📨"],["Listen","👂"]
+        ],
+        bad: [
+            ["Loneliness","😔"],["Awkward","🙃"],["Rush","⏰"],["Distraction","📱"],["Fear","😨"]
+        ],
+        events: [
+            ["Refill Rush","event-good"],["Awkward Silence","event-bad"],["Warm Welcome",""]
+        ]
+    },
+    {
+        id: "kids",
+        name: "Adventure Kids",
+        icon: "🖍️",
+        price: 750,
+        theme: "theme-kids",
+        color: "#ffd855",
+        glow: "rgba(255,216,85,0.25)",
+        coinMultiplier: 1.12,
+        badChance: 0.40,
+        speedMod: 1.13,
+        description: "Fast, bright, chaotic, and high reward.",
+        special: "Kid Energy makes drops faster but doubles many rewards.",
+        good: [
+            ["Joy","😄"],["Wonder","🌈"],["Bible Story","📖"],["Laughter","😂"],["Friendship","🤝"],["Worship","🎵"],["Adventure","🧭"],["Grace","✨"]
+        ],
+        bad: [
+            ["Chaos","🌪️"],["Tantrum","😭"],["Spill","🥤"],["Lost Shoe","👟"],["Distraction","📱"]
+        ],
+        events: [
+            ["Kid Energy","event-fire"],["Snack Rush","event-good"],["Chaos Storm","event-bad"]
+        ]
+    },
+    {
+        id: "protect",
+        name: "Forged to Protect",
+        icon: "🚒",
+        price: 1000,
+        theme: "theme-protect",
+        color: "#ff5555",
+        glow: "rgba(255,80,80,0.20)",
+        coinMultiplier: 1.22,
+        badChance: 0.42,
+        speedMod: 1.08,
+        description: "First responder and veteran appreciation level. Harder, but bigger rewards.",
+        special: "Hero Moment doubles good drops and increases coins.",
+        good: [
+            ["Courage","🛡️"],["Service","🤝"],["Honor","🎖️"],["Protection","🚒"],["Sacrifice","🇺🇸"],["Hope","🌟"],["Community","🏘️"],["Prayer","🙏"]
+        ],
+        bad: [
+            ["Burnout","😮‍💨"],["Danger","⚠️"],["Stress","😖"],["Fear","😨"],["Exhaustion","💤"]
+        ],
+        events: [
+            ["Hero Moment","event-good"],["Call Rush","event-fire"],["Burnout Storm","event-bad"]
+        ]
+    }
+];
 
-    upgrades: [
-        { id: 'width', t: 'Wider Catch Zone', d: 'Catch area grows by 15%.' },
-        { id: 'life', t: 'Extra Heart', d: 'Gain one extra life.' },
-        { id: 'slowBad', t: 'Calmer Storms', d: 'Joy-stealers fall 20% slower.' },
-        { id: 'points', t: 'Greater Blessing', d: 'Earn +5 base points per catch.' },
-        { id: 'powerDur', t: 'Longer Power', d: 'Power-ups last 30% longer.' },
-        { id: 'foil', t: 'Rare Luck', d: 'Higher chance for rare glowing blessings.' },
-        { id: 'burstGain', t: 'Faster Burst', d: 'Blessing Burst meter fills faster.' }
+const STORE_ITEMS = [
+    {
+        id: "outfit_gold",
+        type: "outfit",
+        slot: "outfit",
+        name: "Foundery Gold Shirt",
+        icon: "🟡",
+        price: 0,
+        rarity: "common",
+        value: "#f5b700",
+        description: "The classic starter look.",
+        bonusText: "No bonus.",
+        bonus: {}
+    },
+    {
+        id: "outfit_hoodie",
+        type: "outfit",
+        slot: "outfit",
+        name: "Forge Hoodie",
+        icon: "🔥",
+        price: 400,
+        rarity: "rare",
+        value: "#d96c06",
+        description: "A hoodie made for the grind.",
+        bonusText: "+10% coins after each match.",
+        bonus: { coinMultiplier: 1.10 }
+    },
+    {
+        id: "outfit_vest",
+        type: "outfit",
+        slot: "outfit",
+        name: "Community Helper Vest",
+        icon: "🦺",
+        price: 500,
+        rarity: "rare",
+        value: "#2ecc71",
+        description: "A service vest for mission-focused players.",
+        bonusText: "Missions give +25 extra points.",
+        bonus: { missionBonus: 25 }
+    },
+    {
+        id: "outfit_jacket",
+        type: "outfit",
+        slot: "outfit",
+        name: "Veteran Honor Jacket",
+        icon: "🎖️",
+        price: 750,
+        rarity: "epic",
+        value: "#34495e",
+        description: "An honor jacket built for endurance.",
+        bonusText: "Start each match with +1 life.",
+        bonus: { extraLife: 1 }
+    },
+    {
+        id: "acc_none",
+        type: "accessory",
+        slot: "accessory",
+        name: "No Accessory",
+        icon: "🙂",
+        price: 0,
+        rarity: "common",
+        value: "none",
+        description: "Simple and clean.",
+        bonusText: "No bonus.",
+        bonus: {}
+    },
+    {
+        id: "acc_cap",
+        type: "accessory",
+        slot: "accessory",
+        name: "Forge Cap",
+        icon: "🧢",
+        price: 200,
+        rarity: "uncommon",
+        value: "hat",
+        description: "A simple cap with a little extra grind.",
+        bonusText: "+5% coins.",
+        bonus: { coinMultiplier: 1.05 }
+    },
+    {
+        id: "acc_cape",
+        type: "accessory",
+        slot: "accessory",
+        name: "Hero Cape",
+        icon: "🦸",
+        price: 250,
+        rarity: "rare",
+        value: "cape",
+        description: "A bold cape for a second chance.",
+        bonusText: "Start with one shield.",
+        bonus: { startShield: true }
+    },
+    {
+        id: "acc_glasses",
+        type: "accessory",
+        slot: "accessory",
+        name: "Prayer Warrior Glasses",
+        icon: "👓",
+        price: 350,
+        rarity: "rare",
+        value: "glasses",
+        description: "See trouble before it gets close.",
+        bonusText: "Bad drops fall 10% slower.",
+        bonus: { badSlow: 0.90 }
+    },
+    {
+        id: "acc_halo",
+        type: "accessory",
+        slot: "accessory",
+        name: "Golden Halo",
+        icon: "😇",
+        price: 800,
+        rarity: "legendary",
+        value: "halo",
+        description: "A legendary rare-drop booster.",
+        bonusText: "Rare drops appear more often.",
+        bonus: { foilChance: 0.06 }
+    },
+    {
+        id: "tool_tray",
+        type: "tool",
+        slot: "tool",
+        name: "Serving Tray",
+        icon: "🍽️",
+        price: 0,
+        rarity: "common",
+        value: "tray",
+        description: "The original blessing-catching tray.",
+        bonusText: "No bonus.",
+        bonus: {}
+    },
+    {
+        id: "tool_tote",
+        type: "tool",
+        slot: "tool",
+        name: "Kenny's Kloset Tote",
+        icon: "🛍️",
+        price: 350,
+        rarity: "rare",
+        value: "bag",
+        description: "A tote built for donation drops.",
+        bonusText: "Special drops appear more often.",
+        bonus: { specialChance: 0.10 }
+    },
+    {
+        id: "tool_basket",
+        type: "tool",
+        slot: "tool",
+        name: "Golden Basket",
+        icon: "🧺",
+        price: 700,
+        rarity: "epic",
+        value: "basket",
+        description: "Premium basket with a bigger catch zone.",
+        bonusText: "Catch zone +10%.",
+        bonus: { width: 1.10 }
+    },
+    {
+        id: "tool_crate",
+        type: "tool",
+        slot: "tool",
+        name: "Forge Crate",
+        icon: "📦",
+        price: 600,
+        rarity: "rare",
+        value: "crate",
+        description: "Heavy duty, steady, and strong.",
+        bonusText: "Bad drops fall 5% slower.",
+        bonus: { badSlow: 0.95 }
+    },
+    {
+        id: "tool_hands",
+        type: "tool",
+        slot: "tool",
+        name: "Helping Hands",
+        icon: "🙌",
+        price: 500,
+        rarity: "rare",
+        value: "hands",
+        description: "Catch blessings bare-handed.",
+        bonusText: "Burst meter fills 15% faster.",
+        bonus: { burstGain: 1.15 }
+    }
+];
+
+const ACHIEVEMENTS = [
+    { id: "first", icon: "✨", name: "First Blessing", desc: "Catch your first good item.", reward: 25, check: d => d.stats.goodCaught >= 1 },
+    { id: "prayer", icon: "🙏", name: "Prayer Warrior", desc: "Catch 25 Prayer drops.", reward: 100, check: d => (d.stats.byDrop.Prayer || 0) >= 25 },
+    { id: "mega", icon: "🌟", name: "Mega Blesser", desc: "Trigger Mega Blessing 3 times.", reward: 150, check: d => d.stats.megaBlessings >= 3 },
+    { id: "nogossip", icon: "🤐", name: "No Gossip Zone", desc: "Avoid or block 20 bad drops.", reward: 125, check: d => d.stats.badAvoided >= 20 },
+    { id: "kloset", icon: "👕", name: "Kloset Helper", desc: "Catch 15 special donation drops.", reward: 150, check: d => d.stats.specialCaught >= 15 },
+    { id: "missions", icon: "🎯", name: "Mission Minded", desc: "Complete 10 missions.", reward: 175, check: d => d.stats.missionsCompleted >= 10 },
+    { id: "return", icon: "📅", name: "Faithful Return", desc: "Play on 3 different days.", reward: 200, check: d => d.stats.playDays.length >= 3 },
+    { id: "buyer", icon: "🛒", name: "Store Supporter", desc: "Buy your first store item.", reward: 75, check: d => d.stats.itemsPurchased >= 1 },
+    { id: "worlds", icon: "🗺️", name: "World Walker", desc: "Unlock 3 levels.", reward: 250, check: d => d.unlockedLevels.length >= 3 },
+    { id: "score", icon: "🏆", name: "Score Chaser", desc: "Score 2,500 in one match.", reward: 250, check: d => d.stats.bestScore >= 2500 }
+];
+
+const GAME = {
+    gravity: 650,
+    baseFallSpeed: 245,
+    playerSpeed: 1900,
+    playerFriction: 0.82,
+    playerMaxSpeed: 950,
+    touchFollow: 20,
+    powerChance: 0.075,
+    foilChance: 0.045,
+    specialChance: 0.035,
+    eventChance: 0.0014,
+    basePoints: 10,
+    streakBonus: 5,
+    meterMax: 100,
+    upgradeInterval: 400,
+    levelCurve: 0.35,
+    combo: ["Prayer", "Hope", "Grace"],
+    powers: [
+        { id: "shield", t: "Shield", e: "🛡️", c: "#00e5ff" },
+        { id: "slow", t: "Slow Time", e: "⏳", c: "#00ff88" },
+        { id: "double", t: "Double Pts", e: "✝️", c: "#ff00ff" },
+        { id: "magnet", t: "Magnet", e: "🧲", c: "#ffaa00" }
     ],
-
+    upgrades: [
+        { id: "width", t: "Wider Catch Zone", d: "Catch area grows by 15%." },
+        { id: "life", t: "Extra Heart", d: "Gain one extra life." },
+        { id: "slowBad", t: "Calmer Storms", d: "Bad drops fall 20% slower." },
+        { id: "points", t: "Greater Blessing", d: "Earn +5 base points per catch." },
+        { id: "powerDur", t: "Longer Power", d: "Power-ups last 30% longer." },
+        { id: "foil", t: "Rare Luck", d: "Rare drops appear more often." },
+        { id: "burstGain", t: "Faster Burst", d: "Burst meter fills faster." },
+        { id: "coinBoost", t: "Coin Boost", d: "Earn 8% more coins this run." }
+    ],
     challenges: [
         "Text someone you haven't checked on in a while.",
         "Pray for a first responder, veteran, teacher, or neighbor today.",
@@ -1049,15 +1625,106 @@ const GAME_CONFIG = {
         "Invite someone to church, Good Company, or coffee.",
         "Donate something useful to Kenny's Kloset.",
         "Write a short note of encouragement to someone this week.",
-        "Ask someone, 'How can I pray for you?' and actually follow up."
+        "Ask someone, 'How can I pray for you?' and actually follow up.",
+        "Encourage a volunteer who usually works behind the scenes.",
+        "Share one thing you are thankful for with your family today."
     ]
 };
 
-const MathUtils = {
-    clamp: (val, min, max) => Math.min(Math.max(val, min), max),
-    easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
-    randomRange: (min, max) => Math.random() * (max - min) + min
-};
+function todayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function defaultData() {
+    return {
+        coins: 0,
+        ownedItems: ["outfit_gold", "acc_none", "tool_tray"],
+        unlockedLevels: ["forge"],
+        equipped: {
+            outfit: "outfit_gold",
+            accessory: "acc_none",
+            tool: "tool_tray",
+            level: "forge"
+        },
+        achievements: [],
+        lastDaily: null,
+        stats: {
+            matches: 0,
+            totalScore: 0,
+            bestScore: 0,
+            totalCoins: 0,
+            goodCaught: 0,
+            badCaught: 0,
+            badAvoided: 0,
+            specialCaught: 0,
+            foilCaught: 0,
+            powersCaught: 0,
+            missionsCompleted: 0,
+            megaBlessings: 0,
+            bestStreak: 0,
+            itemsPurchased: 0,
+            playDays: [],
+            byDrop: {}
+        }
+    };
+}
+
+function loadData() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultData();
+        const saved = JSON.parse(raw);
+        const base = defaultData();
+        return {
+            ...base,
+            ...saved,
+            equipped: { ...base.equipped, ...(saved.equipped || {}) },
+            stats: { ...base.stats, ...(saved.stats || {}), byDrop: { ...(saved.stats?.byDrop || {}) }, playDays: saved.stats?.playDays || [] },
+            ownedItems: saved.ownedItems || base.ownedItems,
+            unlockedLevels: saved.unlockedLevels || base.unlockedLevels,
+            achievements: saved.achievements || []
+        };
+    } catch {
+        return defaultData();
+    }
+}
+
+function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function item(id) {
+    return STORE_ITEMS.find(x => x.id === id);
+}
+
+function level(id) {
+    return LEVELS.find(x => x.id === id) || LEVELS[0];
+}
+
+function coins(n) {
+    return `🪙 ${Math.floor(n).toLocaleString()}`;
+}
+
+function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function clamp(v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}
+
+function rand(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function rarityClass(r) {
+    return `rarity-${r || "common"}`;
+}
+
+function rarityLabel(r) {
+    return String(r || "common").toUpperCase();
+}
 
 class AudioEngine {
     constructor() {
@@ -1068,61 +1735,57 @@ class AudioEngine {
     }
 
     init() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx.state === "suspended") this.ctx.resume();
     }
 
-    play(freq, type = 'sine', dur = 0.2, vol = 0.3) {
-        if (this.ctx.state === 'suspended') return;
-
+    play(freq, type = "sine", dur = 0.2, vol = 0.3) {
+        if (this.ctx.state === "suspended") return;
         const osc = this.ctx.createOscillator();
         const g = this.ctx.createGain();
-
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
         g.gain.setValueAtTime(vol, this.ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-
         osc.connect(g);
         g.connect(this.master);
-
         osc.start();
         osc.stop(this.ctx.currentTime + dur);
     }
 
     good() {
-        this.play(659.25, 'sine', 0.15, 0.3);
-        setTimeout(() => this.play(880.00, 'sine', 0.2, 0.2), 50);
+        this.play(659, "sine", 0.15, 0.3);
+        setTimeout(() => this.play(880, "sine", 0.2, 0.2), 50);
     }
 
     bad() {
-        this.play(150, 'sawtooth', 0.4, 0.4);
-        setTimeout(() => this.play(140, 'square', 0.4, 0.3), 30);
+        this.play(150, "sawtooth", 0.4, 0.4);
+        setTimeout(() => this.play(140, "square", 0.4, 0.3), 30);
     }
 
     power() {
-        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-            setTimeout(() => this.play(f, 'square', 0.2, 0.15), i * 80);
-        });
+        [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.play(f, "square", 0.2, 0.15), i * 80));
     }
 
     burst() {
-        this.play(150, 'sine', 0.8, 0.5);
-        setTimeout(() => this.play(100, 'sawtooth', 0.8, 0.3), 10);
+        this.play(150, "sine", 0.8, 0.5);
+        setTimeout(() => this.play(100, "sawtooth", 0.8, 0.3), 10);
     }
 
     levelUp() {
-        [440, 554, 659, 880, 1108].forEach((f, i) => {
-            setTimeout(() => this.play(f, 'sine', 0.3, 0.3), i * 100);
-        });
+        [440, 554, 659, 880, 1108].forEach((f, i) => setTimeout(() => this.play(f, "sine", 0.3, 0.3), i * 100));
     }
 
-    uiClick() {
-        this.play(800, 'sine', 0.05, 0.1);
+    click() {
+        this.play(800, "sine", 0.05, 0.1);
+    }
+
+    coin() {
+        this.play(880, "triangle", 0.08, 0.18);
+        setTimeout(() => this.play(1175, "triangle", 0.08, 0.12), 60);
     }
 }
 
-class ParticleSystem {
+class Particles {
     constructor() {
         this.particles = [];
         this.texts = [];
@@ -1131,8 +1794,7 @@ class ParticleSystem {
     burst(x, y, color, count = 15, force = 1) {
         for (let i = 0; i < count; i++) {
             this.particles.push({
-                x,
-                y,
+                x, y,
                 vx: (Math.random() - 0.5) * 420 * force,
                 vy: (Math.random() - 0.5) * 420 * force - 100 * force,
                 life: 1,
@@ -1142,36 +1804,24 @@ class ParticleSystem {
         }
     }
 
-    floatText(x, y, txt, color, isLarge = false) {
-        this.texts.push({
-            x,
-            y,
-            txt,
-            color,
-            life: 1.5,
-            vy: -60,
-            isLarge
-        });
+    text(x, y, txt, color, large = false) {
+        this.texts.push({ x, y, txt, color, life: 1.5, vy: -60, large });
     }
 
     update(dt) {
         for (let i = this.particles.length - 1; i >= 0; i--) {
-            let p = this.particles[i];
-
+            const p = this.particles[i];
             p.x += p.vx * dt;
             p.y += p.vy * dt;
-            p.vy += GAME_CONFIG.physics.gravity * dt;
+            p.vy += GAME.gravity * dt;
             p.life -= dt * 1.5;
-
             if (p.life <= 0) this.particles.splice(i, 1);
         }
 
         for (let i = this.texts.length - 1; i >= 0; i--) {
-            let t = this.texts[i];
-
+            const t = this.texts[i];
             t.y += t.vy * dt;
             t.life -= dt;
-
             if (t.life <= 0) this.texts.splice(i, 1);
         }
     }
@@ -1188,22 +1838,11 @@ class ParticleSystem {
         this.texts.forEach(t => {
             ctx.globalAlpha = Math.max(0, Math.min(1, t.life * 2));
             ctx.fillStyle = t.color;
-            ctx.font = t.isLarge ? "900 30px Montserrat" : "900 20px Montserrat";
+            ctx.font = t.large ? "900 30px Montserrat" : "900 20px Montserrat";
             ctx.textAlign = "center";
-            ctx.shadowColor = '#000';
+            ctx.shadowColor = "#000";
             ctx.shadowBlur = 8;
-
-            let scale = 1;
-            let progress = 1.5 - t.life;
-
-            if (progress < 0.2) scale = MathUtils.easeOutCubic(progress * 5);
-
-            ctx.save();
-            ctx.translate(t.x, t.y);
-            ctx.scale(scale, scale);
-            ctx.fillText(t.txt, 0, 0);
-            ctx.restore();
-
+            ctx.fillText(t.txt, t.x, t.y);
             ctx.shadowBlur = 0;
         });
 
@@ -1211,59 +1850,54 @@ class ParticleSystem {
     }
 }
 
-class Character {
-    constructor(game, bodyC, outfitC, acc, tool) {
+class Player {
+    constructor(game, outfit, accessory, tool) {
         this.game = game;
-        this.bodyColor = bodyC;
-        this.outfitColor = outfitC;
-        this.accessory = acc;
-        this.tool = tool;
-
+        this.body = "#f1c27d";
+        this.outfit = outfit.value;
+        this.accessory = accessory.value;
+        this.tool = tool.value;
         this.baseW = 110;
-        this.h = 20;
         this.w = 110;
+        this.h = 20;
         this.x = game.width / 2 - this.w / 2;
-        this.y = game.height - this.h - 90;
-
+        this.y = game.height - 110;
         this.vx = 0;
         this.sx = 1;
         this.sy = 1;
-        this.state = 'idle';
+        this.state = "idle";
         this.stateTimer = 0;
         this.shield = false;
     }
 
-    pulse(isGood) {
-        this.state = isGood ? 'happy' : 'hurt';
+    pulse(good) {
+        this.state = good ? "happy" : "hurt";
         this.stateTimer = 0.5;
-        this.sx = isGood ? 1.25 : 0.75;
-        this.sy = isGood ? 0.72 : 1.28;
+        this.sx = good ? 1.25 : 0.75;
+        this.sy = good ? 0.72 : 1.28;
     }
 
     update(dt) {
-        const p = GAME_CONFIG.physics;
-
         if (this.game.input.touch !== null) {
-            this.x += (this.game.input.touch - this.w / 2 - this.x) * p.touchFollowSpeed * dt;
+            this.x += (this.game.input.touch - this.w / 2 - this.x) * GAME.touchFollow * dt;
             this.vx = 0;
         } else {
-            this.vx += this.game.input.axis * p.playerSpeed * dt;
-            this.vx *= p.playerFriction;
-            this.vx = MathUtils.clamp(this.vx, -p.playerMaxSpeed, p.playerMaxSpeed);
+            this.vx += this.game.input.axis * GAME.playerSpeed * dt;
+            this.vx *= GAME.playerFriction;
+            this.vx = clamp(this.vx, -GAME.playerMaxSpeed, GAME.playerMaxSpeed);
             this.x += this.vx * dt;
         }
 
-        this.x = MathUtils.clamp(this.x, 0, this.game.width - this.w);
-
+        this.x = clamp(this.x, 0, this.game.width - this.w);
         this.sx += (1 - this.sx) * 15 * dt;
         this.sy += (1 - this.sy) * 15 * dt;
 
         if (this.stateTimer > 0) {
             this.stateTimer -= dt;
-            if (this.stateTimer <= 0) this.state = 'idle';
+            if (this.stateTimer <= 0) this.state = "idle";
         }
 
-        this.y = (this.game.height - 90) - (this.h * this.sy);
+        this.y = this.game.height - 110;
     }
 
     draw(ctx) {
@@ -1277,8 +1911,8 @@ class Character {
         const ty = this.y;
         const bodyY = ty + 15;
 
-        if (this.accessory === 'cape') {
-            ctx.fillStyle = '#e74c3c';
+        if (this.accessory === "cape") {
+            ctx.fillStyle = "#e74c3c";
             ctx.beginPath();
             ctx.moveTo(cx - 15, bodyY);
             ctx.lineTo(cx - 38, bodyY + 70);
@@ -1287,9 +1921,9 @@ class Character {
             ctx.fill();
         }
 
-        ctx.strokeStyle = this.outfitColor;
+        ctx.strokeStyle = this.outfit;
         ctx.lineWidth = 8;
-        ctx.lineCap = 'round';
+        ctx.lineCap = "round";
 
         ctx.beginPath();
         ctx.moveTo(cx - 12, bodyY + 40);
@@ -1301,21 +1935,21 @@ class Character {
         ctx.lineTo(cx + 15, bodyY + 75);
         ctx.stroke();
 
-        ctx.fillStyle = this.outfitColor;
+        ctx.fillStyle = this.outfit;
         ctx.beginPath();
         ctx.roundRect(cx - 22, bodyY, 44, 48, 12);
         ctx.fill();
 
-        ctx.fillStyle = this.bodyColor;
+        ctx.fillStyle = this.body;
         ctx.beginPath();
         ctx.arc(cx, bodyY - 18, 22, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#000';
-        ctx.strokeStyle = '#000';
+        ctx.fillStyle = "#000";
+        ctx.strokeStyle = "#000";
         ctx.lineWidth = 2.5;
 
-        if (this.state === 'hurt') {
+        if (this.state === "hurt") {
             ctx.beginPath();
             ctx.moveTo(cx - 12, bodyY - 24);
             ctx.lineTo(cx - 6, bodyY - 18);
@@ -1331,7 +1965,7 @@ class Character {
             ctx.beginPath();
             ctx.arc(cx, bodyY - 6, 5, 0, Math.PI * 2);
             ctx.fill();
-        } else if (this.state === 'happy') {
+        } else if (this.state === "happy") {
             ctx.beginPath();
             ctx.moveTo(cx - 14, bodyY - 18);
             ctx.quadraticCurveTo(cx - 10, bodyY - 24, cx - 6, bodyY - 18);
@@ -1360,14 +1994,14 @@ class Character {
             ctx.stroke();
         }
 
-        if (this.accessory === 'hat') {
-            ctx.fillStyle = this.outfitColor;
+        if (this.accessory === "hat") {
+            ctx.fillStyle = this.outfit;
             ctx.beginPath();
             ctx.arc(cx, bodyY - 24, 22, Math.PI, 0);
             ctx.fill();
             ctx.fillRect(cx - 32, bodyY - 24, 44, 6);
-        } else if (this.accessory === 'glasses') {
-            ctx.strokeStyle = '#222';
+        } else if (this.accessory === "glasses") {
+            ctx.strokeStyle = "#222";
             ctx.lineWidth = 2.5;
 
             ctx.beginPath();
@@ -1382,12 +2016,21 @@ class Character {
             ctx.moveTo(cx - 1, bodyY - 18);
             ctx.lineTo(cx + 1, bodyY - 18);
             ctx.stroke();
+        } else if (this.accessory === "halo") {
+            ctx.strokeStyle = "#f5b700";
+            ctx.lineWidth = 4;
+            ctx.shadowColor = "#f5b700";
+            ctx.shadowBlur = 14;
+            ctx.beginPath();
+            ctx.ellipse(cx, bodyY - 46, 23, 7, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
 
-        ctx.strokeStyle = this.bodyColor;
+        ctx.strokeStyle = this.body;
         ctx.lineWidth = 7;
 
-        if (this.tool === 'tray') {
+        if (this.tool === "tray") {
             ctx.beginPath();
             ctx.moveTo(cx - 18, bodyY + 10);
             ctx.lineTo(cx - 35, ty + 10);
@@ -1398,14 +2041,14 @@ class Character {
             ctx.lineTo(cx + 35, ty + 10);
             ctx.stroke();
 
-            ctx.fillStyle = '#bdc3c7';
+            ctx.fillStyle = "#bdc3c7";
             ctx.beginPath();
             ctx.roundRect(this.x, ty, this.w, this.h, 6);
             ctx.fill();
 
-            ctx.fillStyle = '#95a5a6';
+            ctx.fillStyle = "#95a5a6";
             ctx.fillRect(this.x + 5, ty + 5, this.w - 10, this.h - 10);
-        } else if (this.tool === 'bag') {
+        } else if (this.tool === "bag") {
             ctx.beginPath();
             ctx.moveTo(cx - 18, bodyY + 10);
             ctx.lineTo(cx - 20, ty + 5);
@@ -1416,14 +2059,14 @@ class Character {
             ctx.lineTo(cx + 20, ty + 5);
             ctx.stroke();
 
-            ctx.fillStyle = '#d35400';
+            ctx.fillStyle = "#d35400";
             ctx.beginPath();
             ctx.moveTo(this.x, ty);
             ctx.lineTo(this.x + this.w, ty);
             ctx.lineTo(this.x + this.w - 10, ty + this.h + 25);
             ctx.lineTo(this.x + 10, ty + this.h + 25);
             ctx.fill();
-        } else if (this.tool === 'crate') {
+        } else if (this.tool === "crate") {
             ctx.beginPath();
             ctx.moveTo(cx - 18, bodyY + 10);
             ctx.lineTo(cx - 35, ty + 15);
@@ -1434,16 +2077,29 @@ class Character {
             ctx.lineTo(cx + 35, ty + 15);
             ctx.stroke();
 
-            ctx.fillStyle = '#8B4513';
+            ctx.fillStyle = "#8B4513";
             ctx.fillRect(this.x, ty, this.w, this.h + 15);
 
-            ctx.strokeStyle = '#5c2e0b';
+            ctx.strokeStyle = "#5c2e0b";
             ctx.lineWidth = 3;
             ctx.strokeRect(this.x, ty, this.w, this.h + 15);
+        } else if (this.tool === "basket") {
+            ctx.beginPath();
+            ctx.moveTo(cx - 18, bodyY + 10);
+            ctx.lineTo(cx - 28, ty + 9);
+            ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(this.x, ty);
-            ctx.lineTo(this.x + this.w, ty + this.h + 15);
+            ctx.moveTo(cx + 18, bodyY + 10);
+            ctx.lineTo(cx + 28, ty + 9);
+            ctx.stroke();
+
+            ctx.fillStyle = "#d6a93a";
+            ctx.strokeStyle = "#f5b700";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(this.x, ty, this.w, this.h + 16, 10);
+            ctx.fill();
             ctx.stroke();
         } else {
             ctx.beginPath();
@@ -1456,7 +2112,7 @@ class Character {
             ctx.lineTo(this.x + this.w - 15, ty + 10);
             ctx.stroke();
 
-            ctx.fillStyle = this.bodyColor;
+            ctx.fillStyle = this.body;
             ctx.beginPath();
             ctx.arc(this.x + 15, ty + 10, 14, 0, Math.PI * 2);
             ctx.fill();
@@ -1467,9 +2123,9 @@ class Character {
         }
 
         if (this.shield) {
-            ctx.strokeStyle = '#00e5ff';
+            ctx.strokeStyle = "#00e5ff";
             ctx.lineWidth = 4;
-            ctx.fillStyle = 'rgba(0,229,255,0.15)';
+            ctx.fillStyle = "rgba(0,229,255,0.15)";
             ctx.beginPath();
             ctx.arc(cx, bodyY, 65 + this.w / 2, 0, Math.PI * 2);
             ctx.fill();
@@ -1480,159 +2136,169 @@ class Character {
     }
 }
 
-class Game {
+class KingdomGame {
     constructor() {
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.wrapper = document.getElementById('game-wrapper');
-
+        this.canvas = document.getElementById("gameCanvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.wrapper = document.getElementById("game-wrapper");
         this.audio = new AudioEngine();
-        this.particles = new ParticleSystem();
+        this.particles = new Particles();
+        this.data = loadData();
 
-        this.state = 'MENU';
+        this.state = "MENU";
+        this.width = 0;
+        this.height = 0;
+        this.lastTime = 0;
+        this.items = [];
+        this.stars = [];
+        this.input = { axis: 0, touch: null };
+
         this.score = 0;
         this.lives = 3;
         this.streak = 0;
+        this.bestRunStreak = 0;
         this.comboIndex = 0;
-        this.survivalTime = 0;
-        this.lastTime = 0;
-        this.shakeTimer = 0;
-        this.spawnTimer = 0;
-        this.level = 1;
-
-        this.items = [];
-        this.backgroundStars = [];
-        this.player = null;
-
-        this.input = {
-            axis: 0,
-            touch: null
-        };
-
-        this.upgrades = {
-            width: 1,
-            fallSpeed: 1,
-            points: 0,
-            powerDur: 1,
-            foil: 0,
-            burstGain: 1
-        };
-
-        this.nextLevelGate = GAME_CONFIG.rules.upgradeInterval;
-        this.lastLevelGate = 0;
-
+        this.runLevel = 1;
+        this.lastGate = 0;
+        this.nextGate = GAME.upgradeInterval;
         this.burstMeter = 0;
+        this.survivalTime = 0;
+        this.spawnTimer = 0;
+        this.shakeTimer = 0;
         this.activeEvent = null;
         this.eventTimer = 0;
-
-        this.activePowers = {
-            shield: false,
-            slow: 0,
-            double: 0,
-            magnet: 0
-        };
-
+        this.player = null;
         this.mission = null;
-        this.lbPrevScreen = 'startScreen';
-        this.personalBest = parseInt(localStorage.getItem('blessingBasketArcadePB')) || 0;
+        this.storeTab = "outfit";
+        this.powers = { shield: false, slow: 0, double: 0, magnet: 0 };
+        this.gearBonus = {};
+        this.upgrades = {};
+        this.runStats = this.emptyRunStats();
 
         this.bindUI();
         this.resize();
-        this.makeBackgroundStars();
+        this.makeStars();
+        this.renderMenus();
+        this.applyTheme();
 
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             this.resize();
-            this.makeBackgroundStars();
+            this.makeStars();
         });
 
         requestAnimationFrame(t => this.loop(t));
     }
 
+    emptyRunStats() {
+        return {
+            coins: 0,
+            missions: 0,
+            good: 0,
+            bad: 0,
+            avoided: 0,
+            special: 0,
+            foil: 0,
+            powers: 0,
+            mega: 0
+        };
+    }
+
     bindUI() {
-        document.getElementById('startBtn').onclick = () => {
-            this.audio.uiClick();
+        document.getElementById("startBtn").onclick = () => {
+            this.audio.click();
             this.startCountdown();
         };
 
-        document.getElementById('burstBtn').onclick = () => this.activateBurst();
-
-        document.getElementById('playAgainBtn').onclick = () => {
-            this.audio.uiClick();
-            this.startCountdown();
+        document.getElementById("storeBtn").onclick = () => {
+            this.audio.click();
+            this.showStore();
         };
 
-        document.getElementById('lbStartBtn').onclick = () => {
-            this.audio.uiClick();
-            this.showLeaderboard('startScreen');
+        document.getElementById("levelsBtn").onclick = () => {
+            this.audio.click();
+            this.showLevels();
         };
 
-        document.getElementById('lbEndBtn').onclick = () => {
-            this.audio.uiClick();
-            this.showLeaderboard('endScreen');
+        document.getElementById("achievementsBtn").onclick = () => {
+            this.audio.click();
+            this.showAchievements();
         };
 
-        document.getElementById('lbCloseBtn').onclick = () => {
-            this.audio.uiClick();
-            this.showScreen(this.lbPrevScreen || 'startScreen');
+        document.getElementById("statsBtn").onclick = () => {
+            this.audio.click();
+            this.showStats();
         };
 
-        document.getElementById('submitScoreBtn').onclick = () => {
-            this.audio.uiClick();
-            this.submitScore();
+        document.getElementById("storeBackBtn").onclick = () => this.showHome();
+        document.getElementById("levelsBackBtn").onclick = () => this.showHome();
+        document.getElementById("achievementsBackBtn").onclick = () => this.showHome();
+        document.getElementById("statsBackBtn").onclick = () => this.showHome();
+
+        document.getElementById("dailyBtn").onclick = () => {
+            this.audio.click();
+            this.claimDaily();
         };
 
-        document.getElementById('pauseBtn').onclick = () => {
-            this.audio.uiClick();
-            this.pauseGame();
-        };
+        document.getElementById("selLevel").onchange = e => this.equipLevel(e.target.value);
+        document.getElementById("selOutfit").onchange = e => this.equipItem(e.target.value);
+        document.getElementById("selAccessory").onchange = e => this.equipItem(e.target.value);
+        document.getElementById("selTool").onchange = e => this.equipItem(e.target.value);
 
-        document.getElementById('resumeBtn').onclick = () => {
-            this.audio.uiClick();
-            this.resumeGame();
-        };
+        document.getElementById("pauseBtn").onclick = () => this.pause();
+        document.getElementById("resumeBtn").onclick = () => this.resume();
+        document.getElementById("quitBtn").onclick = () => this.endGame();
+        document.getElementById("burstBtn").onclick = () => this.activateBurst();
+        document.getElementById("playAgainBtn").onclick = () => this.startCountdown();
+        document.getElementById("homeBtn").onclick = () => this.showHome();
 
-        document.getElementById('quitBtn').onclick = () => {
-            this.audio.uiClick();
-            this.endGame();
+        document.getElementById("resetBtn").onclick = () => {
+            if (confirm("Reset all progress on this device?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                this.data = defaultData();
+                saveData(this.data);
+                this.renderMenus();
+                this.showHome();
+                this.toast("Progress reset.");
+            }
         };
 
         window.onkeydown = e => {
             const k = e.key.toLowerCase();
 
-            if (k === 'a' || e.key === 'ArrowLeft') this.input.axis = -1;
-            if (k === 'd' || e.key === 'ArrowRight') this.input.axis = 1;
+            if (k === "a" || e.key === "ArrowLeft") this.input.axis = -1;
+            if (k === "d" || e.key === "ArrowRight") this.input.axis = 1;
 
-            if (e.key === ' ') {
+            if (e.key === " ") {
                 e.preventDefault();
                 this.activateBurst();
             }
 
-            if (k === 'p' || e.key === 'Escape') {
-                if (this.state === 'PLAYING') this.pauseGame();
-                else if (this.state === 'PAUSED') this.resumeGame();
+            if (k === "p" || e.key === "Escape") {
+                if (this.state === "PLAYING") this.pause();
+                else if (this.state === "PAUSED") this.resume();
             }
         };
 
         window.onkeyup = e => {
             const k = e.key.toLowerCase();
 
-            if ((k === 'a' || e.key === 'ArrowLeft') && this.input.axis === -1) this.input.axis = 0;
-            if ((k === 'd' || e.key === 'ArrowRight') && this.input.axis === 1) this.input.axis = 0;
+            if ((k === "a" || e.key === "ArrowLeft") && this.input.axis === -1) this.input.axis = 0;
+            if ((k === "d" || e.key === "ArrowRight") && this.input.axis === 1) this.input.axis = 0;
         };
 
-        this.canvas.addEventListener('touchstart', e => {
+        this.canvas.addEventListener("touchstart", e => {
             e.preventDefault();
-            const rect = this.canvas.getBoundingClientRect();
-            this.input.touch = e.touches[0].clientX - rect.left;
+            const r = this.canvas.getBoundingClientRect();
+            this.input.touch = e.touches[0].clientX - r.left;
         }, { passive: false });
 
-        this.canvas.addEventListener('touchmove', e => {
+        this.canvas.addEventListener("touchmove", e => {
             e.preventDefault();
-            const rect = this.canvas.getBoundingClientRect();
-            this.input.touch = e.touches[0].clientX - rect.left;
+            const r = this.canvas.getBoundingClientRect();
+            this.input.touch = e.touches[0].clientX - r.left;
         }, { passive: false });
 
-        this.canvas.addEventListener('touchend', () => {
+        this.canvas.addEventListener("touchend", () => {
             this.input.touch = null;
         });
     }
@@ -1640,21 +2306,18 @@ class Game {
     resize() {
         this.width = this.canvas.clientWidth;
         this.height = this.canvas.clientHeight;
-
         const ratio = window.devicePixelRatio || 1;
-
         this.canvas.width = this.width * ratio;
         this.canvas.height = this.height * ratio;
-
         this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     }
 
-    makeBackgroundStars() {
-        this.backgroundStars = [];
+    makeStars() {
+        this.stars = [];
         const count = Math.floor((this.width * this.height) / 13000);
 
         for (let i = 0; i < count; i++) {
-            this.backgroundStars.push({
+            this.stars.push({
                 x: Math.random() * this.width,
                 y: Math.random() * this.height,
                 r: Math.random() * 1.8 + 0.5,
@@ -1665,40 +2328,446 @@ class Game {
     }
 
     showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-        document.getElementById('hud').style.display = 'none';
+        document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
+        document.getElementById("hud").style.display = "none";
 
-        if (id === 'hud') {
-            document.getElementById('hud').style.display = 'flex';
-        } else if (id) {
-            document.getElementById(id).style.display = 'flex';
+        if (id === "hud") {
+            document.getElementById("hud").style.display = "flex";
+        } else {
+            document.getElementById(id).style.display = "flex";
         }
+    }
+
+    showHome() {
+        this.state = "MENU";
+        this.applyTheme();
+        this.renderMenus();
+        this.showScreen("startScreen");
+    }
+
+    toast(msg, time = 2200) {
+        const el = document.getElementById("toast");
+        el.innerHTML = msg;
+        el.classList.add("show");
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => el.classList.remove("show"), time);
+    }
+
+    currentLevel() {
+        return level(this.data.equipped.level);
+    }
+
+    equippedItems() {
+        return {
+            outfit: item(this.data.equipped.outfit) || item("outfit_gold"),
+            accessory: item(this.data.equipped.accessory) || item("acc_none"),
+            tool: item(this.data.equipped.tool) || item("tool_tray")
+        };
+    }
+
+    calcGearBonus() {
+        const equipped = this.equippedItems();
+        const combined = {};
+
+        Object.values(equipped).forEach(it => {
+            Object.entries(it.bonus || {}).forEach(([k, v]) => {
+                if (typeof v === "number") {
+                    if (k === "coinMultiplier" || k === "badSlow" || k === "burstGain" || k === "width") {
+                        combined[k] = (combined[k] || 1) * v;
+                    } else {
+                        combined[k] = (combined[k] || 0) + v;
+                    }
+                } else {
+                    combined[k] = v;
+                }
+            });
+        });
+
+        return combined;
+    }
+
+    applyTheme() {
+        this.wrapper.className = this.currentLevel().theme;
+    }
+
+    renderMenus() {
+        this.renderCoins();
+        this.renderDaily();
+        this.renderSelects();
+        this.checkAchievements(false);
+    }
+
+    renderCoins() {
+        document.getElementById("coinDisplay").innerText = `${coins(this.data.coins)} Coins`;
+        document.getElementById("storeCoins").innerText = coins(this.data.coins);
+        document.getElementById("hudCoins").innerText = coins(this.data.coins);
+    }
+
+    renderDaily() {
+        const claimed = this.data.lastDaily === todayKey();
+        document.getElementById("dailyText").innerText = claimed ? "Daily blessing claimed. Come back tomorrow." : "Claim today’s 75 coin blessing bonus.";
+        document.getElementById("dailyBtn").innerText = claimed ? "Claimed" : "Claim";
+        document.getElementById("dailyBtn").disabled = claimed;
+    }
+
+    claimDaily() {
+        if (this.data.lastDaily === todayKey()) {
+            this.toast("Daily blessing already claimed.");
+            return;
+        }
+
+        this.data.lastDaily = todayKey();
+        this.data.coins += 75;
+        this.data.stats.totalCoins += 75;
+        saveData(this.data);
+        this.audio.coin();
+        this.toast("Daily Blessing claimed! +75 coins");
+        this.renderMenus();
+    }
+
+    renderSelects() {
+        const levelSelect = document.getElementById("selLevel");
+        levelSelect.innerHTML = LEVELS
+            .filter(l => this.data.unlockedLevels.includes(l.id))
+            .map(l => `<option value="${l.id}">${l.icon} ${l.name}</option>`)
+            .join("");
+        levelSelect.value = this.data.equipped.level;
+
+        const owned = STORE_ITEMS.filter(i => this.data.ownedItems.includes(i.id));
+
+        const fill = (id, slot) => {
+            const el = document.getElementById(id);
+            el.innerHTML = owned
+                .filter(i => i.slot === slot)
+                .map(i => `<option value="${i.id}">${i.icon} ${i.name}</option>`)
+                .join("");
+            el.value = this.data.equipped[slot];
+        };
+
+        fill("selOutfit", "outfit");
+        fill("selAccessory", "accessory");
+        fill("selTool", "tool");
+    }
+
+    showStore() {
+        this.renderStore();
+        this.showScreen("storeScreen");
+    }
+
+    renderStore() {
+        this.renderCoins();
+
+        const tabs = [
+            ["outfit","Outfits"],
+            ["accessory","Accessories"],
+            ["tool","Tools"]
+        ];
+
+        document.getElementById("storeTabs").innerHTML = tabs.map(([id,label]) => `
+            <button class="tab ${this.storeTab === id ? "active" : ""}" data-tab="${id}">${label}</button>
+        `).join("");
+
+        document.querySelectorAll("[data-tab]").forEach(btn => {
+            btn.onclick = () => {
+                this.storeTab = btn.dataset.tab;
+                this.audio.click();
+                this.renderStore();
+            };
+        });
+
+        const list = document.getElementById("storeList");
+        const items = STORE_ITEMS.filter(i => i.type === this.storeTab);
+
+        list.innerHTML = items.map(it => {
+            const owned = this.data.ownedItems.includes(it.id);
+            const equipped = this.data.equipped[it.slot] === it.id;
+            const canBuy = this.data.coins >= it.price;
+
+            let button = "";
+            if (equipped) button = `<button class="btn btn-small" disabled>Equipped</button>`;
+            else if (owned) button = `<button class="btn btn-small" data-equip="${it.id}">Equip</button>`;
+            else button = `<button class="btn btn-small ${canBuy ? "" : "btn-outline"}" data-buy="${it.id}" ${canBuy ? "" : "disabled"}>${coins(it.price)}</button>`;
+
+            return `
+                <div class="item-card ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
+                    <div class="item-top">
+                        <div class="item-info">
+                            <div class="item-icon">${it.icon}</div>
+                            <div>
+                                <div class="item-title">${it.name}</div>
+                                <div class="item-meta"><span class="${rarityClass(it.rarity)}">${rarityLabel(it.rarity)}</span> • ${it.type}</div>
+                            </div>
+                        </div>
+                        <span class="pill ${owned ? "green-pill" : "gold-pill"}">${owned ? "Owned" : coins(it.price)}</span>
+                    </div>
+                    <div class="item-desc">${it.description}</div>
+                    <div class="item-bonus">Bonus: ${it.bonusText}</div>
+                    <div class="item-footer">
+                        <span class="pill ${equipped ? "gold-pill" : owned ? "green-pill" : ""}">${equipped ? "Active" : owned ? "Unlocked" : "Locked"}</span>
+                        ${button}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        document.querySelectorAll("[data-buy]").forEach(btn => {
+            btn.onclick = () => this.buyItem(btn.dataset.buy);
+        });
+
+        document.querySelectorAll("[data-equip]").forEach(btn => {
+            btn.onclick = () => this.equipItem(btn.dataset.equip);
+        });
+    }
+
+    buyItem(id) {
+        const it = item(id);
+        if (!it) return;
+
+        if (this.data.ownedItems.includes(id)) {
+            this.equipItem(id);
+            return;
+        }
+
+        if (this.data.coins < it.price) {
+            this.toast("Not enough coins yet.");
+            return;
+        }
+
+        this.data.coins -= it.price;
+        this.data.ownedItems.push(id);
+        this.data.stats.itemsPurchased++;
+        saveData(this.data);
+
+        this.audio.coin();
+        this.toast(`${it.name} unlocked!`);
+        this.checkAchievements(true);
+        this.renderStore();
+        this.renderMenus();
+    }
+
+    equipItem(id) {
+        const it = item(id);
+        if (!it) return;
+
+        if (!this.data.ownedItems.includes(id)) {
+            this.toast("Buy this item first.");
+            this.renderMenus();
+            return;
+        }
+
+        this.data.equipped[it.slot] = id;
+        saveData(this.data);
+        this.audio.click();
+        this.toast(`${it.name} equipped.`);
+        this.renderMenus();
+
+        if (document.getElementById("storeScreen").style.display === "flex") {
+            this.renderStore();
+        }
+    }
+
+    showLevels() {
+        this.renderLevels();
+        this.showScreen("levelsScreen");
+    }
+
+    renderLevels() {
+        const list = document.getElementById("levelsList");
+
+        list.innerHTML = LEVELS.map(l => {
+            const unlocked = this.data.unlockedLevels.includes(l.id);
+            const equipped = this.data.equipped.level === l.id;
+            const canBuy = this.data.coins >= l.price;
+
+            let button = "";
+            if (equipped) button = `<button class="btn btn-small" disabled>Equipped</button>`;
+            else if (unlocked) button = `<button class="btn btn-small" data-level-equip="${l.id}">Equip</button>`;
+            else button = `<button class="btn btn-small ${canBuy ? "" : "btn-outline"}" data-level-buy="${l.id}" ${canBuy ? "" : "disabled"}>${coins(l.price)}</button>`;
+
+            return `
+                <div class="item-card ${unlocked ? "owned" : ""} ${equipped ? "equipped" : ""}">
+                    <div class="item-top">
+                        <div class="item-info">
+                            <div class="item-icon">${l.icon}</div>
+                            <div>
+                                <div class="item-title">${l.name}</div>
+                                <div class="item-meta">${unlocked ? "Unlocked" : "Locked"} • ${Math.round(l.coinMultiplier * 100)}% coins</div>
+                            </div>
+                        </div>
+                        <span class="pill ${equipped ? "gold-pill" : unlocked ? "green-pill" : "gold-pill"}">${equipped ? "Active" : unlocked ? "Owned" : coins(l.price)}</span>
+                    </div>
+                    <div class="item-desc">${l.description}</div>
+                    <div class="item-bonus">Special: ${l.special}</div>
+                    <div class="item-footer">
+                        <span class="pill blue-pill">${l.good.slice(0,3).map(d => d[1]).join(" ")}</span>
+                        ${button}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        document.querySelectorAll("[data-level-buy]").forEach(btn => {
+            btn.onclick = () => this.buyLevel(btn.dataset.levelBuy);
+        });
+
+        document.querySelectorAll("[data-level-equip]").forEach(btn => {
+            btn.onclick = () => this.equipLevel(btn.dataset.levelEquip);
+        });
+    }
+
+    buyLevel(id) {
+        const l = level(id);
+
+        if (this.data.unlockedLevels.includes(id)) {
+            this.equipLevel(id);
+            return;
+        }
+
+        if (this.data.coins < l.price) {
+            this.toast("Not enough coins to unlock this level.");
+            return;
+        }
+
+        this.data.coins -= l.price;
+        this.data.unlockedLevels.push(id);
+        saveData(this.data);
+
+        this.audio.coin();
+        this.toast(`${l.name} unlocked!`);
+        this.checkAchievements(true);
+        this.renderLevels();
+        this.renderMenus();
+    }
+
+    equipLevel(id) {
+        const l = level(id);
+
+        if (!this.data.unlockedLevels.includes(id)) {
+            this.toast("Unlock this level first.");
+            this.renderMenus();
+            return;
+        }
+
+        this.data.equipped.level = id;
+        saveData(this.data);
+
+        this.audio.click();
+        this.applyTheme();
+        this.toast(`${l.name} equipped.`);
+        this.renderMenus();
+
+        if (document.getElementById("levelsScreen").style.display === "flex") {
+            this.renderLevels();
+        }
+    }
+
+    showAchievements() {
+        this.checkAchievements(false);
+        this.renderAchievements();
+        this.showScreen("achievementsScreen");
+    }
+
+    renderAchievements() {
+        document.getElementById("achievementsList").innerHTML = ACHIEVEMENTS.map(a => {
+            const unlocked = this.data.achievements.includes(a.id);
+
+            return `
+                <div class="item-card ${unlocked ? "owned" : ""}">
+                    <div class="item-top">
+                        <div class="item-info">
+                            <div class="item-icon">${a.icon}</div>
+                            <div>
+                                <div class="item-title">${a.name}</div>
+                                <div class="item-meta">${unlocked ? "Unlocked" : "Locked"}</div>
+                            </div>
+                        </div>
+                        <span class="pill ${unlocked ? "green-pill" : "gold-pill"}">${unlocked ? "Done" : "+" + a.reward}</span>
+                    </div>
+                    <div class="item-desc">${a.desc}</div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    checkAchievements(show) {
+        let changed = false;
+
+        ACHIEVEMENTS.forEach(a => {
+            if (!this.data.achievements.includes(a.id) && a.check(this.data)) {
+                this.data.achievements.push(a.id);
+                this.data.coins += a.reward;
+                this.data.stats.totalCoins += a.reward;
+                changed = true;
+
+                if (show) {
+                    this.audio.coin();
+                    this.toast(`Badge unlocked: ${a.name}! +${a.reward} coins`, 3200);
+                }
+            }
+        });
+
+        if (changed) {
+            saveData(this.data);
+            this.renderMenus();
+        }
+    }
+
+    showStats() {
+        this.renderStats();
+        this.showScreen("statsScreen");
+    }
+
+    renderStats() {
+        const s = this.data.stats;
+        const equipped = this.equippedItems();
+        const l = this.currentLevel();
+
+        const rows = [
+            ["Coins", coins(this.data.coins), "Spend these in the store."],
+            ["Best Score", s.bestScore.toLocaleString(), "Highest score on this device."],
+            ["Matches", s.matches.toLocaleString(), "Total games played."],
+            ["Good Caught", s.goodCaught.toLocaleString(), "Blessings and helpful drops."],
+            ["Bad Hits", s.badCaught.toLocaleString(), "Joy-stealers that hit you."],
+            ["Bad Avoided", s.badAvoided.toLocaleString(), "Bad drops avoided or blocked."],
+            ["Rare Caught", s.foilCaught.toLocaleString(), "Glowing rare drops caught."],
+            ["Missions", s.missionsCompleted.toLocaleString(), "Total missions completed."],
+            ["Badges", `${this.data.achievements.length}/${ACHIEVEMENTS.length}`, "Achievements unlocked."],
+            ["Levels", `${this.data.unlockedLevels.length}/${LEVELS.length}`, "Worlds unlocked."],
+            ["Equipped", `${equipped.outfit.icon} ${equipped.accessory.icon} ${equipped.tool.icon}`, `Current level: ${l.name}`]
+        ];
+
+        document.getElementById("statsList").innerHTML = rows.map(([title,value,desc]) => `
+            <div class="item-card">
+                <div class="item-top">
+                    <div>
+                        <div class="item-title">${title}</div>
+                        <div class="item-desc" style="margin:4px 0 0;">${desc}</div>
+                    </div>
+                    <span class="pill gold-pill">${value}</span>
+                </div>
+            </div>
+        `).join("");
     }
 
     startCountdown() {
         this.audio.init();
         this.showScreen(null);
-
         let count = 3;
-        const cdEl = document.getElementById('countdown');
-
-        cdEl.style.opacity = 1;
+        const el = document.getElementById("countdown");
+        el.style.opacity = 1;
 
         const tick = () => {
-            cdEl.innerText = count > 0 ? count : 'GO!';
-            cdEl.classList.remove('count-pop');
-            void cdEl.offsetWidth;
-            cdEl.classList.add('count-pop');
+            el.innerText = count > 0 ? count : "GO!";
+            el.classList.remove("count-pop");
+            void el.offsetWidth;
+            el.classList.add("count-pop");
 
-            if (count > 0) {
-                this.audio.play(400, 'sine', 0.1, 0.2);
-            } else {
-                this.audio.play(800, 'sine', 0.4, 0.3);
-            }
+            if (count > 0) this.audio.play(400, "sine", 0.1, 0.2);
+            else this.audio.play(800, "sine", 0.4, 0.3);
 
             if (count < 0) {
-                cdEl.style.opacity = 0;
-                cdEl.classList.remove('count-pop');
+                el.style.opacity = 0;
+                el.classList.remove("count-pop");
                 this.initGame();
             } else {
                 count--;
@@ -1710,25 +2779,25 @@ class Game {
     }
 
     initGame() {
-        this.state = 'PLAYING';
+        this.gearBonus = this.calcGearBonus();
+        this.state = "PLAYING";
         this.score = 0;
-        this.lives = GAME_CONFIG.rules.maxLives;
+        this.lives = 3 + (this.gearBonus.extraLife || 0);
         this.streak = 0;
+        this.bestRunStreak = 0;
         this.comboIndex = 0;
+        this.runLevel = 1;
+        this.lastGate = 0;
+        this.nextGate = GAME.upgradeInterval;
+        this.burstMeter = 0;
         this.survivalTime = 0;
         this.spawnTimer = 0;
         this.shakeTimer = 0;
-        this.level = 1;
-
-        this.items = [];
-        this.particles = new ParticleSystem();
-
-        this.lastLevelGate = 0;
-        this.nextLevelGate = GAME_CONFIG.rules.upgradeInterval;
-
-        this.burstMeter = 0;
         this.activeEvent = null;
         this.eventTimer = 0;
+        this.items = [];
+        this.particles = new Particles();
+        this.runStats = this.emptyRunStats();
 
         this.upgrades = {
             width: 1,
@@ -1736,139 +2805,275 @@ class Game {
             points: 0,
             powerDur: 1,
             foil: 0,
-            burstGain: 1
+            burstGain: this.gearBonus.burstGain || 1,
+            coinMultiplier: 1
         };
 
-        this.activePowers = {
-            shield: false,
+        this.powers = {
+            shield: !!this.gearBonus.startShield,
             slow: 0,
             double: 0,
             magnet: 0
         };
 
-        const bCol = document.getElementById('selBody').value;
-        const oCol = document.getElementById('selOutfit').value;
-        const acc = document.getElementById('selAcc').value;
-        const tool = document.getElementById('selTool').value;
+        const eq = this.equippedItems();
+        this.player = new Player(this, eq.outfit, eq.accessory, eq.tool);
+        this.player.w = this.player.baseW * (this.gearBonus.width || 1);
 
-        this.player = new Character(this, bCol, oCol, acc, tool);
+        const today = todayKey();
+        if (!this.data.stats.playDays.includes(today)) this.data.stats.playDays.push(today);
 
-        this.wrapper.className = '';
-        this.setNewMission();
-        this.showScreen('hud');
+        this.applyTheme();
+        this.setMission();
+        this.showScreen("hud");
         this.updateHUD();
     }
 
-    pauseGame() {
-        if (this.state !== 'PLAYING') return;
-
-        this.state = 'PAUSED';
-        this.showScreen('pauseScreen');
+    pause() {
+        if (this.state !== "PLAYING") return;
+        this.state = "PAUSED";
+        this.showScreen("pauseScreen");
     }
 
-    resumeGame() {
-        if (this.state !== 'PAUSED') return;
-
-        this.state = 'PLAYING';
-        this.showScreen('hud');
+    resume() {
+        if (this.state !== "PAUSED") return;
+        this.state = "PLAYING";
+        this.showScreen("hud");
     }
 
-    setNewMission() {
-        const types = [
-            { t: 'Catch 3 Prayers', goal: 3, type: 'catch', target: 'Prayer' },
-            { t: 'Catch 5 Hopes', goal: 5, type: 'catch', target: 'Hope' },
-            { t: 'Catch 8 Good Items', goal: 8, type: 'catch_any' },
-            { t: 'Reach a 10 Streak', goal: 10, type: 'streak' },
-            { t: 'Avoid Bad items (15s)', goal: 15, type: 'avoid_time' },
-            { t: 'Trigger Blessing Burst', goal: 1, type: 'burst' }
+    setMission() {
+        const l = this.currentLevel();
+        const target = pick(l.good)[0];
+
+        const missions = [
+            { t: `Catch 3 ${target}`, goal: 3, type: "catch", target },
+            { t: "Catch 8 good drops", goal: 8, type: "catchAny" },
+            { t: "Reach a 10 streak", goal: 10, type: "streak" },
+            { t: "Avoid bad items for 15s", goal: 15, type: "avoid" },
+            { t: "Trigger Blessing Burst", goal: 1, type: "burst" }
         ];
 
-        this.mission = types[Math.floor(Math.random() * types.length)];
+        this.mission = pick(missions);
         this.mission.cur = 0;
 
-        document.getElementById('missionDesc').innerText = this.mission.t;
-        document.getElementById('missionPanel').classList.remove('complete');
-
+        document.getElementById("missionDesc").innerText = this.mission.t;
+        document.getElementById("missionPanel").classList.remove("complete");
         this.updateHUD();
     }
 
-    updateMission(type, val, dt = 0) {
+    missionUpdate(type, val, dt = 0) {
         if (!this.mission) return;
 
         if (this.mission.type === type) {
-            if (type === 'catch' && val === this.mission.target) this.mission.cur++;
-            if (type === 'catch_any' || type === 'burst') this.mission.cur++;
-            if (type === 'streak') this.mission.cur = Math.max(this.mission.cur, val);
-            if (type === 'avoid_time') this.mission.cur += dt;
+            if (type === "catch" && val === this.mission.target) this.mission.cur++;
+            if (type === "catchAny" || type === "burst") this.mission.cur++;
+            if (type === "streak") this.mission.cur = Math.max(this.mission.cur, val);
+            if (type === "avoid") this.mission.cur += dt;
 
             if (this.mission.cur >= this.mission.goal) {
-                this.score += 75;
+                const bonus = 75 + (this.gearBonus.missionBonus || 0);
+                this.score += bonus;
+                this.runStats.missions++;
+                this.data.stats.missionsCompleted++;
+
                 this.audio.power();
-                this.particles.floatText(this.width / 2, 120, "MISSION COMPLETE! +75", '#00ff88', true);
-                document.getElementById('missionPanel').classList.add('complete');
+                this.particles.text(this.width / 2, 120, `MISSION COMPLETE! +${bonus}`, "#00ff88", true);
+                document.getElementById("missionPanel").classList.add("complete");
 
                 this.mission = null;
-
                 setTimeout(() => {
-                    if (this.state === 'PLAYING') this.setNewMission();
-                }, 2000);
+                    if (this.state === "PLAYING") this.setMission();
+                }, 1800);
             }
         }
 
-        if (type === 'hit_bad' && this.mission && this.mission.type === 'avoid_time') {
+        if (type === "hitBad" && this.mission && this.mission.type === "avoid") {
             this.mission.cur = 0;
-
-            const pnl = document.getElementById('missionPanel');
-            pnl.style.borderColor = '#ff0000';
-
-            setTimeout(() => pnl.style.borderColor = '', 300);
+            const panel = document.getElementById("missionPanel");
+            panel.style.borderColor = "#ff0000";
+            setTimeout(() => panel.style.borderColor = "", 300);
         }
     }
 
     activateBurst() {
-        if (this.burstMeter < GAME_CONFIG.rules.meterMax || this.state !== 'PLAYING') return;
+        if (this.state !== "PLAYING" || this.burstMeter < GAME.meterMax) return;
 
         this.burstMeter = 0;
         this.audio.burst();
-        this.flash('#fff', 0.7);
-        this.triggerCameraShake(0.5);
-        this.updateMission('burst');
+        this.flash("#fff", 0.7);
+        this.shakeTimer = 0.5;
+        this.missionUpdate("burst");
 
-        let ptsGained = 0;
+        let points = 0;
 
         this.items.forEach(it => {
-            if (!it.isGood && !it.isPower) {
+            if (!it.good && !it.power) {
                 it.dead = true;
-                ptsGained += 15;
-                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#fff', 25, 2);
+                points += 15;
+                this.runStats.avoided++;
+                this.data.stats.badAvoided++;
+                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, "#fff", 25, 2);
             }
         });
 
-        if (ptsGained > 0) {
-            this.score += ptsGained;
-            this.particles.floatText(this.width / 2, this.height / 2, `BURST! +${ptsGained}`, '#f5b700', true);
+        if (points > 0) {
+            this.score += points;
+            this.particles.text(this.width / 2, this.height / 2, `BURST! +${points}`, "#f5b700", true);
         } else {
-            this.particles.floatText(this.width / 2, this.height / 2, "BLESSING BURST!", '#f5b700', true);
+            this.particles.text(this.width / 2, this.height / 2, "BLESSING BURST!", "#f5b700", true);
         }
 
         this.updateHUD();
     }
 
+    flash(color, opacity) {
+        const el = document.getElementById("flash");
+        el.style.background = color;
+        el.style.transition = "none";
+        el.style.opacity = opacity;
+        setTimeout(() => {
+            el.style.transition = "opacity 0.5s ease-out";
+            el.style.opacity = 0;
+        }, 50);
+    }
+
+    announce(txt, cls) {
+        const el = document.getElementById("event-announcer");
+        el.innerText = txt;
+        this.wrapper.className = cls || this.currentLevel().theme;
+        el.classList.remove("announce");
+        void el.offsetWidth;
+        el.classList.add("announce");
+    }
+
+    spawnItem() {
+        const l = this.currentLevel();
+        const cardW = Math.min(134, this.width * 0.34);
+        const r = Math.random();
+
+        let it = {};
+        const powerChance = GAME.powerChance;
+        const specialChance = GAME.specialChance + (this.gearBonus.specialChance || 0);
+
+        if (r < powerChance && !["Gossip Storm","Burnout Storm","Chaos Storm"].includes(this.activeEvent)) {
+            const p = pick(GAME.powers);
+            it = {
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
+                h: 42,
+                txt: `${p.e} ${p.t}`,
+                good: true,
+                power: true,
+                pId: p.id,
+                c: p.c
+            };
+        } else if (["Grace Rush","Donation Rush","Refill Rush","Snack Rush","Hero Moment","Warm Welcome"].includes(this.activeEvent)) {
+            const d = pick(l.good);
+            it = this.makeDrop(d, true, cardW);
+        } else if (this.activeEvent === "Kenny's Drop" || Math.random() < specialChance) {
+            it = {
+                x: Math.random() * (this.width - cardW),
+                y: -55,
+                w: cardW,
+                h: 42,
+                txt: "👕 Donation",
+                good: true,
+                special: true,
+                c: "#3498db",
+                t: "Donation"
+            };
+        } else if (r < l.badChance) {
+            const d = pick(l.bad);
+            it = this.makeDrop(d, false, cardW);
+        } else {
+            const d = pick(l.good);
+            it = this.makeDrop(d, true, cardW);
+        }
+
+        const foilChance = GAME.foilChance + this.upgrades.foil + (this.gearBonus.foilChance || 0);
+
+        if (it.good && !it.power && !it.special && Math.random() < foilChance) {
+            it.foil = true;
+            it.c = "#00e5ff";
+        }
+
+        let speed = (GAME.baseFallSpeed * l.speedMod) + Math.min(1, this.survivalTime / 85) * 155;
+
+        if (!it.good) speed *= this.upgrades.fallSpeed * (this.gearBonus.badSlow || 1);
+        if (["Forge Fire","Kid Energy","Call Rush"].includes(this.activeEvent)) speed *= 1.4;
+        if (this.powers.slow > 0) speed *= 0.45;
+
+        it.vy = speed;
+        it.rot = rand(-0.1, 0.1);
+        it.dead = false;
+        it.pulse = Math.random() * Math.PI * 2;
+
+        this.items.push(it);
+    }
+
+    makeDrop(d, good, cardW) {
+        return {
+            x: Math.random() * (this.width - cardW),
+            y: -55,
+            w: cardW,
+            h: 42,
+            txt: `${d[1]} ${d[0]}`,
+            good,
+            c: good ? "#fff" : "#ff4444",
+            t: d[0]
+        };
+    }
+
+    updateHUD() {
+        document.getElementById("scoreVal").innerText = this.score.toLocaleString();
+        document.getElementById("levelVal").innerText = `LVL ${this.runLevel}`;
+        document.getElementById("hudCoins").innerText = coins(this.data.coins);
+
+        const progress = clamp((this.score - this.lastGate) / (this.nextGate - this.lastGate), 0, 1);
+        document.getElementById("xpFill").style.width = `${progress * 100}%`;
+
+        document.getElementById("livesVal").innerText = "❤️".repeat(Math.max(0, this.lives)) || "💀";
+
+        const streak = document.getElementById("streakVal");
+        streak.innerText = `Streak: ${this.streak}`;
+        streak.className = this.streak >= 3 ? "streak-box hud-chip high" : "streak-box hud-chip";
+
+        document.getElementById("dot0").classList.toggle("filled", this.comboIndex >= 1);
+        document.getElementById("dot1").classList.toggle("filled", this.comboIndex >= 2);
+        document.getElementById("dot2").classList.toggle("filled", this.comboIndex >= 3);
+
+        const meterOffset = 188.49 - (this.burstMeter / GAME.meterMax) * 188.49;
+        document.getElementById("meterFill").style.strokeDashoffset = Math.max(0, meterOffset);
+        document.getElementById("burstBtn").classList.toggle("full", this.burstMeter >= GAME.meterMax);
+
+        if (this.mission) {
+            document.getElementById("missionProgress").innerText = this.mission.type === "avoid"
+                ? `${Math.floor(this.mission.cur)}s / ${this.mission.goal}s`
+                : `${Math.floor(this.mission.cur)} / ${this.mission.goal}`;
+        }
+
+        const powers = document.getElementById("powerList");
+        powers.innerHTML = "";
+
+        if (this.powers.shield) powers.innerHTML += `<div class="power-badge" style="background:#00e5ff;">🛡️ SHIELD</div>`;
+        if (this.powers.slow > 0) powers.innerHTML += `<div class="power-badge" style="background:#00ff88;">⏳ SLOW</div>`;
+        if (this.powers.double > 0) powers.innerHTML += `<div class="power-badge" style="background:#ff00ff;">✝️ 2X</div>`;
+        if (this.powers.magnet > 0) powers.innerHTML += `<div class="power-badge" style="background:#ffaa00;">🧲 MAGNET</div>`;
+    }
+
     triggerLevelUp() {
-        this.state = 'LEVEL_UP';
+        this.state = "LEVEL_UP";
         this.audio.levelUp();
-        this.flash('#f5b700', 0.35);
+        this.flash("#f5b700", 0.35);
+        document.getElementById("upgradeTitle").innerText = `LEVEL ${this.runLevel + 1} UNLOCKED`;
 
-        document.getElementById('upgradeLevelText').innerText = `LEVEL ${this.level + 1} UNLOCKED`;
+        const grid = document.getElementById("upgradeGrid");
+        grid.innerHTML = "";
 
-        const grid = document.getElementById('upgradeGrid');
-        grid.innerHTML = '';
-
-        const pool = [...GAME_CONFIG.upgrades].sort(() => 0.5 - Math.random()).slice(0, 3);
-
-        pool.forEach(u => {
-            const card = document.createElement('div');
-            card.className = 'upgrade-card';
+        [...GAME.upgrades].sort(() => 0.5 - Math.random()).slice(0, 3).forEach(u => {
+            const card = document.createElement("div");
+            card.className = "upgrade-card";
             card.innerHTML = `<h4>${u.t}</h4><p>${u.d}</p>`;
             card.onclick = () => {
                 this.audio.power();
@@ -1877,205 +3082,204 @@ class Game {
             grid.appendChild(card);
         });
 
-        setTimeout(() => this.showScreen('upgradeScreen'), 400);
+        setTimeout(() => this.showScreen("upgradeScreen"), 350);
     }
 
     applyUpgrade(id) {
-        if (id === 'width') {
+        if (id === "width") {
             this.upgrades.width += 0.15;
-            this.player.w = this.player.baseW * this.upgrades.width;
+            this.player.w = this.player.baseW * this.upgrades.width * (this.gearBonus.width || 1);
         }
 
-        if (id === 'life') {
-            this.lives++;
-            this.particles.floatText(this.width / 2, this.height / 2, "+1 LIFE", '#ff4444', true);
-        }
+        if (id === "life") this.lives++;
+        if (id === "slowBad") this.upgrades.fallSpeed *= 0.8;
+        if (id === "points") this.upgrades.points += 5;
+        if (id === "powerDur") this.upgrades.powerDur += 0.3;
+        if (id === "foil") this.upgrades.foil += 0.05;
+        if (id === "burstGain") this.upgrades.burstGain += 0.25;
+        if (id === "coinBoost") this.upgrades.coinMultiplier *= 1.08;
 
-        if (id === 'slowBad') this.upgrades.fallSpeed *= 0.8;
-        if (id === 'points') this.upgrades.points += 5;
-        if (id === 'powerDur') this.upgrades.powerDur += 0.3;
-        if (id === 'foil') this.upgrades.foil += 0.05;
-        if (id === 'burstGain') this.upgrades.burstGain += 0.25;
+        this.runLevel++;
+        this.lastGate = this.nextGate;
+        this.nextGate += Math.floor(GAME.upgradeInterval * (1 + this.runLevel * GAME.levelCurve));
 
-        this.level++;
-        this.lastLevelGate = this.nextLevelGate;
-        this.nextLevelGate += Math.floor(GAME_CONFIG.rules.upgradeInterval * (1 + this.level * GAME_CONFIG.rules.levelCurve));
-
-        this.showScreen('hud');
-        this.state = 'PLAYING';
+        this.state = "PLAYING";
+        this.showScreen("hud");
         this.updateHUD();
     }
 
-    announceEvent(txt, cssClass) {
-        const el = document.getElementById('event-announcer');
+    handleCatch(it) {
+        if (it.power) {
+            this.audio.power();
+            this.flash(it.c, 0.35);
 
-        el.innerText = txt;
-        this.wrapper.className = cssClass;
+            const dur = 8 * this.upgrades.powerDur;
 
-        el.classList.remove('announce-active');
-        void el.offsetWidth;
-        el.classList.add('announce-active');
-    }
+            if (it.pId === "shield") this.powers.shield = true;
+            else if (it.pId === "double") this.powers.double = 10 * this.upgrades.powerDur;
+            else this.powers[it.pId] = dur;
 
-    flash(color = '#fff', maxOpacity = 0.5) {
-        const f = document.getElementById('flash-overlay');
+            this.runStats.powers++;
+            this.data.stats.powersCaught++;
+            this.particles.text(it.x + it.w / 2, it.y, it.pId.toUpperCase(), it.c, true);
+            this.player.pulse(true);
+        } else if (it.good) {
+            this.audio.good();
+            this.streak++;
+            this.bestRunStreak = Math.max(this.bestRunStreak, this.streak);
+            this.player.pulse(true);
 
-        f.style.background = color;
-        f.style.transition = 'none';
-        f.style.opacity = maxOpacity;
+            let pts = (it.special ? 50 : GAME.basePoints) + this.upgrades.points;
 
-        setTimeout(() => {
-            f.style.transition = 'opacity 0.5s ease-out';
-            f.style.opacity = 0;
-        }, 50);
-    }
+            if (this.streak >= 3) pts += GAME.streakBonus;
+            if (it.foil) pts *= 3;
+            if (["Forge Fire","Hero Moment","Kid Energy"].includes(this.activeEvent)) pts *= 2;
+            if (this.powers.double > 0) pts *= 2;
 
-    triggerCameraShake(duration = 0.3) {
-        this.shakeTimer = duration;
-    }
+            this.score += pts;
 
-    spawnItem() {
-        const cardW = Math.min(130, this.width * 0.32);
-        const typeRand = Math.random();
-        let item = {};
+            const meterGain = (it.foil ? 15 : 5) * this.upgrades.burstGain;
+            this.burstMeter = Math.min(GAME.meterMax, this.burstMeter + meterGain);
 
-        if (typeRand < GAME_CONFIG.gameplay.powerupChance && this.activeEvent !== 'Gossip Storm') {
-            const p = GAME_CONFIG.items.powers[Math.floor(Math.random() * GAME_CONFIG.items.powers.length)];
+            const color = it.foil ? "#00e5ff" : "#f5b700";
+            this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, color, it.foil ? 20 : 10);
+            this.particles.text(it.x + it.w / 2, it.y, `+${pts}`, color);
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: p.e + ' ' + p.t,
-                isGood: true,
-                isPower: true,
-                pId: p.id,
-                c: p.c
-            };
-        } else if (this.activeEvent === 'Grace Rush') {
-            const d = GAME_CONFIG.items.good[Math.floor(Math.random() * GAME_CONFIG.items.good.length)];
+            if (this.streak === 5 || this.streak === 10 || this.streak === 20) {
+                this.particles.text(this.width / 2, 190, `${this.streak} STREAK!`, "#f5b700", true);
+            }
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: d.e + ' ' + d.t,
-                isGood: true,
-                c: '#fff',
-                t: d.t
-            };
-        } else if (this.activeEvent === 'Gossip Storm') {
-            const d = GAME_CONFIG.items.bad[Math.floor(Math.random() * GAME_CONFIG.items.bad.length)];
+            this.runStats.good++;
+            this.data.stats.goodCaught++;
+            this.data.stats.byDrop[it.t] = (this.data.stats.byDrop[it.t] || 0) + 1;
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: d.e + ' ' + d.t,
-                isGood: false,
-                c: '#ff4444'
-            };
-        } else if (this.activeEvent === "Kenny's Drop" && Math.random() < 0.3) {
-            const d = GAME_CONFIG.items.special;
+            if (it.foil) {
+                this.runStats.foil++;
+                this.data.stats.foilCaught++;
+            }
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: d.e + ' ' + d.t,
-                isGood: true,
-                isSpecial: true,
-                c: d.c,
-                t: d.t
-            };
-        } else if (typeRand < 0.38) {
-            const d = GAME_CONFIG.items.bad[Math.floor(Math.random() * GAME_CONFIG.items.bad.length)];
+            if (it.special) {
+                this.runStats.special++;
+                this.data.stats.specialCaught++;
+            }
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: d.e + ' ' + d.t,
-                isGood: false,
-                c: '#ff4444'
-            };
+            this.missionUpdate("catch", it.t);
+            this.missionUpdate("catchAny");
+            this.missionUpdate("streak", this.streak);
+
+            if (!it.special) {
+                if (it.t === GAME.combo[this.comboIndex]) {
+                    this.comboIndex++;
+                    if (this.comboIndex >= GAME.combo.length) this.megaBlessing();
+                } else {
+                    this.comboIndex = it.t === GAME.combo[0] ? 1 : 0;
+                }
+            }
         } else {
-            const d = GAME_CONFIG.items.good[Math.floor(Math.random() * GAME_CONFIG.items.good.length)];
+            if (this.powers.shield) {
+                this.powers.shield = false;
+                this.audio.power();
 
-            item = {
-                x: Math.random() * (this.width - cardW),
-                y: -55,
-                w: cardW,
-                h: 42,
-                txt: d.e + ' ' + d.t,
-                isGood: true,
-                c: '#fff',
-                t: d.t
-            };
+                this.runStats.avoided++;
+                this.data.stats.badAvoided++;
+
+                this.particles.text(it.x + it.w / 2, it.y, "BLOCKED!", "#00e5ff", true);
+                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, "#00e5ff", 20);
+                this.player.pulse(false);
+            } else {
+                this.audio.bad();
+                this.shakeTimer = 0.4;
+                this.player.pulse(false);
+                this.lives--;
+                this.streak = 0;
+                this.comboIndex = 0;
+                this.burstMeter = Math.max(0, this.burstMeter - 20);
+
+                this.runStats.bad++;
+                this.data.stats.badCaught++;
+
+                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, "#ff4444", 30, 1.5);
+                this.particles.text(it.x + it.w / 2, it.y, "-1 LIFE", "#ff4444", true);
+                this.missionUpdate("hitBad");
+
+                if (this.lives <= 0) {
+                    setTimeout(() => this.endGame(), 300);
+                }
+            }
         }
 
-        if (item.isGood && !item.isPower && !item.isSpecial && Math.random() < GAME_CONFIG.gameplay.foilChance + this.upgrades.foil) {
-            item.isFoil = true;
-            item.c = '#00e5ff';
-        }
-
-        let timeRatio = Math.min(1, this.survivalTime / 85);
-        let speed = GAME_CONFIG.physics.baseFallSpeed + (timeRatio * 155);
-
-        if (!item.isGood) speed *= this.upgrades.fallSpeed;
-        if (this.activeEvent === 'Forge Fire') speed *= 1.4;
-        if (this.activePowers.slow > 0) speed *= 0.45;
-
-        item.vy = speed;
-        item.rot = MathUtils.randomRange(-0.1, 0.1);
-        item.dead = false;
-        item.pulse = Math.random() * Math.PI * 2;
-
-        this.items.push(item);
+        this.updateHUD();
     }
 
-    updateHUD() {
-        document.getElementById('scoreVal').innerText = this.score;
-        document.getElementById('levelVal').innerText = `LVL ${this.level}`;
+    megaBlessing() {
+        this.audio.burst();
+        this.flash("#f5b700", 0.6);
+        this.score += 200;
+        this.comboIndex = 0;
 
-        const progress = MathUtils.clamp((this.score - this.lastLevelGate) / (this.nextLevelGate - this.lastLevelGate), 0, 1);
-        document.getElementById('xpFill').style.width = `${progress * 100}%`;
+        this.runStats.mega++;
+        this.data.stats.megaBlessings++;
 
-        document.getElementById('livesVal').innerText = '❤️'.repeat(Math.max(0, this.lives)) || '💀';
+        this.particles.text(this.width / 2, this.height / 2, "MEGA BLESSING! +200", "#f5b700", true);
 
-        const stEl = document.getElementById('streakVal');
-        stEl.innerText = `Streak: ${this.streak}`;
-        stEl.className = this.streak >= 3 ? 'streak-box hud-chip high' : 'streak-box hud-chip';
+        this.items.forEach(it => {
+            if (!it.good && !it.power) {
+                it.good = true;
+                it.c = "#fff";
+                it.t = "Grace";
+                it.txt = "✨ Grace";
+                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, "#fff", 10);
+            }
+        });
 
-        document.getElementById('dot0').classList.toggle('filled', this.comboIndex >= 1);
-        document.getElementById('dot1').classList.toggle('filled', this.comboIndex >= 2);
-        document.getElementById('dot2').classList.toggle('filled', this.comboIndex >= 3);
+        this.updateHUD();
+    }
 
-        const offset = 188.49 - ((this.burstMeter / GAME_CONFIG.rules.meterMax) * 188.49);
+    calcCoinsEarned() {
+        let base = Math.floor(this.score / 10);
+        let bonus = 0;
 
-        document.getElementById('meterFill').style.strokeDashoffset = Math.max(0, offset);
-        document.getElementById('meterIcon').classList.toggle('meter-full', this.burstMeter >= GAME_CONFIG.rules.meterMax);
+        bonus += this.runStats.missions * 15;
+        bonus += this.runStats.foil * 5;
+        bonus += this.runStats.special * 6;
+        bonus += Math.floor(this.bestRunStreak / 10) * 10;
 
-        if (this.mission) {
-            const pText = this.mission.type === 'avoid_time'
-                ? `${Math.floor(this.mission.cur)}s / ${this.mission.goal}s`
-                : `${Math.floor(this.mission.cur)} / ${this.mission.goal}`;
+        const multiplier =
+            this.currentLevel().coinMultiplier *
+            (this.gearBonus.coinMultiplier || 1) *
+            this.upgrades.coinMultiplier;
 
-            document.getElementById('missionProgress').innerText = pText;
-        }
+        return Math.max(0, Math.floor((base + bonus) * multiplier));
+    }
 
-        const pbBox = document.getElementById('activePowersBox');
-        pbBox.innerHTML = '';
+    endGame() {
+        if (this.state === "END") return;
 
-        if (this.activePowers.shield) pbBox.innerHTML += `<div class="power-badge" style="background:${GAME_CONFIG.colors.shield}">🛡️ SHIELD</div>`;
-        if (this.activePowers.slow > 0) pbBox.innerHTML += `<div class="power-badge" style="background:${GAME_CONFIG.colors.slow}">⏳ SLOW</div>`;
-        if (this.activePowers.double > 0) pbBox.innerHTML += `<div class="power-badge" style="background:${GAME_CONFIG.colors.double}">✝️ 2x PTS</div>`;
-        if (this.activePowers.magnet > 0) pbBox.innerHTML += `<div class="power-badge" style="background:${GAME_CONFIG.colors.magnet}">🧲 MAGNET</div>`;
+        this.state = "END";
+
+        const earned = this.calcCoinsEarned();
+        this.runStats.coins = earned;
+
+        this.data.coins += earned;
+        this.data.stats.matches++;
+        this.data.stats.totalScore += this.score;
+        this.data.stats.bestScore = Math.max(this.data.stats.bestScore, this.score);
+        this.data.stats.bestStreak = Math.max(this.data.stats.bestStreak, this.bestRunStreak);
+        this.data.stats.totalCoins += earned;
+
+        saveData(this.data);
+        this.checkAchievements(true);
+
+        document.getElementById("finalScore").innerText = this.score.toLocaleString();
+        document.getElementById("bestScoreText").innerText = this.data.stats.bestScore.toLocaleString();
+        document.getElementById("coinsEarned").innerText = earned.toLocaleString();
+        document.getElementById("totalCoins").innerText = this.data.coins.toLocaleString();
+        document.getElementById("missionsDone").innerText = this.runStats.missions.toLocaleString();
+        document.getElementById("runBestStreak").innerText = this.bestRunStreak.toLocaleString();
+        document.getElementById("challengeText").innerText = pick(GAME.challenges);
+
+        this.renderMenus();
+        this.showScreen("endScreen");
     }
 
     loop(ts) {
@@ -2086,56 +3290,45 @@ class Game {
         }
 
         let dt = (ts - this.lastTime) / 1000;
-
         if (dt > 0.1) dt = 0.1;
-
         this.lastTime = ts;
 
-        if (this.state === 'PLAYING') {
+        if (this.state === "PLAYING") {
             this.survivalTime += dt;
             this.spawnTimer += dt;
 
             if (this.shakeTimer > 0) this.shakeTimer -= dt;
 
-            this.updateMission('avoid_time', null, dt);
+            this.missionUpdate("avoid", null, dt);
 
-            ['slow', 'double', 'magnet'].forEach(power => {
-                if (this.activePowers[power] > 0) {
-                    this.activePowers[power] -= dt;
-                    if (this.activePowers[power] <= 0) this.updateHUD();
+            ["slow","double","magnet"].forEach(p => {
+                if (this.powers[p] > 0) {
+                    this.powers[p] -= dt;
+                    if (this.powers[p] <= 0) this.updateHUD();
                 }
             });
 
             if (this.eventTimer > 0) {
                 this.eventTimer -= dt;
-
                 if (this.eventTimer <= 0) {
                     this.activeEvent = null;
-                    this.wrapper.className = '';
+                    this.wrapper.className = this.currentLevel().theme;
                 }
-            } else if (this.survivalTime > 15 && Math.random() < GAME_CONFIG.gameplay.eventChance) {
-                const events = [
-                    { n: 'Grace Rush', c: 'grace-rush' },
-                    { n: 'Gossip Storm', c: 'storm-phase' },
-                    { n: 'Forge Fire', c: 'forge-fire' },
-                    { n: "Kenny's Drop", c: '' }
-                ];
-
-                const ev = events[Math.floor(Math.random() * events.length)];
-
-                this.activeEvent = ev.n;
+            } else if (this.survivalTime > 15 && Math.random() < GAME.eventChance) {
+                const ev = pick(this.currentLevel().events);
+                this.activeEvent = ev[0];
                 this.eventTimer = 8;
-                this.announceEvent(this.activeEvent, ev.c);
+                this.announce(ev[0], ev[1]);
                 this.audio.power();
             }
 
             this.player.update(dt);
-            this.player.shield = this.activePowers.shield;
+            this.player.shield = this.powers.shield;
 
-            let rate = Math.max(0.34, 1.0 - (this.survivalTime / 85));
+            let rate = Math.max(0.34, 1.0 - this.survivalTime / 85);
 
-            if (this.activeEvent === 'Grace Rush' || this.activeEvent === 'Gossip Storm') rate = 0.25;
-            if (this.activeEvent === 'Forge Fire') rate = 0.2;
+            if (["Grace Rush","Donation Rush","Refill Rush","Snack Rush","Hero Moment"].includes(this.activeEvent)) rate = 0.25;
+            if (["Forge Fire","Kid Energy","Call Rush"].includes(this.activeEvent)) rate = 0.2;
 
             if (this.spawnTimer > rate) {
                 this.spawnItem();
@@ -2143,16 +3336,22 @@ class Game {
             }
 
             for (let i = this.items.length - 1; i >= 0; i--) {
-                let it = this.items[i];
+                const it = this.items[i];
 
-                if (this.activePowers.magnet > 0 && (it.isGood || it.isPower)) {
+                if (this.powers.magnet > 0 && (it.good || it.power)) {
                     it.x += (this.player.x + this.player.w / 2 - (it.x + it.w / 2)) * 4 * dt;
                 }
 
                 it.y += it.vy * dt;
                 it.pulse += dt * 3;
 
-                if (it.y > this.height) it.dead = true;
+                if (it.y > this.height) {
+                    it.dead = true;
+                    if (!it.good) {
+                        this.runStats.avoided++;
+                        this.data.stats.badAvoided++;
+                    }
+                }
 
                 if (
                     it.x < this.player.x + this.player.w - 10 &&
@@ -2169,164 +3368,47 @@ class Game {
 
             this.particles.update(dt);
 
-            if (this.score >= this.nextLevelGate) this.triggerLevelUp();
+            if (this.score >= this.nextGate) this.triggerLevelUp();
         }
 
         this.draw();
-
         requestAnimationFrame(t => this.loop(t));
     }
 
-    handleCatch(it) {
-        if (it.isPower) {
-            this.audio.power();
-            this.flash(it.c, 0.4);
-
-            const dur = 8 * this.upgrades.powerDur;
-
-            if (it.pId === 'shield') {
-                this.activePowers.shield = true;
-            } else if (it.pId === 'double') {
-                this.activePowers.double = 10 * this.upgrades.powerDur;
-            } else {
-                this.activePowers[it.pId] = dur;
-            }
-
-            this.particles.floatText(it.x + it.w / 2, it.y, it.pId.toUpperCase(), it.c, true);
-            this.player.pulse(true);
-        } else if (it.isGood) {
-            this.audio.good();
-            this.streak++;
-            this.player.pulse(true);
-
-            let pts = (it.isSpecial ? GAME_CONFIG.items.special.pts : GAME_CONFIG.rules.basePoints) + this.upgrades.points;
-
-            if (this.streak >= 3) pts += GAME_CONFIG.rules.pointsStreakBonus;
-            if (it.isFoil) pts *= 3;
-            if (this.activeEvent === 'Forge Fire') pts *= 2;
-            if (this.activePowers.double > 0) pts *= 2;
-
-            this.score += pts;
-
-            const meterGain = (it.isFoil ? 15 : 5) * this.upgrades.burstGain;
-            this.burstMeter = Math.min(GAME_CONFIG.rules.meterMax, this.burstMeter + meterGain);
-
-            const floatColor = it.isFoil ? '#00e5ff' : '#f5b700';
-
-            this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, floatColor, it.isFoil ? 20 : 10);
-            this.particles.floatText(it.x + it.w / 2, it.y, `+${pts}`, floatColor);
-
-            if (this.streak === 5 || this.streak === 10 || this.streak === 20) {
-                this.particles.floatText(this.width / 2, 190, `${this.streak} STREAK!`, '#f5b700', true);
-            }
-
-            this.updateMission('catch', it.t);
-            this.updateMission('catch_any');
-            this.updateMission('streak', this.streak);
-
-            if (!it.isSpecial) {
-                if (it.t === GAME_CONFIG.rules.comboSequence[this.comboIndex]) {
-                    this.comboIndex++;
-
-                    if (this.comboIndex >= GAME_CONFIG.rules.comboSequence.length) {
-                        this.triggerMegaBlessing();
-                    }
-                } else {
-                    this.comboIndex = (it.t === GAME_CONFIG.rules.comboSequence[0]) ? 1 : 0;
-                }
-            }
-        } else {
-            if (this.activePowers.shield) {
-                this.activePowers.shield = false;
-                this.audio.power();
-
-                this.particles.floatText(it.x + it.w / 2, it.y, "BLOCKED!", '#00e5ff', true);
-                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#00e5ff', 20);
-
-                this.player.pulse(false);
-            } else {
-                this.audio.bad();
-                this.triggerCameraShake(0.4);
-                this.player.pulse(false);
-
-                this.lives--;
-                this.streak = 0;
-                this.comboIndex = 0;
-                this.burstMeter = Math.max(0, this.burstMeter - 20);
-
-                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#ff4444', 30, 1.5);
-                this.particles.floatText(it.x + it.w / 2, it.y, "-1 LIFE", '#ff4444', true);
-
-                this.updateMission('hit_bad');
-
-                if (this.lives <= 0) {
-                    setTimeout(() => this.endGame(), 300);
-                }
-            }
-        }
-
-        this.updateHUD();
-    }
-
-    triggerMegaBlessing() {
-        this.audio.burst();
-        this.flash('#f5b700', 0.6);
-
-        this.score += 200;
-        this.comboIndex = 0;
-
-        this.particles.floatText(this.width / 2, this.height / 2, "MEGA BLESSING! +200", '#f5b700', true);
-
-        this.items.forEach(it => {
-            if (!it.isGood && !it.isPower) {
-                it.isGood = true;
-                it.c = '#fff';
-                this.particles.burst(it.x + it.w / 2, it.y + it.h / 2, '#fff', 10);
-            }
-        });
-
-        this.updateHUD();
-    }
-
-    endGame() {
-        this.state = 'END';
-        this.showScreen('endScreen');
-
-        document.getElementById('finalScore').innerText = this.score;
-
-        if (this.score > this.personalBest) {
-            this.personalBest = this.score;
-            localStorage.setItem('blessingBasketArcadePB', this.personalBest);
-            document.getElementById('highScoreVal').innerHTML = `<span style="color:var(--brand-gold);">${this.personalBest} (NEW!)</span>`;
-        } else {
-            document.getElementById('highScoreVal').innerText = this.personalBest;
-        }
-
-        document.getElementById('challengeText').innerText = GAME_CONFIG.challenges[Math.floor(Math.random() * GAME_CONFIG.challenges.length)];
-        document.getElementById('submitScoreBlock').style.display = this.score > 0 ? 'block' : 'none';
-        document.getElementById('scoreSavedMsg').style.display = 'none';
-        document.getElementById('playerNameInput').value = '';
-    }
-
     drawBackground(ctx) {
-        const time = this.survivalTime;
+        const l = this.currentLevel();
 
         ctx.save();
 
-        this.backgroundStars.forEach(star => {
-            ctx.globalAlpha = star.a + Math.sin(time * 1.3 + star.s) * 0.04;
-            ctx.fillStyle = '#fff';
+        this.stars.forEach(star => {
+            ctx.globalAlpha = star.a + Math.sin(this.survivalTime * 1.3 + star.s) * 0.04;
+            ctx.fillStyle = "#fff";
             ctx.beginPath();
-            ctx.arc(star.x, star.y + (time * star.s) % (this.height + 30) - 30, star.r, 0, Math.PI * 2);
+            ctx.arc(star.x, star.y + (this.survivalTime * star.s) % (this.height + 30) - 30, star.r, 0, Math.PI * 2);
             ctx.fill();
         });
 
+        ctx.globalAlpha = 0.08;
+        ctx.fillStyle = l.color;
+        ctx.font = "900 72px Montserrat";
+        ctx.textAlign = "center";
+
+        const words = {
+            forge: "FORGE",
+            kloset: "DONATE",
+            coffee: "COFFEE",
+            kids: "JOY",
+            protect: "HONOR"
+        };
+
+        ctx.fillText(words[l.id] || "FORGE", this.width / 2, this.height * 0.34);
+
         ctx.globalAlpha = 1;
 
-        const grd = ctx.createRadialGradient(this.width / 2, this.height + 80, 10, this.width / 2, this.height + 80, this.width * 0.85);
-        grd.addColorStop(0, 'rgba(217,108,6,0.22)');
-        grd.addColorStop(1, 'rgba(217,108,6,0)');
-        ctx.fillStyle = grd;
+        const g = ctx.createRadialGradient(this.width / 2, this.height + 80, 10, this.width / 2, this.height + 80, this.width * 0.85);
+        g.addColorStop(0, l.glow);
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
         ctx.fillRect(0, 0, this.width, this.height);
 
         ctx.restore();
@@ -2337,59 +3419,57 @@ class Game {
         this.ctx.save();
 
         if (this.shakeTimer > 0) {
-            const ins = this.shakeTimer * 20;
-            this.ctx.translate((Math.random() - 0.5) * ins, (Math.random() - 0.5) * ins);
+            const power = this.shakeTimer * 20;
+            this.ctx.translate((Math.random() - 0.5) * power, (Math.random() - 0.5) * power);
         }
 
         this.drawBackground(this.ctx);
 
-        if (this.state === 'PLAYING' || this.state === 'PAUSED' || this.state === 'LEVEL_UP') {
+        if (["PLAYING","PAUSED","LEVEL_UP"].includes(this.state)) {
             if (this.player) this.player.draw(this.ctx);
 
             this.items.forEach(it => {
                 this.ctx.save();
 
                 const bob = Math.sin(it.pulse) * 1.5;
-
                 this.ctx.translate(it.x + it.w / 2, it.y + it.h / 2 + bob);
                 this.ctx.rotate(it.rot);
 
-                this.ctx.shadowBlur = it.isFoil ? 25 : 15;
+                this.ctx.shadowBlur = it.foil ? 25 : 15;
                 this.ctx.shadowColor = it.c;
 
-                this.ctx.fillStyle = it.isGood ? (it.isPower ? '#111' : (it.isFoil ? '#071014' : '#fdfbf7')) : '#1e1414';
+                this.ctx.fillStyle = it.good ? (it.power ? "#111" : (it.foil ? "#071014" : "#fdfbf7")) : "#1e1414";
                 this.ctx.strokeStyle = it.c;
-                this.ctx.lineWidth = it.isFoil ? 3 : 2;
+                this.ctx.lineWidth = it.foil ? 3 : 2;
 
                 this.ctx.beginPath();
                 this.ctx.roundRect(-it.w / 2, -it.h / 2, it.w, it.h, 21);
                 this.ctx.fill();
-
                 this.ctx.shadowBlur = 0;
                 this.ctx.stroke();
 
-                if (it.isFoil) {
-                    this.ctx.fillStyle = '#00e5ff';
-                    this.ctx.font = '900 8px Montserrat';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText('RARE', 0, -it.h / 2 + 10);
+                if (it.foil) {
+                    this.ctx.fillStyle = "#00e5ff";
+                    this.ctx.font = "900 8px Montserrat";
+                    this.ctx.textAlign = "center";
+                    this.ctx.fillText("RARE", 0, -it.h / 2 + 10);
                 }
 
-                this.ctx.fillStyle = (it.isGood && !it.isPower && !it.isFoil) ? '#000' : '#fff';
-                this.ctx.font = '900 14px Montserrat';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
+                this.ctx.fillStyle = (it.good && !it.power && !it.foil) ? "#000" : "#fff";
+                this.ctx.font = "900 13px Montserrat";
+                this.ctx.textAlign = "center";
+                this.ctx.textBaseline = "middle";
 
-                let displayTxt = it.txt;
+                let txt = it.txt;
 
-                if (it.isFoil) displayTxt = `✨ ${it.t}`;
+                if (it.foil) txt = `✨ ${it.t}`;
 
-                if (it.isPower) {
-                    const parts = it.txt.split(' ');
-                    displayTxt = `${parts[0]} ${parts.slice(1).join(' ').toUpperCase()}`;
+                if (it.power) {
+                    const parts = it.txt.split(" ");
+                    txt = `${parts[0]} ${parts.slice(1).join(" ").toUpperCase()}`;
                 }
 
-                this.ctx.fillText(displayTxt, 0, it.isFoil ? 4 : 1);
+                this.ctx.fillText(txt, 0, it.foil ? 4 : 1);
                 this.ctx.restore();
             });
 
@@ -2398,82 +3478,10 @@ class Game {
 
         this.ctx.restore();
     }
-
-    async submitScore() {
-        const nameInput = document.getElementById('playerNameInput');
-        const name = nameInput.value.trim();
-
-        if (!name) {
-            alert("Please enter your name!");
-            return;
-        }
-
-        const btn = document.getElementById('submitScoreBtn');
-
-        btn.innerText = "SAVING...";
-        btn.disabled = true;
-
-        try {
-            await addDoc(collection(db, "scores"), {
-                name,
-                score: this.score,
-                timestamp: serverTimestamp()
-            });
-
-            document.getElementById('submitScoreBlock').style.display = 'none';
-            document.getElementById('scoreSavedMsg').style.display = 'block';
-        } catch (e) {
-            alert("Failed to save score to the cloud.");
-        }
-
-        btn.innerText = "SUBMIT TO LEADERBOARD";
-        btn.disabled = false;
-    }
-
-    async showLeaderboard(prevScreen) {
-        this.lbPrevScreen = prevScreen;
-        this.showScreen('leaderboardScreen');
-
-        const list = document.getElementById('leaderboardList');
-
-        list.innerHTML = '<div style="color:var(--brand-cream-dim); text-align:center; padding:40px 20px;">Fetching global data...</div>';
-
-        try {
-            const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(10));
-            const snap = await getDocs(q);
-
-            list.innerHTML = '';
-
-            let i = 1;
-
-            snap.forEach((doc) => {
-                const d = doc.data();
-                const rawName = String(d.name || 'PLAYER');
-                const safeName = rawName.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 15);
-                const safeScore = Number(d.score || 0);
-
-                list.innerHTML += `
-                    <div class="lb-row" data-rank="${i}">
-                        <div class="lb-rank">#${i}</div>
-                        <div class="lb-name">${safeName}</div>
-                        <div class="lb-score">${safeScore}</div>
-                    </div>
-                `;
-
-                i++;
-            });
-
-            if (snap.empty) {
-                list.innerHTML = '<div style="text-align:center; padding:20px;">No scores yet!</div>';
-            }
-        } catch (e) {
-            list.innerHTML = '<div style="color:var(--bad-red); text-align:center; padding:20px;">Database connection failed.</div>';
-        }
-    }
 }
 
 if (!CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         if (w < 2 * r) r = w / 2;
         if (h < 2 * r) r = h / 2;
 
@@ -2489,7 +3497,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     };
 }
 
-const game = new Game();
+const game = new KingdomGame();
 </script>
 </body>
 </html>
