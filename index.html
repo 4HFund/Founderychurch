@@ -1380,6 +1380,7 @@ const LEVELS = [
         icon: "👕",
         price: 300,
         theme: "theme-kloset",
+        video: "assets/backgrounds/kloset-bg.mp4",
         color: "#3498db",
         glow: "rgba(52,152,219,0.25)",
         coinMultiplier: 1.15,
@@ -1665,6 +1666,12 @@ const ACHIEVEMENTS = [
     { id: "worlds", icon: "🗺️", name: "World Walker", desc: "Unlock 3 levels.", reward: 250, check: d => d.unlockedLevels.length >= 3 },
     { id: "score", icon: "🏆", name: "Score Chaser", desc: "Score 2,500 in one match.", reward: 250, check: d => d.stats.bestScore >= 2500 }
 ];
+
+const CHARACTER_SPRITES = {
+    forgeKeeper: new Image()
+};
+
+CHARACTER_SPRITES.forgeKeeper.src = "assets/characters/forge-keeper.png";
 
 const GAME = {
     gravity: 650,
@@ -1955,13 +1962,14 @@ class Player {
         this.state = "idle";
         this.stateTimer = 0;
         this.shield = false;
+        this.sprite = CHARACTER_SPRITES.forgeKeeper;
     }
 
     pulse(good) {
         this.state = good ? "happy" : "hurt";
         this.stateTimer = 0.5;
-        this.sx = good ? 1.25 : 0.75;
-        this.sy = good ? 0.72 : 1.28;
+        this.sx = good ? 1.18 : 0.86;
+        this.sy = good ? 0.9 : 1.12;
     }
 
     update(dt) {
@@ -1998,6 +2006,54 @@ class Player {
         const ty = this.y;
         const bodyY = ty + 15;
 
+        this.drawCharacterSprite(ctx, cx, ty, bodyY);
+        this.drawTool(ctx, cx, ty, bodyY);
+
+        if (this.shield) {
+            ctx.strokeStyle = "#00e5ff";
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "rgba(0,229,255,0.15)";
+            ctx.beginPath();
+            ctx.arc(cx, bodyY, 65 + this.w / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
+    drawCharacterSprite(ctx, cx, ty, bodyY) {
+        const spriteLoaded = this.sprite && this.sprite.complete && this.sprite.naturalWidth > 0;
+
+        if (spriteLoaded) {
+            const spriteW = 150;
+            const spriteH = 175;
+            const spriteX = cx - spriteW / 2;
+            const spriteY = ty - 132;
+
+            ctx.save();
+
+            if (this.state === "hurt") {
+                ctx.globalAlpha = 0.86;
+                ctx.shadowColor = "#ff4444";
+                ctx.shadowBlur = 18;
+            } else if (this.state === "happy") {
+                ctx.shadowColor = "#f5b700";
+                ctx.shadowBlur = 18;
+            } else {
+                ctx.shadowColor = "rgba(0,0,0,0.55)";
+                ctx.shadowBlur = 12;
+            }
+
+            ctx.drawImage(this.sprite, spriteX, spriteY, spriteW, spriteH);
+            ctx.restore();
+            return;
+        }
+
+        this.drawFallbackCharacter(ctx, cx, ty, bodyY);
+    }
+
+    drawFallbackCharacter(ctx, cx, ty, bodyY) {
         if (this.accessory === "cape") {
             ctx.fillStyle = "#e74c3c";
             ctx.beginPath();
@@ -2113,21 +2169,14 @@ class Player {
             ctx.stroke();
             ctx.shadowBlur = 0;
         }
+    }
 
+    drawTool(ctx, cx, ty, bodyY) {
         ctx.strokeStyle = this.body;
         ctx.lineWidth = 7;
+        ctx.lineCap = "round";
 
         if (this.tool === "tray") {
-            ctx.beginPath();
-            ctx.moveTo(cx - 18, bodyY + 10);
-            ctx.lineTo(cx - 35, ty + 10);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(cx + 18, bodyY + 10);
-            ctx.lineTo(cx + 35, ty + 10);
-            ctx.stroke();
-
             ctx.fillStyle = "#bdc3c7";
             ctx.beginPath();
             ctx.roundRect(this.x, ty, this.w, this.h, 6);
@@ -2136,34 +2185,19 @@ class Player {
             ctx.fillStyle = "#95a5a6";
             ctx.fillRect(this.x + 5, ty + 5, this.w - 10, this.h - 10);
         } else if (this.tool === "bag") {
-            ctx.beginPath();
-            ctx.moveTo(cx - 18, bodyY + 10);
-            ctx.lineTo(cx - 20, ty + 5);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(cx + 18, bodyY + 10);
-            ctx.lineTo(cx + 20, ty + 5);
-            ctx.stroke();
-
             ctx.fillStyle = "#d35400";
             ctx.beginPath();
             ctx.moveTo(this.x, ty);
             ctx.lineTo(this.x + this.w, ty);
             ctx.lineTo(this.x + this.w - 10, ty + this.h + 25);
             ctx.lineTo(this.x + 10, ty + this.h + 25);
+            ctx.closePath();
             ctx.fill();
+
+            ctx.strokeStyle = "rgba(0,0,0,0.35)";
+            ctx.lineWidth = 3;
+            ctx.stroke();
         } else if (this.tool === "crate") {
-            ctx.beginPath();
-            ctx.moveTo(cx - 18, bodyY + 10);
-            ctx.lineTo(cx - 35, ty + 15);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(cx + 18, bodyY + 10);
-            ctx.lineTo(cx + 35, ty + 15);
-            ctx.stroke();
-
             ctx.fillStyle = "#8B4513";
             ctx.fillRect(this.x, ty, this.w, this.h + 15);
 
@@ -2171,16 +2205,6 @@ class Player {
             ctx.lineWidth = 3;
             ctx.strokeRect(this.x, ty, this.w, this.h + 15);
         } else if (this.tool === "basket") {
-            ctx.beginPath();
-            ctx.moveTo(cx - 18, bodyY + 10);
-            ctx.lineTo(cx - 28, ty + 9);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(cx + 18, bodyY + 10);
-            ctx.lineTo(cx + 28, ty + 9);
-            ctx.stroke();
-
             ctx.fillStyle = "#d6a93a";
             ctx.strokeStyle = "#f5b700";
             ctx.lineWidth = 3;
@@ -2189,16 +2213,6 @@ class Player {
             ctx.fill();
             ctx.stroke();
         } else {
-            ctx.beginPath();
-            ctx.moveTo(cx - 18, bodyY + 10);
-            ctx.lineTo(this.x + 15, ty + 10);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(cx + 18, bodyY + 10);
-            ctx.lineTo(this.x + this.w - 15, ty + 10);
-            ctx.stroke();
-
             ctx.fillStyle = this.body;
             ctx.beginPath();
             ctx.arc(this.x + 15, ty + 10, 14, 0, Math.PI * 2);
@@ -2208,18 +2222,6 @@ class Player {
             ctx.arc(this.x + this.w - 15, ty + 10, 14, 0, Math.PI * 2);
             ctx.fill();
         }
-
-        if (this.shield) {
-            ctx.strokeStyle = "#00e5ff";
-            ctx.lineWidth = 4;
-            ctx.fillStyle = "rgba(0,229,255,0.15)";
-            ctx.beginPath();
-            ctx.arc(cx, bodyY, 65 + this.w / 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-        }
-
-        ctx.restore();
     }
 }
 
