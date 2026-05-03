@@ -27,7 +27,7 @@
                 <div class="mission-panel hud-chip" id="missionPanel">
                     <div class="mission-title">Active Mission</div>
                     <div class="mission-desc" id="missionDesc">Loading...</div>
-                    <div class="mission-progress" id="missionProgress">0 / 0</div>
+                    <div class="mission-progress" id="missionProgress">0 / 100</div>
                 </div>
                 <div class="score-box">SCORE <span class="score-val" id="scoreVal">0</span></div>
                 <div class="level-box hud-chip"><span id="levelVal">LVL 1</span><div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div></div>
@@ -50,7 +50,7 @@
             <div class="inner">
                 <h1>Blessing Catcher</h1>
                 <h2>Kingdom Arcade</h2>
-                <p class="small-copy">Catch blessings, dodge joy-stealers, earn coins, unlock gear, choose levels, and keep coming back for new runs.</p>
+                <p class="small-copy">Catch blessings, dodge joy-stealers, earn coins, unlock gear, use Blessing Burst, and nominate someone for a real blessing.</p>
                 <div class="daily-card card">
                     <div class="daily-top">
                         <div><div class="daily-title">Daily Blessing</div><p id="dailyText">Claim today’s bonus coins.</p></div>
@@ -70,18 +70,17 @@
             </div>
         </div>
 
-        <div class="screen top" id="storeScreen"><div class="inner"><h1>Store</h1><h2>Buy gear • Equip bonuses</h2><div class="daily-card card"><div class="daily-top"><div><div class="daily-title">Wallet</div><p>Earn coins after matches and spend them here.</p></div><span class="pill gold-pill" id="storeCoins">🪙 0</span></div></div><div class="tabs" id="storeTabs"></div><div class="list" id="storeList"></div><button class="btn btn-outline" id="storeBackBtn">Back</button></div></div>
+        <div class="screen top" id="storeScreen"><div class="inner"><h1>Store</h1><h2>Buy gear • Upgrade the next run</h2><div class="daily-card card"><div class="daily-top"><div><div class="daily-title">Wallet</div><p>Earn coins during matches and spend them here.</p></div><span class="pill gold-pill" id="storeCoins">🪙 0</span></div></div><div class="tabs" id="storeTabs"></div><div class="list" id="storeList"></div><button class="btn btn-outline" id="storeBackBtn">Back</button></div></div>
         <div class="screen top" id="levelsScreen"><div class="inner"><h1>Levels</h1><h2>Different drops • different worlds</h2><div class="list" id="levelsList"></div><button class="btn btn-outline" id="levelsBackBtn">Back</button></div></div>
         <div class="screen top" id="achievementsScreen"><div class="inner"><h1>Badges</h1><h2>Achievements unlock coin rewards</h2><div class="list" id="achievementsList"></div><button class="btn btn-outline" id="achievementsBackBtn">Back</button></div></div>
         <div class="screen top" id="statsScreen"><div class="inner"><h1>Stats</h1><h2>Your progress</h2><div class="list" id="statsList"></div><button class="btn btn-danger" id="resetBtn">Reset Progress</button><button class="btn btn-outline" id="statsBackBtn">Back</button></div></div>
-        <div class="screen" id="upgradeScreen"><div class="inner"><h1 class="gold-heading">Level Up!</h1><h2 id="upgradeTitle">Choose Your Upgrade</h2><p class="small-copy">Every level takes more points, so upgrades feel earned.</p><div class="upgrade-grid" id="upgradeGrid"></div></div></div>
         <div class="screen" id="pauseScreen"><div class="inner"><h1>Paused</h1><h2>Take a breath</h2><button class="btn" id="resumeBtn">Resume</button><button class="btn btn-outline" id="quitBtn">Quit Match</button></div></div>
-        <div class="screen top" id="endScreen"><div class="inner"><h2 class="end-kicker">Match Complete</h2><div class="score-val final-score" id="finalScore">0</div><div class="best-line">PERSONAL BEST: <span id="bestScoreText">0</span></div><div class="reward-summary"><div class="reward-box"><div class="reward-label">Coins Earned</div><div class="reward-value" id="coinsEarned">0</div></div><div class="reward-box"><div class="reward-label">Total Coins</div><div class="reward-value" id="totalCoins">0</div></div><div class="reward-box"><div class="reward-label">Missions</div><div class="reward-value" id="missionsDone">0</div></div><div class="reward-box"><div class="reward-label">Best Streak</div><div class="reward-value" id="runBestStreak">0</div></div></div><div id="submitScoreBox" class="submit-box"><input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false"><button class="btn" id="submitScoreBtn">Submit Score</button></div><div class="challenge-card"><div class="challenge-label">Your Challenge This Week</div><div class="challenge-text" id="challengeText">...</div></div><div class="two-col end-buttons"><button class="btn" id="playAgainBtn">Again</button><button class="btn btn-outline" id="homeBtn">Home</button></div><button class="btn btn-outline" id="leaderboardEndBtn">Global Leaderboard</button></div></div>
+        <div class="screen top" id="endScreen"><div class="inner"><h2 class="end-kicker">Match Complete</h2><div class="score-val final-score" id="finalScore">0</div><div class="best-line">PERSONAL BEST: <span id="bestScoreText">0</span></div><div class="reward-summary"><div class="reward-box"><div class="reward-label">Coins Earned</div><div class="reward-value" id="coinsEarned">0</div></div><div class="reward-box"><div class="reward-label">Total Coins</div><div class="reward-value" id="totalCoins">0</div></div><div class="reward-box"><div class="reward-label">Bursts Used</div><div class="reward-value" id="missionsDone">0</div></div><div class="reward-box"><div class="reward-label">Best Streak</div><div class="reward-value" id="runBestStreak">0</div></div></div><div id="submitScoreBox" class="submit-box"><input type="text" id="playerNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" spellcheck="false"><button class="btn" id="submitScoreBtn">Submit Score</button></div><div class="challenge-card"><div class="challenge-label">Your Challenge This Week</div><div class="challenge-text" id="challengeText">...</div></div><div class="two-col end-buttons"><button class="btn" id="playAgainBtn">Again</button><button class="btn btn-outline" id="homeBtn">Home</button></div><button class="btn btn-outline" id="leaderboardEndBtn">Global Leaderboard</button></div></div>
         <div class="screen top" id="leaderboardScreen"><div class="inner"><h1>Leaderboard</h1><h2>Top 20 Blessers</h2><div class="list" id="leaderboardList"><div class="item-card"><div class="item-desc">Loading leaderboard...</div></div></div><button class="btn btn-outline" id="leaderboardBackBtn">Back</button></div></div>
     </div>
 </div>
 <script src="assets/character-select.js"></script>
 <script src="assets/tool-position-fix.js"></script>
-<script type="module" src="assets/game.js"></script>
+<script type="module" src="assets/game-v2.js"></script>
 </body>
 </html>
